@@ -25,9 +25,9 @@ gulp.task('compileTs', function() {
         .pipe(gulpTs({
             declarationFiles: true,
             target: 'ES5',
-            sortOutput:true
+            sortOutput:true,
             //out: 'dyR.js'
-            //typescript: require('typescript')
+            typescript: require('typescript')
         }));
 
 
