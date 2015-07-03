@@ -1,5 +1,6 @@
 /// <reference path="../Collection"/>
 /// <reference path="Observer"/>
+/// <reference path="../global/Variable"/>
 module dyRt {
     export class Scheduler {
         public static create() {
@@ -20,10 +21,10 @@ module dyRt {
             });
         }
 
-        public publishRecursive(initial, recursiveFunc:Function){
+        public publishRecursive(initial:any, action:Function){
             var self = this;
 
-            recursiveFunc(initial, function(value){
+            action(initial, function(value){
                 self.publishNext(value);
             }, function(){
                self.publishCompleted();
@@ -40,6 +41,12 @@ module dyRt {
             this._queue.map(function(ob:Observer){
                 ob.completed();
             });
+        }
+
+        public publishInterval(initial:any, interval:number, action:Function){
+            root.setInterval(function(){
+                  initial = action(initial);
+               }, interval);
         }
 
         //public publishAll(value:any){

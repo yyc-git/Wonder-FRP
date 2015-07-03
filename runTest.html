@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="dist/dyRt.js"></script>
+</head>
+<body>
+<script>
+    var source = dyRt.interval(500);
+
+    var subscription = source.subscribe(
+            function (x) {
+                console.log('onNext: %s', x);
+            },
+            function (e) {
+                console.log('onError: %s', e);
+            },
+            function () {
+                console.log('onCompleted');
+            });
+
+    setTimeout(function(){
+        subscription.dispose();
+    }, 2100);
+
+</script>
+</body>
+</html>

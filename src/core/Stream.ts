@@ -63,7 +63,7 @@ module dyRt{
 
 
     export class BaseStream extends Stream{
-        public subscribeCore(observer){
+        public subscribeCore(observer):Function{
             throw ABSTRACT_METHOD();
         }
 
@@ -76,11 +76,14 @@ module dyRt{
             //todo encapsulate it to scheduleItem
             this.scheduler.add(observer);
 
+            //todo refactor
             if(observer.cleanCallback){
                 observer.cleanCallback = this.subscribeFunc(observer) || function(){};
             }
 
-            this.subscribeCore(observer);
+            if(observer.cleanCallback2){
+                observer.cleanCallback2 = this.subscribeCore(observer) || function(){};
+            }
 
             if(observer.shouldDispose){
                 observer.dispose();

@@ -24,6 +24,9 @@ module dyRt{
                 }
             }
             this.scheduler.publishRecursive(0, loopRecursive);
+
+            return function(){
+            };
         }
     }
 }

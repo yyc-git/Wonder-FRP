@@ -127,6 +127,14 @@ module dyRt {
             this._cleanCallback = cleanCallback;
         }
 
+        private _cleanCallback2:Function = function(){};
+        get cleanCallback2(){
+            return this._cleanCallback2;
+        }
+        set cleanCallback2(cleanCallback2:Function){
+            this._cleanCallback2 = cleanCallback2;
+        }
+
         private _shouldDispose:boolean = null;
         get shouldDispose(){
             return this._shouldDispose;
@@ -152,7 +160,9 @@ module dyRt {
 
             super.dispose();
 
-            this.cleanCallback();
+            //todo refactor, retain one?
+            this._cleanCallback();
+            this._cleanCallback2();
 
             this._scheduler.remove(this);
         }
