@@ -67,13 +67,18 @@ module dyRt{
             throw ABSTRACT_METHOD();
         }
 
-        public subscribe(onNext, onError, onCompleted):Observer {
-            var observer = AutoDetachObserver.create(this.scheduler, onNext, onError, onCompleted);
+        public subscribe(observerOrOnNext:Function|Observer, onError?, onCompleted?):Observer {
+            //todo not force set <Autoxxx>?
+            var observer = observerOrOnNext instanceof Observer
+                ? <AutoDetachObserver>observerOrOnNext
+                : AutoDetachObserver.create(this.scheduler, observerOrOnNext, onError, onCompleted);
 
             //todo encapsulate it to scheduleItem
             this.scheduler.add(observer);
 
-            observer.cleanCallback = this.subscribeFunc(observer) || function(){};
+            if(observer.cleanCallback){
+                observer.cleanCallback = this.subscribeFunc(observer) || function(){};
+            }
 
             this.subscribeCore(observer);
 

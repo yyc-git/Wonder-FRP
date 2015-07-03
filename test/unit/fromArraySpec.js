@@ -1,5 +1,8 @@
 describe("fromArray", function(){
-    var rt = dyRt;
+    var rt = dyRt,
+        TestScheduler = rt.TestScheduler,
+        next = TestScheduler.next,
+        completed = TestScheduler.completed;
     var sandbox = null;
 
     beforeEach(function(){
@@ -11,15 +14,20 @@ describe("fromArray", function(){
 
     describe("create stream from array", function(){
         it("test", function(){
-            var sum = 0;
             var array = [1,2,3];
-            rt.fromArray(array)
-                .subscribe(function(x){
-                    sum += x;
-                }, function(e){
-                }, function(){
-                    expect(sum).toEqual(6);
-                });
+
+            var scheduler = new TestScheduler();
+
+            var results = scheduler.startWithCreate(function () {
+                return rt.fromArray(array);
+            });
+
+            expect(results.messages).toStreamEqual(
+                    next(200, 1),
+                    next(201, 2),
+                    next(202, 3),
+                    completed(203)
+            );
         });
     });
 });

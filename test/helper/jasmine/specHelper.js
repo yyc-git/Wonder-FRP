@@ -199,7 +199,6 @@ beforeEach(function () {
     ;
 
 
-//* sinon matcher
     (function (jasmine) {
         //* 引入YTool的judge和convert方法
 
@@ -622,6 +621,8 @@ beforeEach(function () {
         }
 
 
+        //* sinon matcher
+
         jasmine.addMatchers({
             toCalledWith: function () {
                 return {
@@ -711,5 +712,46 @@ beforeEach(function () {
                 };
             }
         });
+
+        jasmine.addMatchers({
+            toStreamEqual: function (util, customEqualityTesters) {
+                return {
+                    compare: function (actual, expected) {
+                        var actualArg = null,
+                            expectedArg = null;
+                        //var t = util;
+                        //var m = customEqualityTesters;
+                        actualArg = actual;
+                        expectedArg = Array.prototype.slice.call(arguments, 1);
+
+                        var result = true;
+
+                        if(actualArg.length !== expectedArg.length){
+                            result = false;
+                        }
+                        else{
+                            var i = 0,
+                                len = actualArg.length;
+
+                            for(i = 0; i < len; i++){
+                                if(!actualArg[i].equals(expectedArg[i])){
+                                    result = false;
+                                    break;
+                                }
+                            }
+                        }
+
+
+                        return {
+                            pass: result,
+                            message: "Expected " + Tool.convert.toString(expectedArg).slice(1, -1)
+                            + "to equal " + Tool.convert.toString(actualArg).slice(1, -1)
+                            + ", but actual is not equal."
+                        }
+                    }
+                };
+            }
+        });
+
     }(jasmine));
 });
