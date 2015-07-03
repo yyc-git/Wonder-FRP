@@ -1,6 +1,6 @@
-/// <reference path="Global.ts"/>
-/// <reference path="Log.ts"/>
-/// <reference path="Scheduler.ts"/>
+/// <reference path="../global/Const"/>
+/// <reference path="../Log"/>
+/// <reference path="Scheduler"/>
 module dyRt {
     export class Observer {
         //public static create(onNext, onError, onCompleted) {

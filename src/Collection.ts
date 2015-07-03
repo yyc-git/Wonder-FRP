@@ -1,4 +1,4 @@
-/// <reference path="JudgeUtils.ts"/>
+/// <reference path="JudgeUtils"/>
 module dyRt {
     const $BREAK = 1;
 

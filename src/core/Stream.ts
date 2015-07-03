@@ -1,18 +1,14 @@
-/// <reference path="JudgeUtils.ts"/>
-/// <reference path="Scheduler.ts"/>
+/// <reference path="../global/Const"/>
+/// <reference path="../JudgeUtils"/>
+/// <reference path="Scheduler"/>
 module dyRt{
     export class Stream{
-        //todo add parent?
-        public static create(subscribeFunc) {
-            return new AnonymousStream(subscribeFunc);
-        }
-
         protected scheduler:Scheduler = ABSTRACT_ATTRIBUTE;
 
         protected subscribeFunc:Function = null;
 
         constructor(subscribeFunc){
-            this.subscribeFunc = subscribeFunc;
+            this.subscribeFunc = subscribeFunc || function(){};
         }
 
         /**
@@ -65,20 +61,22 @@ module dyRt{
     //};
     }
 
-    export class AnonymousStream extends Stream{
-        constructor(subscribeFunc){
-            super(subscribeFunc);
 
-            this.scheduler = Scheduler.create();
+    export class BaseStream extends Stream{
+        public subscribeCore(observer){
+            throw ABSTRACT_METHOD();
         }
 
-        subscribe(onNext, onError, onCompleted):Observer {
+        public subscribe(onNext, onError, onCompleted):Observer {
             var observer = AutoDetachObserver.create(this.scheduler, onNext, onError, onCompleted);
 
             //todo encapsulate it to scheduleItem
             this.scheduler.add(observer);
 
             observer.cleanCallback = this.subscribeFunc(observer) || function(){};
+
+            this.subscribeCore(observer);
+
             if(observer.shouldDispose){
                 observer.dispose();
             }

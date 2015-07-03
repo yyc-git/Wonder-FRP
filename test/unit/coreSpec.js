@@ -12,7 +12,7 @@ describe("core", function () {
     describe("create stream", function () {
         it("test next and completed", function () {
             var a = 0;
-            var source = rt.Stream.create(function (observer) {
+            var source = rt.createStream(function (observer) {
                 observer.next(10);
                 observer.next(20);
                 observer.completed();
@@ -34,7 +34,7 @@ describe("core", function () {
                 "(i.e, when an completed or error messages is published)", function(){
                 it("publish error", function(){
                     var b = 0;
-                    var source = rt.Stream.create(function (observer) {
+                    var source = rt.createStream(function (observer) {
                         observer.error();
 
                         // Any cleanup logic might go here
@@ -58,7 +58,7 @@ describe("core", function () {
                 });
                 it("publish completed", function () {
                     var b = 0;
-                    var source = rt.Stream.create(function (observer) {
+                    var source = rt.createStream(function (observer) {
                         observer.completed();
 
                         // Any cleanup logic might go here
@@ -115,7 +115,7 @@ describe("core", function () {
         it("error shouldn't terminate a stream", function () {
             var errorMsg = "error occur";
             var a = 0;
-            var source = rt.Stream.create(function (observer) {
+            var source = rt.createStream(function (observer) {
                 observer.next(1);
                 observer.error(errorMsg);
                 observer.next(2);
@@ -138,6 +138,29 @@ describe("core", function () {
         });
         it("stream.endOnError can terminate the stream", function () {
             //todo
+        });
+    });
+
+    it("can have multi observer", function(){
+        var a = 0,
+            b = 0;
+        var source = rt.createStream(function (observer) {
+            observer.next(1);
+            observer.completed();
+        });
+
+        source.subscribe(function(x){
+            a += x;
+        }, function(e){
+        }, function(){
+            expect(a).toEqual(1);
+        });
+
+        source.subscribe(function(x){
+            b += x;
+        }, function(e){
+        }, function(){
+            expect(b).toEqual(1);
         });
     });
 });
