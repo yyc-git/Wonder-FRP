@@ -197,6 +197,8 @@ module dyRt {
             }
         }
 
+        //todo need test
+
         //private _map(arr:any[], handlerName:string, valueArr?:any[], context?:any) {
         private _map(arr:any[], func:Function) {
             //if (valueArr && !JudgeUtils.isArray(valueArr)) {
@@ -204,10 +206,20 @@ module dyRt {
             //    return;
             //}
 
+            var resultArr = [];
+
             this._forEach(arr, function (e, index) {
-                func(e, index);
+                var result = func(e, index);
+
+                if(result !== void 0){
+                    resultArr.push(result);
+                }
                 //e && e[handlerName] && e[handlerName].apply(context || e, valueArr);
-            })
+            });
+
+            if(resultArr.length > 0){
+                this._childs = resultArr;
+            }
         }
 
         private _removeChild(arr:any[], func:Function) {
@@ -227,6 +239,7 @@ module dyRt {
             return arr;
         }
 
+        //todo refactor?
         private _filter = function (arr, func, context) {
             var scope = context || window,
                 //self = this,

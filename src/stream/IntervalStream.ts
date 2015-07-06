@@ -5,10 +5,14 @@ module dyRt{
         private _interval:number = null;
 
         constructor(interval:number, scheduler:Scheduler){
+            super(null);
+
             this._interval = interval;
             this.scheduler = scheduler;
-        }
 
+            //todo initWhenCreate
+            this._interval = this._interval <= 0 ? 1 : this._interval;
+        }
 
         public subscribeCore(observer:Observer){
             var id = this.scheduler.publishInterval(0, this._interval, function(count){
@@ -20,18 +24,6 @@ module dyRt{
             return function(){
                 root.clearInterval(id);
             };
-            //
-            //
-            //return scheduler.schedulePeriodicWithState(0, period, function (count) {
-            //    observer.onNext(count);
-            //    return count + 1;
-            //});
         }
     }
 }
-//return new AnonymousStream(function (observer) {
-//    return scheduler.schedulePeriodicWithState(0, period, function (count) {
-//        observer.onNext(count);
-//        return count + 1;
-//    });
-//});

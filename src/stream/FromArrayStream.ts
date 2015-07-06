@@ -4,11 +4,11 @@ module dyRt{
     export class FromArrayStream extends BaseStream{
         private _array:[any] = null;
 
-        constructor(array:[any]){
+        constructor(array:[any], scheduler:Scheduler){
             super(null);
 
             this._array = array;
-            this.scheduler = Scheduler.create();
+            this.scheduler = scheduler;
         }
 
         public subscribeCore(observer:Observer){

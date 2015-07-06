@@ -1,99 +1,133 @@
+/// <reference path="../core/Scheduler"/>
 /// <reference path="MockObserver"/>
+/// <reference path="../Hash"/>
 module dyRt {
-    export class TestScheduler {
-        public static next(tick, value){
+    const SUBSCRIBE_TIME = 200;
+    const DISPOSE_TIME = 1000;
+
+    export class TestScheduler extends Scheduler {
+        public static next(tick, value) {
             return new Record(tick, value);
         }
 
-        public static error(tick, error){
+        public static error(tick, error) {
             return new Record(tick, error);
         }
 
-        public static completed(tick){
+        public static completed(tick) {
             return new Record(tick, null);
         }
 
         private _clock:number = null;
-        get clock(){
+        get clock() {
             return this._clock;
         }
-        set clock(clock:number){
+
+        set clock(clock:number) {
             this._clock = clock;
         }
 
-        ///** Default virtual time used for creation of observable sequences in unit tests. */
-        //created: 100,
-        /** Default virtual time used to subscribe to observable sequences in unit tests. */
-        private _subscribedTime = 200;
+        private _isDisposed:boolean = false;
+        private _timerMap:Hash = Hash.create();
 
-        ///** Default virtual time used to dispose subscriptions in unit tests. */
-        //disposed: 1000,
+        public remove(observer:Observer) {
+            //this._queue.removeChild(function (ob:Observer) {
+            //    return ob.oid === observer.oid;
+            //});
 
-        /**
-         * Starts the test scheduler and uses the specified virtual times to invoke the factory function, subscribe to the resulting sequence, and dispose the subscription.
-         *
-         * @param create Factory method to create an observable sequence.
-         * @param created Virtual time at which to invoke the factory to create an observable sequence.
-         * @param subscribed Virtual time at which to subscribe to the created observable sequence.
-         * @param disposed Virtual time at which to dispose the subscription.
-         * @return Observer with timestamped recordings of notification messages that were received during the virtual time window when the subscription to the source sequence was active.
-         */
-        //startWithTiming(create, created, subscribed, disposed) {
-        //    var observer = this.createObserver(),
-        //        source, subscription;
-        //
-        //    this.scheduleAbsoluteWithState(null, created, function () {
-        //        source = create();
-        //        return disposableEmpty;
-        //    });
-        //
-        //    this.scheduleAbsoluteWithState(null, subscribed, function () {
-        //        subscription = source.subscribe(observer);
-        //        return disposableEmpty;
-        //    });
-        //
-        //    this.scheduleAbsoluteWithState(null, disposed, function () {
-        //        subscription.dispose();
-        //        return disposableEmpty;
-        //    });
-        //
-        //    this.start();
-        //
-        //    return observer;
-        //}
+            this._isDisposed = true;
+        }
 
-        /**
-         * Starts the test scheduler and uses the specified virtual time to dispose the subscription to the sequence obtained through the factory function.
-         * Default virtual times are used for factory invocation and sequence subscription.
-         *
-         * @param create Factory method to create an observable sequence.
-         * @param disposed Virtual time at which to dispose the subscription.
-         * @return Observer with timestamped recordings of notification messages that were received during the virtual time window when the subscription to the source sequence was active.
-         */
-        //    startWithDispose (create, disposed) {
-        //    return this.startWithTiming(create, ReactiveTest.created, ReactiveTest.subscribed, disposed);
-        //}
+        //todo refactor, need abstract
+        public publishRecursive(initial:any, recursiveFunc:Function) {
+            var self = this;
 
-        /**
-         * Starts the test scheduler and uses default virtual times to invoke the factory function, to subscribe to the resulting sequence, and to dispose the subscription.
-         *
-         * @param create Factory method to create an observable sequence.
-         * @return Observer with timestamped recordings of notification messages that were received during the virtual time window when the subscription to the source sequence was active.
-         */
-        startWithCreate(create, subscribedTime?) {
-            //return this.startWithTiming(create, ReactiveTest.created, ReactiveTest.subscribed, ReactiveTest.disposed);
+            //todo judge dispose
+            recursiveFunc(initial, function (value) {
+                self.publishNext(value);
+                //self._clock++;
+                self._tick(1);
+            }, function () {
+                self.publishCompleted();
+            });
+        }
+
+        public publishInterval(initial:any, interval:number, action:Function) {
+            //produce 10 val for test
+            var COUNT = 10;
+            var self = this;
+
+            while (COUNT > 0 && !this._isDisposed) {
+                //self._clock += interval;
+                self._tick(interval);
+
+                action(initial);
+
+                initial++;
+                COUNT--;
+            }
+        }
+
+        public startWithTime(create:Function, subscribedTime:number, disposedTime:number) {
             var observer = this.createObserver(),
                 source, subscription;
 
-            this._clock = subscribedTime || this._subscribedTime;
+            this._clock = subscribedTime;
 
+            //todo refactor, set tick
             source = create();
 
-            subscription = source.subscribe(observer);
+            this._runAt(subscribedTime, function () {
+                subscription = source.subscribe(observer);
+            });
 
-            subscription.dispose();
+            this._runAt(disposedTime, function () {
+                //todo refactor
+
+                //subscription.dispose();
+                observer.dispose();
+            });
+
+            this._start(subscribedTime);
 
             return observer;
+        }
+
+        private _runAt(time:number, callback:Function) {
+            //use hash
+            //register
+            this._timerMap.addChild(String(time), callback);
+        }
+
+        private _tick(time:number) {
+            var callback = null;
+            //trigger callback
+            this._clock += time;
+
+            callback = this._timerMap.getChild(String(this._clock));
+            callback && callback();
+        }
+
+        private _start(subscribedTime:number) {
+            var callback = null;
+
+            this._clock = subscribedTime;
+
+            callback = this._timerMap.getChild(String(subscribedTime));
+            if(callback){
+                callback();
+            }
+            else{
+                throw new Error("not subscribe");
+            }
+        }
+
+        startWithSubscribe(create, subscribedTime = SUBSCRIBE_TIME) {
+            return this.startWithTime(create, subscribedTime, DISPOSE_TIME);
+        }
+
+        startWithDispose(create, disposedTime = DISPOSE_TIME) {
+            return this.startWithTime(create, SUBSCRIBE_TIME, disposedTime);
         }
 
         /**

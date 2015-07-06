@@ -12,6 +12,9 @@
     var subscription = source.subscribe(
             function (x) {
                 console.log('onNext: %s', x);
+                if(x === 3){
+                    throw new Error("break when 3");
+                }
             },
             function (e) {
                 console.log('onError: %s', e);

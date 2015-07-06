@@ -31,9 +31,9 @@ module dyRt {
         private _isStop:boolean = false;
 
         constructor(onNext:Function, onError:Function, onCompleted:Function) {
-            this.onUserNext = onNext;
-            this.onUserError = onError;
-            this.onUserCompleted = onCompleted;
+            this.onUserNext = onNext || function(){};
+            this.onUserError = onError || function(){};
+            this.onUserCompleted = onCompleted || function(){};
 
             this.oid = Observer.OID++;
         }

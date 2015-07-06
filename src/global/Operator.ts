@@ -7,8 +7,8 @@ module dyRt{
         return new AnonymousStream(subscribeFunc);
     };
 
-    export var fromArray = function(array:[any]){
-        return new FromArrayStream(array);
+    export var fromArray = function(array:[any], scheduler = Scheduler.create()){
+        return new FromArrayStream(array, scheduler);
     };
     /**
      *  Returns an observable sequence that produces a value after each period.
@@ -21,7 +21,7 @@ module dyRt{
      * @param {Scheduler} [scheduler] Scheduler to run the timer on. If not specified, Rx.Scheduler.timeout is used.
      * @returns {Observable} An observable sequence that produces a value after each period.
      */
-    export var interval = function (interval, scheduler = new Scheduler()) {
+    export var interval = function (interval, scheduler = Scheduler.create()) {
         //return observableTimerTimeSpanAndPeriod(interval, interval, isScheduler(scheduler) ? scheduler : timeoutScheduler);
         //return dueTime === interval ?
 

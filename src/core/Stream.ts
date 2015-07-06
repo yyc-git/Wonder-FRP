@@ -77,13 +77,13 @@ module dyRt{
             this.scheduler.add(observer);
 
             //todo refactor
-            if(observer.cleanCallback){
+            //if(observer.cleanCallback){
                 observer.cleanCallback = this.subscribeFunc(observer) || function(){};
-            }
+            //}
 
-            if(observer.cleanCallback2){
+            //if(observer.cleanCallback2){
                 observer.cleanCallback2 = this.subscribeCore(observer) || function(){};
-            }
+            //}
 
             if(observer.shouldDispose){
                 observer.dispose();

@@ -717,36 +717,59 @@ beforeEach(function () {
             toStreamEqual: function (util, customEqualityTesters) {
                 return {
                     compare: function (actual, expected) {
-                        var actualArg = null,
-                            expectedArg = null;
-                        //var t = util;
-                        //var m = customEqualityTesters;
-                        actualArg = actual;
+                        var expectedArg = null,
+                            result = true,
+                            i = 0,
+                            len = actual.length;
+
                         expectedArg = Array.prototype.slice.call(arguments, 1);
 
-                        var result = true;
-
-                        if(actualArg.length !== expectedArg.length){
+                        if(actual.length !== expectedArg.length){
                             result = false;
                         }
                         else{
-                            var i = 0,
-                                len = actualArg.length;
-
                             for(i = 0; i < len; i++){
-                                if(!actualArg[i].equals(expectedArg[i])){
+                                if(!actual[i].equals(expectedArg[i])){
                                     result = false;
                                     break;
                                 }
                             }
                         }
 
+                        return {
+                            pass: result,
+                            message: "Expected " + Tool.convert.toString(actual)
+                            + "to equal " + Tool.convert.toString(expectedArg)
+                            + ", actual is not equal."
+                        }
+                    }
+                };
+            },
+            toStreamContain: function (util, customEqualityTesters) {
+                return {
+                    compare: function (actual, expected) {
+                        var expectedArg = null,
+                            result = true,
+                            i = 0,
+                            len = 0;
+
+                        expectedArg = Array.prototype.slice.call(arguments, 1);
+
+                        len = expectedArg.length;
+
+                        for(i = 0; i < len; i++){
+                            if(!expectedArg[i].equals(actual[i])){
+                                result = false;
+                                break;
+                            }
+                        }
+
 
                         return {
                             pass: result,
-                            message: "Expected " + Tool.convert.toString(expectedArg).slice(1, -1)
-                            + "to equal " + Tool.convert.toString(actualArg).slice(1, -1)
-                            + ", but actual is not equal."
+                            message: "Expected " + Tool.convert.toString(actual)
+                            + "to contain " + Tool.convert.toString(expectedArg)
+                            + ", actual dont't contain."
                         }
                     }
                 };
