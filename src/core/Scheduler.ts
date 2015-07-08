@@ -9,48 +9,75 @@ module dyRt {
             return obj;
         }
 
-        private _queue:Collection = Collection.create();
+        //private queue:Collection = Collection.create();
+        protected queue:Collection = Collection.create();
 
         public add(observer:Observer) {
-            this._queue.addChild(observer);
+            this.queue.addChild(observer);
         }
 
         public remove(observer:Observer) {
-            this._queue.removeChild(function (ob:Observer) {
+            this.queue.removeChild(function (ob:Observer) {
                 return ob.oid === observer.oid;
             });
         }
 
         public publishRecursive(initial:any, action:Function){
             var self = this;
+            //
+            //action(initial, action);
 
             action(initial, function(value){
                 self.publishNext(value);
             }, function(){
-               self.publishCompleted();
+                self.publishCompleted();
             });
         }
 
         public publishNext(value:any){
-            this._queue.map(function(ob:Observer){
+            this.queue.forEach(function(ob:Observer){
                 ob.next(value);
             });
         }
 
         public publishCompleted(){
-            this._queue.map(function(ob:Observer){
+            this.queue.forEach(function(ob:Observer){
                 ob.completed();
             });
         }
 
-        public publishInterval(initial:any, interval:number, action:Function){
-            root.setInterval(function(){
-                  initial = action(initial);
-               }, interval);
+        public publishInterval(initial:any, interval:number, action:Function):Collection{
+            var idList = Collection.create();
+
+            this.queue.forEach(function(ob:Observer){
+               idList.addChild(
+                   root.setInterval(function(){
+                    initial = action(ob, initial);
+                }, interval)
+               );
+            });
+
+            return idList;
+            //
+
+            //return root.setInterval(function(){
+            //    initial = action(initial);
+            //}, interval)
+        }
+
+        public getObservers():number{
+            return this.queue.getCount();
+        }
+
+        public createStreamBySubscribeFunc(subscribeFunc:Function){
+            //todo not force set <Autoxxx>?
+            this.queue.forEach(function(observer:AutoDetachObserver){
+                observer.cleanCallback = subscribeFunc(observer);
+            });
         }
 
         //public publishAll(value:any){
-        //    this._queue.map(function(ob){
+        //    this.queue.map(function(ob){
         //        try{
         //            ob.next(value);
         //        }

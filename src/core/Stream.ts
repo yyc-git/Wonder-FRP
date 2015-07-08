@@ -1,9 +1,13 @@
 /// <reference path="../global/Const"/>
 /// <reference path="../JudgeUtils"/>
 /// <reference path="Scheduler"/>
+
+//to avoid the circular reference in this file and Subject.ts
+/// <reference path="../definitions.d.ts"/>
 module dyRt{
+
     export class Stream{
-        protected scheduler:Scheduler = ABSTRACT_ATTRIBUTE;
+        public scheduler:Scheduler = ABSTRACT_ATTRIBUTE;
 
         protected subscribeFunc:Function = null;
 
@@ -26,8 +30,39 @@ module dyRt{
          *  @param {Function} [onCompleted] Action to invoke upon graceful termination of the observable sequence.
          *  @returns {Diposable} A disposable handling the subscriptions and unsubscriptions.
          */
-        public subscribe(observerOrOnNext, onError, onCompleted):Observer {
+        public subscribe(arg1, onError, onCompleted):Observer {
             throw ABSTRACT_METHOD();
+        }
+
+        //todo refactor?
+        public subscribeCore():Function{
+            throw ABSTRACT_METHOD();
+        }
+
+        protected handleSubject(arg){
+            if(this._isSubject(arg)){
+                this._setSubject(arg);
+                return true;
+            }
+
+            return false;
+        }
+
+        private _isSubject(subject){
+            return subject instanceof Subject;
+        }
+
+        private _setSubject(subject){
+            //subject.scheduler = this.scheduler;
+            //subject.subscribeFunc = this.subscribeFunc;
+            //subject.subscribeCore = subject
+            this.scheduler
+        }
+
+        protected buildStream():Function{
+            this.scheduler.createStreamBySubscribeFunc(this.subscribeFunc);
+
+            return this.subscribeCore();
         }
 
     //    /**
@@ -62,34 +97,4 @@ module dyRt{
     }
 
 
-    export class BaseStream extends Stream{
-        public subscribeCore(observer):Function{
-            throw ABSTRACT_METHOD();
-        }
-
-        public subscribe(observerOrOnNext:Function|Observer, onError?, onCompleted?):Observer {
-            //todo not force set <Autoxxx>?
-            var observer = observerOrOnNext instanceof Observer
-                ? <AutoDetachObserver>observerOrOnNext
-                : AutoDetachObserver.create(this.scheduler, observerOrOnNext, onError, onCompleted);
-
-            //todo encapsulate it to scheduleItem
-            this.scheduler.add(observer);
-
-            //todo refactor
-            //if(observer.cleanCallback){
-                observer.cleanCallback = this.subscribeFunc(observer) || function(){};
-            //}
-
-            //if(observer.cleanCallback2){
-                observer.cleanCallback2 = this.subscribeCore(observer) || function(){};
-            //}
-
-            if(observer.shouldDispose){
-                observer.dispose();
-            }
-
-            return observer;
-        }
-    }
 }

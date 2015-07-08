@@ -10,7 +10,13 @@ module dyRt{
         }
 
         public subscribe(onNext, onError, onCompleted):Observer {
-            var observer = AutoDetachObserver.create(this.scheduler, onNext, onError, onCompleted);
+            var observer = null;
+
+            if(this.handleSubject(arguments[0])){
+                return;
+            }
+
+            observer = AutoDetachObserver.create(this.scheduler, onNext, onError, onCompleted);
 
             //todo encapsulate it to scheduleItem
             this.scheduler.add(observer);
@@ -21,6 +27,11 @@ module dyRt{
             }
 
             return observer;
+        }
+
+        public subscribeCore():Function{
+            return function(){
+            };
         }
     }
 }

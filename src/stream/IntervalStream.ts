@@ -1,5 +1,4 @@
-/// <reference path="../core/Stream"/>
-/// <reference path="../core/Scheduler"/>
+/// <reference path="BaseStream"/>
 module dyRt{
     export class IntervalStream extends BaseStream{
         private _interval:number = null;
@@ -11,11 +10,11 @@ module dyRt{
             this.scheduler = scheduler;
 
             //todo initWhenCreate
-            this._interval = this._interval <= 0 ? 1 : this._interval;
-        }
+            this._interval = this._interval <= 0 ? 1 : this._interval;        }
 
-        public subscribeCore(observer:Observer){
-            var id = this.scheduler.publishInterval(0, this._interval, function(count){
+
+        public subscribeCore(){
+            var id = this.scheduler.publishInterval(0, this._interval, function(observer:Observer, count) {
                 observer.next(count);
 
                 return count + 1;

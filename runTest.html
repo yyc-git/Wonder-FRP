@@ -7,25 +7,80 @@
 </head>
 <body>
 <script>
-    var source = dyRt.interval(500);
+//    var source = dyRt.interval(500);
+////    var source = dyRt.fromArray([1,2,3,4,5]);
+//
+//    var subscription = source.subscribe(
+//            function (x) {
+//                console.log('onNext: %s', x);
+//                if(x === 3){
+//                    throw new Error("break when 3");
+//                }
+//            },
+//            function (e) {
+//                console.log('onError: %s', e);
+//            },
+//            function () {
+//                console.log('onCompleted');
+//            });
+//
+//    var subscription2 = source.subscribe(
+//            function (x) {
+//                console.log('onNext: %s', x);
+////                if(x === 3){
+////                    throw new Error("break when 3");
+////                }
+//            },
+//            function (e) {
+//                console.log('onError: %s', e);
+//            },
+//            function () {
+//                console.log('onCompleted');
+//            });
+//
+////    setTimeout(function(){
+////        source.subscribe(
+////            function (x) {
+//////                console.log('onNext: %s', x);
+////                console.log("222");
+////            },
+////            function (e) {
+////                console.log('onError: %s', e);
+////            },
+////            function () {
+////                console.log('onCompleted');
+////            });
+////    }, 1000);
+//
+//    setTimeout(function(){
+//        subscription2.dispose();
+//    }, 1100);
 
-    var subscription = source.subscribe(
-            function (x) {
-                console.log('onNext: %s', x);
-                if(x === 3){
-                    throw new Error("break when 3");
-                }
-            },
-            function (e) {
-                console.log('onError: %s', e);
-            },
-            function () {
-                console.log('onCompleted');
-            });
 
-    setTimeout(function(){
-        subscription.dispose();
-    }, 2100);
+
+var a = 0,
+        b = 0;
+var source = dyRt.createStream(function (observer) {
+    observer.next(1);
+    observer.completed();
+});
+//var subject = dyRt.Subject.create();
+var subject = new dyRt.Subject();
+
+source.subscribe(subject);
+subject.subscribe(function(x){
+    a += x;
+}, function(e){
+}, function(){
+    console.log("a = ", a);
+});
+subject.subscribe(function(x){
+    b += x;
+}, function(e){
+}, function(){
+    console.log("b = ", b);
+});
+subject.start();
 
 </script>
 </body>
