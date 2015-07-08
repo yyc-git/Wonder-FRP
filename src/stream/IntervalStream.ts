@@ -10,12 +10,13 @@ module dyRt{
             this.scheduler = scheduler;
 
             //todo initWhenCreate
-            this._interval = this._interval <= 0 ? 1 : this._interval;        }
+            this._interval = this._interval <= 0 ? 1 : this._interval;
+        }
 
 
         public subscribeCore(){
-            var id = this.scheduler.publishInterval(0, this._interval, function(observer:Observer, count) {
-                observer.next(count);
+            var id = this.scheduler.publishInterval(0, this._interval, function(target:IObserver, count) {
+                target.next(count);
 
                 return count + 1;
             });

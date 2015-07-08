@@ -1,10 +1,9 @@
-/// <reference path="../core/Subject"/>
-/// <reference path="../core/Stream"/>
+/// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class BaseStream extends Stream{
         //private _isStart:boolean = false;
 
-        public subscribe(arg1:Function|Observer|Subject, onError?, onCompleted?):Observer {
+        public subscribe(arg1:Function|Observer|Subject, onError?, onCompleted?):IDisposable {
             var observer = null;
 
             if(this.handleSubject(arg1)){
@@ -17,7 +16,8 @@ module dyRt{
                 : AutoDetachObserver.create(this.scheduler, arg1, onError, onCompleted);
 
             //todo encapsulate it to scheduleItem
-            this.scheduler.add(observer);
+            //this.scheduler.add(observer);
+            this.scheduler.target = observer;
 
             //todo refactor
             //if(observer.cleanCallback){

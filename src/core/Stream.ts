@@ -1,6 +1,5 @@
 /// <reference path="../global/Const"/>
 /// <reference path="../JudgeUtils"/>
-/// <reference path="Scheduler"/>
 
 //to avoid the circular reference in this file and Subject.ts
 /// <reference path="../definitions.d.ts"/>
@@ -30,13 +29,19 @@ module dyRt{
          *  @param {Function} [onCompleted] Action to invoke upon graceful termination of the observable sequence.
          *  @returns {Diposable} A disposable handling the subscriptions and unsubscriptions.
          */
-        public subscribe(arg1, onError, onCompleted):Observer {
+        public subscribe(arg1, onError, onCompleted):IDisposable {
             throw ABSTRACT_METHOD();
         }
 
         //todo refactor?
         public subscribeCore():Function{
             throw ABSTRACT_METHOD();
+        }
+
+        public buildStream():Function{
+            this.scheduler.createStreamBySubscribeFunc(this.subscribeFunc);
+
+            return this.subscribeCore();
         }
 
         protected handleSubject(arg){
@@ -53,17 +58,14 @@ module dyRt{
         }
 
         private _setSubject(subject){
+            this.scheduler.target = subject;
+            subject.stream = this;
             //subject.scheduler = this.scheduler;
-            //subject.subscribeFunc = this.subscribeFunc;
-            //subject.subscribeCore = subject
-            this.scheduler
+            ////subject.subscribeFunc = this.subscribeFunc;
+            ////subject.subscribeCore = subject
+            //subject.scheduler.target = subject;
         }
 
-        protected buildStream():Function{
-            this.scheduler.createStreamBySubscribeFunc(this.subscribeFunc);
-
-            return this.subscribeCore();
-        }
 
     //    /**
     //     * Subscribes to the next value in the sequence with an optional "this" argument.

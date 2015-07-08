@@ -1,11 +1,13 @@
 /// <reference path="../global/Const"/>
 /// <reference path="../Log"/>
 /// <reference path="Scheduler"/>
+/// <reference path="../IObserver"/>
 module dyRt {
-    export class Observer {
+    export class Observer implements IObserver{
         //public static create(onNext, onError, onCompleted) {
         //    return new AnonymousObserver(onNext, onError, onCompleted);
         //}
+        //todo use uid
         public static OID:number = 1;
 
         private _oid:number = null;
@@ -164,7 +166,7 @@ module dyRt {
             this._cleanCallback();
             this._cleanCallback2();
 
-            this._scheduler.remove(this);
+            //this._scheduler.remove(this);
         }
 
         protected onNext(value) {

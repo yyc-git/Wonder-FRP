@@ -1,6 +1,4 @@
-/// <reference path="../core/Stream"/>
-/// <reference path="../core/Scheduler"/>
-/// <reference path="../core/Observer"/>
+/// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class AnonymousStream extends Stream{
         constructor(subscribeFunc){
@@ -9,7 +7,7 @@ module dyRt{
             this.scheduler = Scheduler.create();
         }
 
-        public subscribe(onNext, onError, onCompleted):Observer {
+        public subscribe(onNext, onError, onCompleted):IDisposable {
             var observer = null;
 
             if(this.handleSubject(arguments[0])){
@@ -19,7 +17,8 @@ module dyRt{
             observer = AutoDetachObserver.create(this.scheduler, onNext, onError, onCompleted);
 
             //todo encapsulate it to scheduleItem
-            this.scheduler.add(observer);
+            //this.scheduler.add(observer);
+            this.scheduler.target = observer;
 
             observer.cleanCallback = this.subscribeFunc(observer) || function(){};
             if(observer.shouldDispose){
