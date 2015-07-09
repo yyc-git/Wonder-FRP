@@ -1,21 +1,22 @@
 /// <reference path="../core/Scheduler"/>
 /// <reference path="MockObserver"/>
 /// <reference path="../Hash"/>
+/// <reference path="TestStream"/>
 module dyRt {
     const SUBSCRIBE_TIME = 200;
     const DISPOSE_TIME = 1000;
 
     export class TestScheduler extends Scheduler {
         public static next(tick, value) {
-            return new Record(tick, value);
+            return new Record(tick, value, ActionType.NEXT);
         }
 
         public static error(tick, error) {
-            return new Record(tick, error);
+            return new Record(tick, error, ActionType.ERROR);
         }
 
         public static completed(tick) {
-            return new Record(tick, null);
+            return new Record(tick, null, ActionType.COMPLETED);
         }
 
         private _clock:number = null;
@@ -28,7 +29,41 @@ module dyRt {
         }
 
         private _isDisposed:boolean = false;
+        private _lastTime:number = null;
         private _timerMap:Hash = Hash.create();
+        private _streamMap:Hash = Hash.create();
+
+
+        public setStreamMap(messages:[Record]){
+            var self = this;
+
+            messages.forEach(function(record:Record){
+                var func = null;
+
+                switch (record.actionType){
+                    case ActionType.NEXT:
+                        func = function(){
+                            self.target && self.target.next(record.value);
+                        };
+                        break;
+                    case ActionType.ERROR:
+                        func = function(){
+                            self.target && self.target.error(record.value);
+                        };
+                        break;
+                    case ActionType.COMPLETED:
+                        func = function(){
+                            self.target && self.target.completed();
+                        };
+                        break;
+                    default:
+                        Log.error(true, Log.info.FUNC_UNKNOW("actionType"));
+                        break;
+                }
+
+                self._streamMap.addChild(String(record.time), func);
+            });
+        }
 
         public remove(observer:Observer) {
             //this._queue.removeChild(function (ob:Observer) {
@@ -44,28 +79,55 @@ module dyRt {
 
             //todo judge dispose
             recursiveFunc(initial, function (value) {
-                self.publishNext(value);
+                //self.publishNext(value);
+                self.target.next(value);
                 //self._clock++;
                 self._tick(1);
             }, function () {
-                self.publishCompleted();
+                //self.publishCompleted();
+                self.target.completed();
             });
+            //recursiveFunc(initial, function(initial, selfFunc){
+            //    self._tick(1);
+            //
+            //    recursiveFunc(initial, selfFunc);
+            //});
         }
 
-        public publishInterval(initial:any, interval:number, action:Function) {
+        public publishInterval(initial:any, interval:number, action:Function):number{
+            //    var self = this;
+            //
+            //this.queue.forEach(function(ob:Observer){
+            //    //produce 10 val for test
+            //    var COUNT = 10;
+            //
+            //    while (COUNT > 0 && !self._isDisposed) {
+            //        //self._clock += interval;
+            //        self._tick(interval);
+            //
+            //        action(ob, initial);
+            //
+            //        initial++;
+            //        COUNT--;
+            //    }
+            //});
+            //
+            //return Collection.create();
+
             //produce 10 val for test
             var COUNT = 10;
-            var self = this;
 
             while (COUNT > 0 && !this._isDisposed) {
                 //self._clock += interval;
-                self._tick(interval);
+                this._tick(interval);
 
-                action(initial);
+                action(this.target, initial);
 
                 initial++;
                 COUNT--;
             }
+
+            return NaN;
         }
 
         public startWithTime(create:Function, subscribedTime:number, disposedTime:number) {
@@ -74,7 +136,6 @@ module dyRt {
 
             this._clock = subscribedTime;
 
-            //todo refactor, set tick
             source = create();
 
             this._runAt(subscribedTime, function () {
@@ -82,60 +143,108 @@ module dyRt {
             });
 
             this._runAt(disposedTime, function () {
-                //todo refactor
-
-                //subscription.dispose();
                 observer.dispose();
             });
 
-            this._start(subscribedTime);
+            this.start();
 
             return observer;
         }
 
-        private _runAt(time:number, callback:Function) {
-            //use hash
-            //register
-            this._timerMap.addChild(String(time), callback);
-        }
-
-        private _tick(time:number) {
-            var callback = null;
-            //trigger callback
-            this._clock += time;
-
-            callback = this._timerMap.getChild(String(this._clock));
-            callback && callback();
-        }
-
-        private _start(subscribedTime:number) {
-            var callback = null;
-
-            this._clock = subscribedTime;
-
-            callback = this._timerMap.getChild(String(subscribedTime));
-            if(callback){
-                callback();
-            }
-            else{
-                throw new Error("not subscribe");
-            }
-        }
-
-        startWithSubscribe(create, subscribedTime = SUBSCRIBE_TIME) {
+        public startWithSubscribe(create, subscribedTime = SUBSCRIBE_TIME) {
             return this.startWithTime(create, subscribedTime, DISPOSE_TIME);
         }
 
-        startWithDispose(create, disposedTime = DISPOSE_TIME) {
+        public startWithDispose(create, disposedTime = DISPOSE_TIME) {
             return this.startWithTime(create, SUBSCRIBE_TIME, disposedTime);
+        }
+
+        public publicAbsolute(time, handler) {
+            this._runAt(time, function () {
+                handler();
+            });
+        }
+
+        public start() {
+            var extremeNumArr = this._getMinAndMaxTime(),
+                min = extremeNumArr[0],
+                max = extremeNumArr[1],
+                time = min;
+
+            while (time <= max) {
+                this._clock = time;
+
+                this._exec(time, this._timerMap);
+                this._exec(time, this._streamMap);
+
+                time++;
+            }
+        }
+
+        public createStream(args){
+            this.setStreamMap(Array.prototype.slice.call(arguments, 0));
+
+            return new TestStream(Array.prototype.slice.call(arguments, 0), this);
         }
 
         /**
          * Creates an observer that records received notification messages and timestamps those.
          * @return Observer that can be used to assert the timing of received notifications.
          */
-        createObserver() {
+        public createObserver() {
             return new MockObserver(this);
+        }
+
+        private _getMinAndMaxTime(){
+            var timeArr = this._timerMap.getKeys().concat(this._streamMap.getKeys())
+                .map(function(key){
+                    return Number(key);
+                });
+
+            return [Math.min.apply(Math, timeArr), Math.max.apply(Math, timeArr)];
+        }
+
+        private _exec(time, map){
+            var handler = map.getChild(String(time));
+
+            if(handler){
+                handler();
+            }
+        }
+
+        /**
+         * exec (lastTime, currentTime]
+         * @param lastTime
+         * @param currentTime
+         * @param map
+         * @private
+         */
+        private _execRange(lastTime, currentTime, map){
+            var time = lastTime;
+
+            if(!lastTime){
+                this._exec(currentTime, map);
+                return;
+            }
+
+            time++;
+            while(time <= currentTime){
+                this._exec(time, map);
+                time++;
+            }
+        }
+
+        private _runAt(time:number, callback:Function) {
+            this._timerMap.addChild(String(time), callback);
+        }
+
+        private _tick(time:number) {
+            this._clock += time;
+
+            this._execRange(this._lastTime, this._clock, this._timerMap);
+            this._lastTime = this._clock;
         }
     }
 }
+
+

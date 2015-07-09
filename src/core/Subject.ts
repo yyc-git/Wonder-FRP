@@ -1,6 +1,13 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class Subject implements IObserver{
+        public static create() {
+            var obj = new this();
+
+            return obj;
+        }
+
+
         private _stream:Stream = null;
         get stream(){
             return this._stream;
@@ -12,8 +19,11 @@ module dyRt{
         private _observers:Collection = Collection.create();
         private _disposeFunc:Function = null;
 
-        public subscribe(onNext?:Function, onError?:Function, onCompleted?:Function):IDisposable{
-            var observer = AutoDetachObserver.create(this._stream.scheduler, onNext, onError, onCompleted);
+        public subscribe(arg1?:Function|Observer, onError?:Function, onCompleted?:Function):IDisposable{
+            //var observer = AutoDetachObserver.create(this._stream.scheduler, onNext, onError, onCompleted);
+            var observer = arg1 instanceof Observer
+                ? <AutoDetachObserver>arg1
+                : AutoDetachObserver.create(this._stream.scheduler, arg1, onError, onCompleted);
 
             //this._observers.addChild(observer);
             this._observers.addChild(observer);

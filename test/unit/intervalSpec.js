@@ -47,16 +47,29 @@ describe("interval", function () {
             next(301, 0), next(302, 1), next(303, 2)
         );
     });
-    it("set dispose time", function () {
-        var results;
+    describe("set dispose time", function () {
+        it("when equal dispose time", function(){
+            var results;
 
-        results = scheduler.startWithDispose(function () {
-            return rt.interval(0, scheduler);
-        }, 204);
+            results = scheduler.startWithDispose(function () {
+                return rt.interval(0, scheduler);
+            }, 204);
 
-        expect(results.messages).toStreamEqual(
-            next(201, 0), next(202, 1), next(203, 2)
-        );
+            expect(results.messages).toStreamEqual(
+                next(201, 0), next(202, 1), next(203, 2)
+            );
+        });
+        it("when over dipose time", function(){
+            var results;
+
+            results = scheduler.startWithDispose(function () {
+                return rt.interval(3, scheduler);
+            }, 208);
+
+            expect(results.messages).toStreamEqual(
+                next(203, 0), next(206, 1)
+            );
+        });
     });
     it("test observer error", function(){
         //todo how to test?

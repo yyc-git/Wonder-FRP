@@ -1,11 +1,16 @@
 describe("core", function () {
-    var rt = dyRt;
+    var rt = dyRt,
+        TestScheduler = rt.TestScheduler,
+        next = TestScheduler.next,
+        completed = TestScheduler.completed;
+    var scheduler = null;
     var sandbox = null;
 
-    beforeEach(function () {
+    beforeEach(function(){
         sandbox = sinon.sandbox.create();
+        scheduler = new TestScheduler();
     });
-    afterEach(function () {
+    afterEach(function(){
         sandbox.restore();
     });
 
@@ -143,27 +148,7 @@ describe("core", function () {
         });
     });
 
-    it("can have multi observer", function(){
-        var a = 0,
-            b = 0;
-        var source = rt.createStream(function (observer) {
-            observer.next(1);
-            observer.completed();
-        });
 
-        source.subscribe(function(x){
-            a += x;
-        }, function(e){
-        }, function(){
-            expect(a).toEqual(1);
-        });
-
-        source.subscribe(function(x){
-            b += x;
-        }, function(e){
-        }, function(){
-            expect(b).toEqual(1);
-        });
-    });
+    //todo hot
 });
 

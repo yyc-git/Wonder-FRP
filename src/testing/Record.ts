@@ -1,3 +1,4 @@
+/// <reference path="ActionType"/>
 module dyRt {
     var defaultIsEqual = function (a, b) {
         return a === b;
@@ -20,6 +21,14 @@ module dyRt {
             this._value = value;
         }
 
+        private _actionType:ActionType = null;
+        get actionType(){
+            return this._actionType;
+        }
+        set actionType(actionType:ActionType){
+            this._actionType = actionType;
+        }
+
         private _comparer:Function = null;
 
         /**
@@ -30,9 +39,10 @@ module dyRt {
          * @param {Mixed} value Value that was produced.
          * @param {Function} comparer An optional comparer.
          */
-        constructor(time, value, comparer?) {
+        constructor(time, value, actionType?:ActionType, comparer?:Function) {
             this._time = time;
             this._value = value;
+            this._actionType = actionType;
             this._comparer = comparer || defaultIsEqual;
         }
 

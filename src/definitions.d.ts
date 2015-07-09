@@ -12,3 +12,5 @@
 /// <reference path="core/Observer"/>
 
 /// <reference path="subject/InnerSubscription"/>
+
+/// <reference path="testing/Record"/>

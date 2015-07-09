@@ -19,6 +19,17 @@ module dyRt {
         //    return this._childs;
         //}
 
+        public getKeys(){
+            var result = [],
+                key = null;
+
+            for(key in this._childs){
+                result.push(key);
+            }
+
+            return result;
+        }
+
         public getChild(key:string) {
             return this._childs[key];
         }

@@ -1,6 +1,31 @@
 module dyRt {
     export class Log {
         public static info = {
+            INVALID_PARAM: "invalid parameter",
+            //ABSTRACT_ATTRIBUTE: "abstract attribute need override",
+            //ABSTRACT_METHOD: "abstract method need override",
+
+            helperFunc: function(msg, value){
+                return msg + " " + String(value);
+            },
+            FUNC_INVALID: function (value) {
+                return this.helperFunc("invalid", value);
+            },
+            FUNC_MUST_BE: function (value) {
+                return this.helperFunc("must be", value);
+            },
+            FUNC_NOT_SUPPORT: function(value){
+                return this.helperFunc("not support", value);
+            },
+            FUNC_MUST_DEFINE: function(value){
+                return this.helperFunc("must define", value);
+            },
+            FUNC_UNKNOW: function(value){
+                return this.helperFunc("unknow", value);
+            },
+            FUNC_UNEXPECT: function(value){
+                return this.helperFunc("unexpected", value);
+            }
         };
 
         /**
@@ -10,10 +35,10 @@ module dyRt {
          */
         public static log(message) {
             if (console && console.log) {
-                console.log("断言：" + message);
+                console.log(message);
             }
             else {
-                alert("断言：" + message);
+                alert(message);
             }
         }
 
@@ -49,10 +74,10 @@ module dyRt {
             else {
                 if (!cond && message) {
                     if (console && console.log) {
-                        console.log("断言：" + message);
+                        console.log(message);
                     }
                     else {
-                        alert("断言：" + message);
+                        alert(message);
                     }
                 }
             }

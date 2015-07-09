@@ -20,7 +20,7 @@ module.exports = function(config) {
         'dist/dyRt.js',
         'reference/RxJS/dist/rx.all.js',
 
-        'test/helper/jsExtend.js',
+        //'test/helper/jsExtend.js',
         'test/helper/jasmine/**',
         'test/helper/sinonJs/*.js',
 

@@ -43,7 +43,7 @@ module dyRt {
         }
 
 
-        public publishInterval(initial:any, interval:number, action:Function):Collection{
+        public publishInterval(initial:any, interval:number, action:Function):number{
             //var idList = Collection.create();
 
             //this.queue.forEach(function(ob:Observer){
