@@ -18,6 +18,8 @@ module dyRt {
             this._target = target;
         }
 
+        private _wrapTargetList:Collection = Collection.create();
+
         //public add(observer:Observer) {
         //    this.queue.addChild(observer);
         //}
@@ -35,9 +37,9 @@ module dyRt {
 
             action(initial, function(value){
                 //self.publishNext(value);
-                self._target.next(value);
+                self.next(value);
             }, function(){
-                self._target.completed();
+                self.completed();
                 //self.publishCompleted();
             });
         }
@@ -85,7 +87,70 @@ module dyRt {
             //});
             var observer = <AutoDetachObserver>this._target;
 
-            observer.cleanCallback = subscribeFunc(this._target);
+            observer.cleanCallback = subscribeFunc(this);
+        }
+
+        public next(value) {
+            var self = this;
+
+            if(this._target){
+                this._execWrapTarget(function(wrapTarget){
+                    try{
+                        wrapTarget.next(value);
+                    }
+                    catch (e) {
+                        wrapTarget.error(e);
+                        self._target.error(e);
+                    }
+                });
+
+                try{
+                    this._target.next(value);
+                }
+                catch (e) {
+                    this._target.error(e);
+                }
+            }
+        }
+
+        public error(error) {
+            if(this._target){
+                this._execWrapTarget(function(wrapTarget){
+                    wrapTarget.error(error);
+                });
+                this._target.error(error);
+            }
+        }
+
+        public completed() {
+            var self = this;
+
+            if(this._target){
+                this._execWrapTarget(function(wrapTarget){
+                    try{
+                        wrapTarget.completed();
+                    }
+                    catch (e) {
+                        wrapTarget.error(e);
+                        self._target.error(e);
+                    }
+                });
+
+                try{
+                    this._target.completed();
+                }
+                catch (e) {
+                    this._target.error(e);
+                }
+            }
+        }
+
+        public addWrapTarget(wrapTarget:IObserver){
+            this._wrapTargetList.addChild(wrapTarget);
+        }
+
+        private _execWrapTarget(func){
+            this._wrapTargetList.getCount() > 0 && this._wrapTargetList.forEach(func);
         }
     }
 }

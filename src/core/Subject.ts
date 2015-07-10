@@ -23,7 +23,8 @@ module dyRt{
             //var observer = AutoDetachObserver.create(this._stream.scheduler, onNext, onError, onCompleted);
             var observer = arg1 instanceof Observer
                 ? <AutoDetachObserver>arg1
-                : AutoDetachObserver.create(this._stream.scheduler, arg1, onError, onCompleted);
+                //: AutoDetachObserver.create(this._stream.scheduler, arg1, onError, onCompleted);
+                : AutoDetachObserver.create(arg1, onError, onCompleted);
 
             //this._observers.addChild(observer);
             this._observers.addChild(observer);

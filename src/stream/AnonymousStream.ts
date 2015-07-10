@@ -14,13 +14,15 @@ module dyRt{
                 return;
             }
 
-            observer = AutoDetachObserver.create(this.scheduler, onNext, onError, onCompleted);
+            //observer = AutoDetachObserver.create(this.scheduler, onNext, onError, onCompleted);
+            observer = AutoDetachObserver.create(onNext, onError, onCompleted);
 
             //todo encapsulate it to scheduleItem
             //this.scheduler.add(observer);
             this.scheduler.target = observer;
 
-            observer.cleanCallback = this.subscribeFunc(observer) || function(){};
+            //observer.cleanCallback = this.subscribeFunc(observer) || function(){};
+            observer.cleanCallback = this.subscribeFunc(this.scheduler) || function(){};
             if(observer.shouldDispose){
                 observer.dispose();
             }

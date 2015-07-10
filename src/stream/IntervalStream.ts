@@ -15,11 +15,12 @@ module dyRt{
 
 
         public subscribeCore(){
-            var id = this.scheduler.publishInterval(0, this._interval, function(target:IObserver, count) {
-                target.next(count);
+            var self = this,
+                id = this.scheduler.publishInterval(0, this._interval, function(count) {
+                    self.scheduler.next(count);
 
-                return count + 1;
-            });
+                    return count + 1;
+                });
 
             return function(){
                 root.clearInterval(id);

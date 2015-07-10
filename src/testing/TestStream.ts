@@ -15,5 +15,9 @@ module dyRt {
 
             return observer;
         }
+
+        public subscribeCore():Function{
+            return function(){};
+        }
     }
 }

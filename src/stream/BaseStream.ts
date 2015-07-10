@@ -13,7 +13,8 @@ module dyRt{
             //todo not force set <Autoxxx>?
             observer = arg1 instanceof Observer
                 ? <AutoDetachObserver>arg1
-                : AutoDetachObserver.create(this.scheduler, arg1, onError, onCompleted);
+                //: AutoDetachObserver.create(this.scheduler, arg1, onError, onCompleted);
+                : AutoDetachObserver.create(arg1, onError, onCompleted);
 
             //todo encapsulate it to scheduleItem
             //this.scheduler.add(observer);

@@ -3,5 +3,7 @@ module dyRt{
         next(value);
         error(error);
         completed();
+        dispose();
+
     }
 }

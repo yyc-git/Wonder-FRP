@@ -1,6 +1,3 @@
-/// <reference path="../global/Const"/>
-/// <reference path="../JudgeUtils"/>
-
 //to avoid the circular reference in this file and Subject.ts
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
@@ -11,7 +8,9 @@ module dyRt{
         protected subscribeFunc:Function = null;
 
         constructor(subscribeFunc){
-            this.subscribeFunc = subscribeFunc || function(){};
+            this.subscribeFunc = subscribeFunc || function(){
+                    return function(){};
+                };
         }
 
         /**
@@ -51,6 +50,10 @@ module dyRt{
             }
 
             return false;
+        }
+
+        public do(onNext?:Function, onError?:Function, onCompleted?:Function) {
+            return new DoStream(this, onNext, onError, onCompleted);
         }
 
         private _isSubject(subject){

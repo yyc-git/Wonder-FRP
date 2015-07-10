@@ -4,9 +4,6 @@
 /// <reference path="../IObserver"/>
 module dyRt {
     export class Observer implements IObserver{
-        //public static create(onNext, onError, onCompleted) {
-        //    return new AnonymousObserver(onNext, onError, onCompleted);
-        //}
         //todo use uid
         public static OID:number = 1;
 
@@ -103,6 +100,10 @@ module dyRt {
     }
 
     export class AnonymousObserver extends Observer{
+        public static create(onNext, onError, onCompleted) {
+            return new this(onNext, onError, onCompleted);
+        }
+
         protected onNext(value){
             this.onUserNext(value);
         }
@@ -117,8 +118,8 @@ module dyRt {
     }
 
     export class AutoDetachObserver extends Observer{
-        public static create(scheduler, onNext, onError, onCompleted) {
-            return new this(scheduler ,onNext, onError, onCompleted);
+        public static create(onNext, onError, onCompleted) {
+            return new this(onNext, onError, onCompleted);
         }
 
         private _cleanCallback:Function = function(){};
@@ -145,13 +146,8 @@ module dyRt {
             this._shouldDispose = shouldDispose;
         }
 
-        private _scheduler:Scheduler = null;
-
-
-        constructor(scheduler, onNext, onError, onCompleted){
+        constructor(onNext, onError, onCompleted){
             super(onNext, onError, onCompleted);
-
-            this._scheduler = scheduler;
         }
 
         public dispose(){
@@ -165,8 +161,6 @@ module dyRt {
             //todo refactor, retain one?
             this._cleanCallback();
             this._cleanCallback2();
-
-            //this._scheduler.remove(this);
         }
 
         protected onNext(value) {
