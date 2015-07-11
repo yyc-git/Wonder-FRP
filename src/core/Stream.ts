@@ -1,4 +1,3 @@
-//to avoid the circular reference in this file and Subject.ts
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
 
@@ -53,7 +52,7 @@ module dyRt{
         }
 
         public do(onNext?:Function, onError?:Function, onCompleted?:Function) {
-            return new DoStream(this, onNext, onError, onCompleted);
+            return DoStream.create(this, onNext, onError, onCompleted);
         }
 
         private _isSubject(subject){

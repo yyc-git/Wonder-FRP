@@ -1,7 +1,15 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class AnonymousStream extends Stream{
-        constructor(subscribeFunc){
+        public static create(subscribeFunc:Function) {
+            var obj = new this(subscribeFunc);
+
+            return obj;
+        }
+
+        private _subscribeFunc:Function = null;
+
+        constructor(subscribeFunc:Function) {
             super(subscribeFunc);
 
             this.scheduler = Scheduler.create();

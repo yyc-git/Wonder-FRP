@@ -1,22 +1,25 @@
-/// <reference path="../core/Scheduler"/>
-/// <reference path="MockObserver"/>
-/// <reference path="../Hash"/>
-/// <reference path="TestStream"/>
+/// <reference path="../definitions.d.ts"/>
 module dyRt {
     const SUBSCRIBE_TIME = 200;
     const DISPOSE_TIME = 1000;
 
     export class TestScheduler extends Scheduler {
         public static next(tick, value) {
-            return new Record(tick, value, ActionType.NEXT);
+            return Record.create(tick, value, ActionType.NEXT);
         }
 
         public static error(tick, error) {
-            return new Record(tick, error, ActionType.ERROR);
+            return Record.create(tick, error, ActionType.ERROR);
         }
 
         public static completed(tick) {
-            return new Record(tick, null, ActionType.COMPLETED);
+            return Record.create(tick, null, ActionType.COMPLETED);
+        }
+
+        public static create() {
+            var obj = new this();
+
+            return obj;
         }
 
         private _clock:number = null;
@@ -191,7 +194,7 @@ module dyRt {
         public createStream(args){
             this.setStreamMap(Array.prototype.slice.call(arguments, 0));
 
-            return new TestStream(Array.prototype.slice.call(arguments, 0), this);
+            return TestStream.create(Array.prototype.slice.call(arguments, 0), this);
         }
 
         /**
@@ -199,7 +202,7 @@ module dyRt {
          * @return Observer that can be used to assert the timing of received notifications.
          */
         public createObserver() {
-            return new MockObserver(this);
+            return MockObserver.create(this);
         }
 
         private _getMinAndMaxTime(){

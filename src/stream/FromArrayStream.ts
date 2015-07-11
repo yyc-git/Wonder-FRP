@@ -1,7 +1,12 @@
-/// <reference path="BaseStream"/>
-/// <reference path="../core/Scheduler"/>
+/// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class FromArrayStream extends BaseStream{
+        public static create(array:[any], scheduler:Scheduler) {
+            var obj = new this(array, scheduler);
+
+            return obj;
+        }
+
         private _array:[any] = null;
 
         constructor(array:[any], scheduler:Scheduler){

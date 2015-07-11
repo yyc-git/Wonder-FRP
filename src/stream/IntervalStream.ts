@@ -1,6 +1,12 @@
-/// <reference path="BaseStream"/>
+/// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class IntervalStream extends BaseStream{
+        public static create(interval:number, scheduler:Scheduler) {
+            var obj = new this(interval, scheduler);
+
+            return obj;
+        }
+
         private _interval:number = null;
 
         constructor(interval:number, scheduler:Scheduler){

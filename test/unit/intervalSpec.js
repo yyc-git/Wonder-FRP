@@ -8,7 +8,7 @@ describe("interval", function () {
 
     beforeEach(function () {
         sandbox = sinon.sandbox.create();
-        scheduler = new TestScheduler();
+        scheduler = TestScheduler.create();
     });
     afterEach(function () {
         sandbox.restore();
@@ -87,7 +87,7 @@ describe("interval", function () {
 
         //test("Interval_TimeSpan_ObserverThrows", function () {
         //    var scheduler, xs;
-        //    scheduler = new TestScheduler();
+        //    scheduler = TestScheduler.create();
         //    xs = Rx.Observable.interval(1, scheduler);
         //    xs.subscribe(function (x) {
         //        throw ex;

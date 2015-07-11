@@ -4,11 +4,11 @@
 module dyRt{
     //todo add parent?
     export var createStream = function(subscribeFunc) {
-        return new AnonymousStream(subscribeFunc);
+        return AnonymousStream.create(subscribeFunc);
     };
 
     export var fromArray = function(array:[any], scheduler = Scheduler.create()){
-        return new FromArrayStream(array, scheduler);
+        return FromArrayStream.create(array, scheduler);
     };
     /**
      *  Returns an observable sequence that produces a value after each period.
@@ -32,7 +32,7 @@ module dyRt{
         //    });
         //});
 
-        return new IntervalStream(interval, scheduler);
+        return IntervalStream.create(interval, scheduler);
     };
 }
 

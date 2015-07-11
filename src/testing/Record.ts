@@ -1,10 +1,16 @@
-/// <reference path="ActionType"/>
+/// <reference path="../definitions.d.ts"/>
 module dyRt {
     var defaultIsEqual = function (a, b) {
         return a === b;
     };
 
-    export class Record{
+    export class Record {
+        public static create(time:number, value:any, actionType?:ActionType, comparer?:Function) {
+            var obj = new this(time, value, actionType, comparer);
+
+            return obj;
+        }
+
         private _time:number = null;
         get time(){
             return this._time;
@@ -39,7 +45,7 @@ module dyRt {
          * @param {Mixed} value Value that was produced.
          * @param {Function} comparer An optional comparer.
          */
-        constructor(time, value, actionType?:ActionType, comparer?:Function) {
+        constructor(time, value, actionType:ActionType, comparer:Function) {
             this._time = time;
             this._value = value;
             this._actionType = actionType;

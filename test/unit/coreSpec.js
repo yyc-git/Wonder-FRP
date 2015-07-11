@@ -8,7 +8,7 @@ describe("core", function () {
 
     beforeEach(function(){
         sandbox = sinon.sandbox.create();
-        scheduler = new TestScheduler();
+        scheduler = TestScheduler.create();
     });
     afterEach(function(){
         sandbox.restore();
