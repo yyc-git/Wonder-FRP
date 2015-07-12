@@ -27,20 +27,10 @@ module dyRt{
         }
 
         public subscribeCore(){
-            //return this._source.subscribe(new ProxyObserver(this._observer));
-            this._source.subscribeCore();
+            if(this._source instanceof BaseStream){
+                let baseStream = <BaseStream>this._source;
+                baseStream.subscribeCore();
+            }
         }
-        //public subscribeCore(){
-        //    var self = this,
-        //        id = this.scheduler.publishInterval(0, this._interval, function(count) {
-        //            self.scheduler.next(count);
-        //
-        //            return count + 1;
-        //        });
-        //
-        //    return function(){
-        //        root.clearInterval(id);
-        //    };
-        //}
     }
 }

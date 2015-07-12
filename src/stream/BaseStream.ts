@@ -1,7 +1,9 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class BaseStream extends Stream{
-        //private _isStart:boolean = false;
+        public subscribeCore(){
+            throw ABSTRACT_METHOD();
+        }
 
         public subscribe(arg1:Function|Observer|Subject, onError?, onCompleted?):IDisposable {
             var observer = null;
@@ -41,10 +43,11 @@ module dyRt{
             //return Disposable.create(this.scheduler, observer);
         }
 
+        public buildStream(){
+            super.buildStream();
 
-        //private _canBuildStream(){
-        //    //return !this._isStart;
-        //}
+            this.subscribeCore();
+        }
 
         private _hasMultiObservers(){
             return this.scheduler.getObservers() > 1;

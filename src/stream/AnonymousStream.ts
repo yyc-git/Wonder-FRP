@@ -7,8 +7,6 @@ module dyRt{
             return obj;
         }
 
-        //private _subscribeFunc:Function = null;
-
         constructor(subscribeFunc:Function) {
             super(subscribeFunc);
 
@@ -35,16 +33,13 @@ module dyRt{
 
             //observer.cleanCallback = this.subscribeFunc(observer) || function(){};
             //observer.cleanCallback = this.subscribeFunc(this.scheduler) || function(){};
-            this.subscribeFunc(this.scheduler);
+            this.buildStream();
             //if(observer.shouldDispose){
             //    observer.dispose();
             //}
 
             return observer;
             //return Disposable.create(this.scheduler, observer);
-        }
-
-        public subscribeCore(){
         }
     }
 }
