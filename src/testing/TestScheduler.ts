@@ -32,7 +32,6 @@ module dyRt {
         }
 
         private _isDisposed:boolean = false;
-        private _lastTime:number = null;
         private _timerMap:Hash = Hash.create();
         private _streamMap:Hash = Hash.create();
         private _subscribedTime:number = null;
@@ -72,7 +71,7 @@ module dyRt {
 
         public remove(observer:Observer) {
             //this._queue.removeChild(function (ob:Observer) {
-            //    return ob.oid === observer.oid;
+            //    return ob.uid === observer.uid;
             //});
 
             this._isDisposed = true;
@@ -81,22 +80,16 @@ module dyRt {
         //todo refactor, need abstract
         public publishRecursive(initial:any, recursiveFunc:Function) {
             var self = this;
+            var messages = [];
 
             //todo judge dispose
             recursiveFunc(initial, function (value) {
-                //self.publishNext(value);
-                self.next(value);
-                //self._clock++;
+                messages.push(TestScheduler.next(self._clock, value));
                 self._tick(1);
             }, function () {
-                //self.publishCompleted();
-                self.target.completed();
+                messages.push(TestScheduler.completed(self._clock));
+                self.setStreamMap(<[Record]>messages);
             });
-            //recursiveFunc(initial, function(initial, selfFunc){
-            //    self._tick(1);
-            //
-            //    recursiveFunc(initial, selfFunc);
-            //});
         }
 
         public publishInterval(initial:any, interval:number, action:Function):number{
@@ -121,16 +114,21 @@ module dyRt {
 
             //produce 10 val for test
             var COUNT = 10;
+            var messages = [];
 
             while (COUNT > 0 && !this._isDisposed) {
-                //self._clock += interval;
+                //this._clock += interval;
                 this._tick(interval);
+                messages.push(TestScheduler.next(this._clock, initial));
 
-                action(initial);
+                //no need to invoke action
+                //action(initial);
 
                 initial++;
                 COUNT--;
             }
+
+            this.setStreamMap(<[Record]>messages);
 
             return NaN;
         }
@@ -152,7 +150,8 @@ module dyRt {
             });
 
             this._runAt(disposedTime, function () {
-                observer.dispose();
+                //observer.dispose();
+                subscription.dispose();
             });
 
             this.start();
@@ -169,7 +168,10 @@ module dyRt {
         }
 
         public publicAbsolute(time, handler) {
+            //var self = this;
+
             this._runAt(time, function () {
+                //self._clock = time;
                 handler();
             });
         }
@@ -184,16 +186,22 @@ module dyRt {
                 this._clock = time;
 
                 this._exec(time, this._timerMap);
+
+                //because "source.subscribe(xxx)" in "_exec" may change "_clock",
+                //so it should set the _clock after "_exec"
+                this._clock = time;
+
                 this._runStream(time);
-                //this._exec(time, this._streamMap);
 
                 time++;
+
+                //refresh max time, because if timerMap has callback that run creat infinite stream(as interval),
+                //it will set streamMap so that the max time will change
+                max = this._getMinAndMaxTime()[1];
             }
         }
 
         public createStream(args){
-            this.setStreamMap(Array.prototype.slice.call(arguments, 0));
-
             return TestStream.create(Array.prototype.slice.call(arguments, 0), this);
         }
 
@@ -207,13 +215,11 @@ module dyRt {
 
         private _getMinAndMaxTime(){
             var timeArr = this._timerMap.getKeys().concat(this._streamMap.getKeys())
-            //var timeArr = this._timerMap.getKeys()
                 .map(function(key){
                     return Number(key);
                 });
 
             return [Math.min.apply(Math, timeArr), Math.max.apply(Math, timeArr)];
-            //return [this._subscribedTime, this._disposedTime];
         }
 
         private _exec(time, map){
@@ -241,27 +247,6 @@ module dyRt {
 
             return !!this.target;
         }
-        /**
-         * exec (lastTime, currentTime]
-         * @param lastTime
-         * @param currentTime
-         * @param map
-         * @private
-         */
-        private _execRange(lastTime, currentTime, map){
-            var time = lastTime;
-
-            if(!lastTime){
-                this._exec(currentTime, map);
-                return;
-            }
-
-            time++;
-            while(time <= currentTime){
-                this._exec(time, map);
-                time++;
-            }
-        }
 
         private _runAt(time:number, callback:Function) {
             this._timerMap.addChild(String(time), callback);
@@ -269,9 +254,6 @@ module dyRt {
 
         private _tick(time:number) {
             this._clock += time;
-
-            this._execRange(this._lastTime, this._clock, this._timerMap);
-            this._lastTime = this._clock;
         }
     }
 }

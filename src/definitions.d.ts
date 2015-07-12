@@ -1,5 +1,5 @@
+/// <reference path="disposable/IDisposable"/>
 /// <reference path="IObserver"/>
-/// <reference path="IDisposable"/>
 
 /// <reference path="Collection"/>
 /// <reference path="Hash"/>
@@ -10,6 +10,10 @@
 
 /// <reference path="global/Variable"/>
 /// <reference path="global/Const"/>
+
+/// <reference path="disposable/InnerSubscription"/>
+
+/// <reference path="scheduler/ProxyTarget"/>
 
 /// <reference path="core/Stream"/>
 /// <reference path="core/Subject"/>
@@ -22,9 +26,9 @@
 /// <reference path="observer/AnonymousObserver"/>
 /// <reference path="observer/AutoDetachObserver"/>
 
-/// <reference path="subject/InnerSubscription"/>
 
 /// <reference path="testing/Record"/>
+/// <reference path="testing/MockObserver"/>
 /// <reference path="testing/TestScheduler"/>
 /// <reference path="testing/ActionType"/>
 /// <reference path="testing/TestStream"/>

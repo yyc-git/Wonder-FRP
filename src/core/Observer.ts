@@ -1,15 +1,14 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt {
     export class Observer implements IObserver{
-        //todo use uid
-        public static OID:number = 1;
+        public static UID:number = 1;
 
-        private _oid:number = null;
-        get oid(){
-            return this._oid;
+        private _uid:number = null;
+        get uid(){
+            return this._uid;
         }
-        set oid(oid:number){
-            this._oid = oid;
+        set uid(uid:number){
+            this._uid = uid;
         }
 
         private _isDisposed:boolean = null;
@@ -25,13 +24,14 @@ module dyRt {
         protected onUserCompleted:Function = null;
 
         private _isStop:boolean = false;
+        private _disposeHandler:Collection = Collection.create();
 
         constructor(onNext:Function, onError:Function, onCompleted:Function) {
             this.onUserNext = onNext || function(){};
             this.onUserError = onError || function(){};
             this.onUserCompleted = onCompleted || function(){};
 
-            this.oid = Observer.OID++;
+            this.uid = Observer.UID++;
         }
 
         /**
@@ -71,6 +71,10 @@ module dyRt {
         public dispose() {
             this._isStop = true;
             this._isDisposed = true;
+
+            this._disposeHandler.forEach(function(handler){
+                handler();
+            });
         }
 
         //public fail(e) {
@@ -82,6 +86,13 @@ module dyRt {
         //
         //    return false;
         //}
+
+        //public addDisposeHandler(func:Function){
+        //    this.disposeHandler.addChild(func);
+        //}
+        public setDisposeHandler(disposeHandler:Collection){
+            this._disposeHandler = disposeHandler;
+        }
 
         protected onNext(value){
             throw ABSTRACT_METHOD();
@@ -95,5 +106,4 @@ module dyRt {
             throw ABSTRACT_METHOD();
         }
     }
-
 }

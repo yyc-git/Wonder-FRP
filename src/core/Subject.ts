@@ -7,30 +7,34 @@ module dyRt{
             return obj;
         }
 
-
-        private _stream:Stream = null;
-        get stream(){
-            return this._stream;
+        private _source:Stream = null;
+        get source(){
+            return this._source;
         }
-        set stream(stream:Stream){
-            this._stream = stream;
+        set source(source:Stream){
+            this._source = source;
         }
+        //
+        //private _cleanCallback:Function = null;
+        //get cleanCallback(){
+        //    return this._cleanCallback;
+        //}
+        //set cleanCallback(cleanCallback:Function){
+        //    this._cleanCallback = cleanCallback;
+        //}
 
         private _observers:Collection = Collection.create();
-        private _disposeFunc:Function = null;
+        //private _disposeFunc:Function = null;
 
         public subscribe(arg1?:Function|Observer, onError?:Function, onCompleted?:Function):IDisposable{
-            //var observer = AutoDetachObserver.create(this._stream.scheduler, onNext, onError, onCompleted);
             var observer = arg1 instanceof Observer
                 ? <AutoDetachObserver>arg1
-                //: AutoDetachObserver.create(this._stream.scheduler, arg1, onError, onCompleted);
                 : AutoDetachObserver.create(arg1, onError, onCompleted);
 
-            //this._observers.addChild(observer);
+            observer.setDisposeHandler(this._source.scheduler.disposeHandler);
             this._observers.addChild(observer);
 
             return InnerSubscription.create(this, observer);
-            //return observer;
         }
 
         public next(value:any){
@@ -52,13 +56,13 @@ module dyRt{
         }
 
         public start(){
-            //this._disposeFunc = this.buildStream();
-            this._disposeFunc = this._stream.buildStream();
+            //this._disposeFunc = this._source.buildStream();
+            this._source.buildStream();
         }
 
         public remove(observer:Observer){
             this._observers.removeChild(function(ob:Observer){
-                return ob.oid === observer.oid;
+                return ob.uid === observer.uid;
             });
         }
 
@@ -67,7 +71,26 @@ module dyRt{
         }
 
         public dispose(){
-            this._disposeFunc && this._disposeFunc();
+            this._observers.forEach(function(ob:Observer){
+                ob.dispose();
+            });
+
+            this._observers.removeAllChilds();
+
+            //this._disposeHandler.forEach(function(handler){
+            //    handler();
+            //});
+
+            //this._cleanCallback && this._cleanCallback();
+            //this._disposeFunc && this._disposeFunc();
         }
+
+        //public addDisposeHandler(func:Function){
+        //    this._disposeHandler.addChild(func);
+        //}
+
+        //public execDisposeHandler(){
+        //    this._source.scheduler.execDisposeHandler();
+        //}
     }
 }

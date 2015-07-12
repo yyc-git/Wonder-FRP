@@ -28,9 +28,12 @@ module dyRt{
                     return count + 1;
                 });
 
-            return function(){
+            this.addDisposeHandler(function(){
                 root.clearInterval(id);
-            };
+            });
+            //return function(){
+            //    root.clearInterval(id);
+            //};
         }
     }
 }

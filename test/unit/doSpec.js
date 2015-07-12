@@ -87,6 +87,9 @@ describe("do", function () {
             scheduler.publicAbsolute(235, function () {
                 subject.subscribe(result2);
             });
+            scheduler.publicAbsolute(151, function () {
+                subject.start();
+            });
             scheduler.start();
 
             //exec "do" 3 times

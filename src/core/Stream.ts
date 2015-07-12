@@ -8,7 +8,6 @@ module dyRt{
 
         constructor(subscribeFunc){
             this.subscribeFunc = subscribeFunc || function(){
-                    return function(){};
                 };
         }
 
@@ -32,14 +31,18 @@ module dyRt{
         }
 
         //todo refactor?
-        public subscribeCore():Function{
+        public subscribeCore(){
             throw ABSTRACT_METHOD();
         }
 
-        public buildStream():Function{
+        public buildStream(){
             this.scheduler.createStreamBySubscribeFunc(this.subscribeFunc);
 
-            return this.subscribeCore();
+            this.subscribeCore();
+        }
+
+        public addDisposeHandler(func:Function){
+            this.scheduler.addDisposeHandler(func);
         }
 
         protected handleSubject(arg){
@@ -61,11 +64,7 @@ module dyRt{
 
         private _setSubject(subject){
             this.scheduler.target = subject;
-            subject.stream = this;
-            //subject.scheduler = this.scheduler;
-            ////subject.subscribeFunc = this.subscribeFunc;
-            ////subject.subscribeCore = subject
-            //subject.scheduler.target = subject;
+            subject.source = this;
         }
 
 

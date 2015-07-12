@@ -26,9 +26,9 @@ module dyRt{
             return this._source.subscribe.apply(this._source, arguments);
         }
 
-        public subscribeCore():Function {
+        public subscribeCore(){
             //return this._source.subscribe(new ProxyObserver(this._observer));
-            return this._source.subscribeCore();
+            this._source.subscribeCore();
         }
         //public subscribeCore(){
         //    var self = this,

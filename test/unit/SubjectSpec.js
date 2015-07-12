@@ -73,6 +73,9 @@ describe("Subject", function(){
             scheduler.publicAbsolute(202, function () {
                 subscription2 = subject.subscribe(result2);
             });
+            scheduler.publicAbsolute(151, function () {
+                subject.start();
+            });
             scheduler.publicAbsolute(205, function () {
                 subscription1.dispose();
             });
@@ -93,6 +96,43 @@ describe("Subject", function(){
                 completed(301)
             );
         });
+        it("test infinite stream", function(){
+            var stream = null;
+            var subject = null;
+            var result1 = scheduler.createObserver();
+            var result2 = scheduler.createObserver();
+            var subscription1 = null,
+                subscription2 = null;
+
+            scheduler.publicAbsolute(50, function () {
+                stream = rt.interval(100, scheduler);
+                subject = rt.Subject.create();
+            });
+            scheduler.publicAbsolute(60, function () {
+                stream.subscribe(subject);
+            });
+            scheduler.publicAbsolute(200, function () {
+                subscription1 = subject.subscribe(result1);
+            });
+            scheduler.publicAbsolute(300, function () {
+                subscription2 = subject.subscribe(result2);
+            });
+            scheduler.publicAbsolute(150, function () {
+                subject.start();
+            });
+            scheduler.start();
+
+            expect(result1.messages).toStreamContain(
+                next(250, 0),
+                next(350, 1),
+                next(450, 2)
+            );
+            expect(result2.messages).toStreamContain(
+                next(350, 1),
+                next(450, 2)
+            );
+        });
+
         it("test error stream", function(){
             var errorMsg = "error msg";
             var stream = scheduler.createStream(
@@ -111,11 +151,14 @@ describe("Subject", function(){
             scheduler.publicAbsolute(90, function () {
                 stream.subscribe(subject);
             });
-            scheduler.publicAbsolute(91, function () {
+            scheduler.publicAbsolute(95, function () {
                 subject.subscribe(result1);
             });
             scheduler.publicAbsolute(101, function () {
                 subject.subscribe(result2);
+            });
+            scheduler.publicAbsolute(91, function () {
+                subject.start();
             });
             scheduler.start();
 

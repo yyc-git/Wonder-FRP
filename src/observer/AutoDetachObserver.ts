@@ -5,29 +5,29 @@ module dyRt{
             return new this(onNext, onError, onCompleted);
         }
 
-        private _cleanCallback:Function = function(){};
-        get cleanCallback(){
-            return this._cleanCallback;
-        }
-        set cleanCallback(cleanCallback:Function){
-            this._cleanCallback = cleanCallback;
-        }
+        //private _cleanCallback:Function = function(){};
+        //get cleanCallback(){
+        //    return this._cleanCallback;
+        //}
+        //set cleanCallback(cleanCallback:Function){
+        //    this._cleanCallback = cleanCallback;
+        //}
+        //
+        //private _cleanCallback2:Function = function(){};
+        //get cleanCallback2(){
+        //    return this._cleanCallback2;
+        //}
+        //set cleanCallback2(cleanCallback2:Function){
+        //    this._cleanCallback2 = cleanCallback2;
+        //}
 
-        private _cleanCallback2:Function = function(){};
-        get cleanCallback2(){
-            return this._cleanCallback2;
-        }
-        set cleanCallback2(cleanCallback2:Function){
-            this._cleanCallback2 = cleanCallback2;
-        }
-
-        private _shouldDispose:boolean = null;
-        get shouldDispose(){
-            return this._shouldDispose;
-        }
-        set shouldDispose(shouldDispose:boolean){
-            this._shouldDispose = shouldDispose;
-        }
+        //private _shouldDispose:boolean = null;
+        //get shouldDispose(){
+        //    return this._shouldDispose;
+        //}
+        //set shouldDispose(shouldDispose:boolean){
+        //    this._shouldDispose = shouldDispose;
+        //}
 
         constructor(onNext, onError, onCompleted){
             super(onNext, onError, onCompleted);
@@ -41,9 +41,13 @@ module dyRt{
 
             super.dispose();
 
-            //todo refactor, retain one?
-            this._cleanCallback();
-            this._cleanCallback2();
+            //this.disposeHandler.forEach(function(handler){
+            //   handler();
+            //});
+
+            ////todo refactor, retain one?
+            //this._cleanCallback();
+            //this._cleanCallback2();
         }
 
         protected onNext(value) {
@@ -65,16 +69,16 @@ module dyRt{
                 throw e;
             }
             finally{
-                //this.dispose();
-                this.shouldDispose = true;
+                this.dispose();
+                //this.shouldDispose = true;
             }
         }
 
         protected onCompleted() {
             try {
                 this.onUserCompleted();
-                //this.dispose();
-                this.shouldDispose = true;
+                this.dispose();
+                //this.shouldDispose = true;
             }
             catch (e) {
                 //throw e;

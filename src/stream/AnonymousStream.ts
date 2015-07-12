@@ -7,7 +7,7 @@ module dyRt{
             return obj;
         }
 
-        private _subscribeFunc:Function = null;
+        //private _subscribeFunc:Function = null;
 
         constructor(subscribeFunc:Function) {
             super(subscribeFunc);
@@ -25,22 +25,26 @@ module dyRt{
             //observer = AutoDetachObserver.create(this.scheduler, onNext, onError, onCompleted);
             observer = AutoDetachObserver.create(onNext, onError, onCompleted);
 
+            observer.setDisposeHandler(this.scheduler.disposeHandler);
+
             //todo encapsulate it to scheduleItem
             //this.scheduler.add(observer);
             this.scheduler.target = observer;
 
+
+
             //observer.cleanCallback = this.subscribeFunc(observer) || function(){};
-            observer.cleanCallback = this.subscribeFunc(this.scheduler) || function(){};
-            if(observer.shouldDispose){
-                observer.dispose();
-            }
+            //observer.cleanCallback = this.subscribeFunc(this.scheduler) || function(){};
+            this.subscribeFunc(this.scheduler);
+            //if(observer.shouldDispose){
+            //    observer.dispose();
+            //}
 
             return observer;
+            //return Disposable.create(this.scheduler, observer);
         }
 
-        public subscribeCore():Function{
-            return function(){
-            };
+        public subscribeCore(){
         }
     }
 }

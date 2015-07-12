@@ -16,6 +16,8 @@ module dyRt{
                 //: AutoDetachObserver.create(this.scheduler, arg1, onError, onCompleted);
                 : AutoDetachObserver.create(arg1, onError, onCompleted);
 
+            observer.setDisposeHandler(this.scheduler.disposeHandler);
+
             //todo encapsulate it to scheduleItem
             //this.scheduler.add(observer);
             this.scheduler.target = observer;
@@ -26,15 +28,17 @@ module dyRt{
             Log.error(this._hasMultiObservers(), "should use Subject to handle multi observers");
             //this._isStart = true;
             //setTimeout(function(){
-            observer.cleanCallback2 = this.buildStream();
+            //observer.cleanCallback2 = this.buildStream();
+            this.buildStream();
             //}, 0);
             //}
 
-            if(observer.shouldDispose){
-                observer.dispose();
-            }
+            //if(observer.shouldDispose){
+            //    observer.dispose();
+            //}
 
             return observer;
+            //return Disposable.create(this.scheduler, observer);
         }
 
 

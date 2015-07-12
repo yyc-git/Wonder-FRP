@@ -16,14 +16,29 @@ module dyRt {
             this.scheduler = scheduler;
         }
 
-        public subscribe(observer):IDisposable {
+        public subscribe(arg1:Observer|Subject):IDisposable {
+            var observer = null;
+
+            if(this.handleSubject(arg1)){
+                return;
+            }
+
+            observer = arg1;
+
+            observer.setDisposeHandler(this.scheduler.disposeHandler);
+
             this.scheduler.target = observer;
 
+            this.buildStream();
+
             return observer;
+            //return Disposable.create(this.scheduler, observer);
         }
 
-        public subscribeCore():Function{
-            return function(){};
+        public subscribeCore(){
+            var scheduler = <TestScheduler>(this.scheduler);
+
+            scheduler.setStreamMap(this._messages);
         }
     }
 }

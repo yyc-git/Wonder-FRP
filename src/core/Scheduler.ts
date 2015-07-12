@@ -7,33 +7,27 @@ module dyRt {
             return obj;
         }
 
-        //private queue:Collection = Collection.create();
-        //protected queue:Collection = Collection.create();
-
-        private _target:IObserver = null;
+        //private target:IObserver = null;
         get target(){
-            return this._target;
+            return this._proxyTarget.target;
         }
         set target(target:IObserver){
-            this._target = target;
+            this._proxyTarget.target = target;
         }
 
-        private _wrapTargetList:Collection = Collection.create();
+        private _disposeHandler:Collection = Collection.create();
+        get disposeHandler(){
+            return this._disposeHandler;
+        }
+        set disposeHandler(disposeHandler:Collection){
+            this._disposeHandler = disposeHandler;
+        }
 
-        //public add(observer:Observer) {
-        //    this.queue.addChild(observer);
-        //}
+        private _proxyTarget:ProxyTarget = ProxyTarget.create();
 
-        //public remove(observer:Observer) {
-        //    this.queue.removeChild(function (ob:Observer) {
-        //        return ob.oid === observer.oid;
-        //    });
-        //}
 
         public publishRecursive(initial:any, action:Function){
             var self = this;
-            //
-            //action(initial, action);
 
             action(initial, function(value){
                 //self.publishNext(value);
@@ -46,32 +40,19 @@ module dyRt {
 
 
         public publishInterval(initial:any, interval:number, action:Function):number{
-            //var idList = Collection.create();
-
-            //this.queue.forEach(function(ob:Observer){
-            //   idList.addChild(
-            //       root.setInterval(function(){
-            //        initial = action(ob, initial);
-            //    }, interval)
-            //   );
-            //});
-            //
-            //return idList;
-            //
-
             var self = this;
 
             return root.setInterval(function(){
-                initial = action(self._target, initial);
+                initial = action(self.target, initial);
             }, interval)
         }
 
         public getObservers():number{
-            if(this._target instanceof Observer){
+            if(this.target instanceof Observer){
                 return 1;
             }
-            else if(this._target instanceof Subject){
-                let subject = <Subject>this._target;
+            else if(this.target instanceof Subject){
+                let subject = <Subject>this.target;
 
                 return subject.getObservers();
             }
@@ -85,72 +66,41 @@ module dyRt {
             //this.queue.forEach(function(observer:AutoDetachObserver){
             //    observer.cleanCallback = subscribeFunc(observer);
             //});
-            var observer = <AutoDetachObserver>this._target;
+            var observer = <AutoDetachObserver>this.target;
 
-            observer.cleanCallback = subscribeFunc(this);
+            //observer.cleanCallback = subscribeFunc(this);
+            subscribeFunc(this);
         }
 
+        public addDisposeHandler(func:Function){
+            //this._proxyTarget.addDisposeHandler(func);
+            this._disposeHandler.addChild(func);
+        }
+
+        //public execDisposeHandler(){
+        //    this._disposeHandler.forEach(function(handler){
+        //        handler();
+        //    });
+        //}
+
         public next(value) {
-            var self = this;
-
-            if(this._target){
-                this._execWrapTarget(function(wrapTarget){
-                    try{
-                        wrapTarget.next(value);
-                    }
-                    catch (e) {
-                        wrapTarget.error(e);
-                        self._target.error(e);
-                    }
-                });
-
-                try{
-                    this._target.next(value);
-                }
-                catch (e) {
-                    this._target.error(e);
-                }
-            }
+            this._proxyTarget.next(value);
         }
 
         public error(error) {
-            if(this._target){
-                this._execWrapTarget(function(wrapTarget){
-                    wrapTarget.error(error);
-                });
-                this._target.error(error);
-            }
+            this._proxyTarget.error(error);
         }
 
         public completed() {
-            var self = this;
+            this._proxyTarget.completed();
+        }
 
-            if(this._target){
-                this._execWrapTarget(function(wrapTarget){
-                    try{
-                        wrapTarget.completed();
-                    }
-                    catch (e) {
-                        wrapTarget.error(e);
-                        self._target.error(e);
-                    }
-                });
-
-                try{
-                    this._target.completed();
-                }
-                catch (e) {
-                    this._target.error(e);
-                }
-            }
+        public dispose(){
+            this._proxyTarget.dispose();
         }
 
         public addWrapTarget(wrapTarget:IObserver){
-            this._wrapTargetList.addChild(wrapTarget);
-        }
-
-        private _execWrapTarget(func){
-            this._wrapTargetList.getCount() > 0 && this._wrapTargetList.forEach(func);
+            this._proxyTarget.addWrapTarget(wrapTarget);
         }
     }
 }
