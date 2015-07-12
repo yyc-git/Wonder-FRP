@@ -20,26 +20,16 @@ module dyRt{
                 return;
             }
 
-            //observer = AutoDetachObserver.create(this.scheduler, onNext, onError, onCompleted);
             observer = AutoDetachObserver.create(onNext, onError, onCompleted);
 
             observer.setDisposeHandler(this.scheduler.disposeHandler);
 
             //todo encapsulate it to scheduleItem
-            //this.scheduler.add(observer);
             this.scheduler.target = observer;
 
-
-
-            //observer.cleanCallback = this.subscribeFunc(observer) || function(){};
-            //observer.cleanCallback = this.subscribeFunc(this.scheduler) || function(){};
             this.buildStream();
-            //if(observer.shouldDispose){
-            //    observer.dispose();
-            //}
 
             return observer;
-            //return Disposable.create(this.scheduler, observer);
         }
     }
 }

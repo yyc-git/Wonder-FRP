@@ -1,4 +1,4 @@
-/// <reference path="JudgeUtils"/>
+/// <reference path="definitions"/>
 module dyRt {
     const $BREAK = 1;
 
@@ -9,17 +9,11 @@ module dyRt {
             return obj;
         }
 
-        //to use Array extend method(such as contain) defined in jsExtend.js,
-        //here should define type "any",not "any[]"
         private _childs:any = [];
 
         public getCount():number {
             return this._childs.length;
         }
-
-        //public sort (func) {
-        //    this._childs.sort(func);
-        //}
 
         public hasChild(arg):boolean {
             if (JudgeUtils.isFunction(arguments[0])) {
@@ -70,15 +64,11 @@ module dyRt {
                 let childs = <any[]>arg;
 
                 this._childs = this._childs.concat(childs);
-                //for (i = 0, len = childs.length; i < len; i++) {
-                //    this.addChild(childs[i]);
-                //}
             }
 
             return this;
         }
 
-        //
         public removeAllChilds():Collection {
             this._childs = [];
 
@@ -87,14 +77,9 @@ module dyRt {
 
         public forEach(func:Function, context?:any):Collection {
             this._forEach(this._childs, func, context);
-            //this._childs.forEach.apply(this._childs, arguments);
 
             return this;
         }
-
-        //public map (handlerName:string, argArr?:any[], context?:any) {
-        //    this._map(this._childs, handlerName, argArr, context);
-        //}
 
         public filter(func):Collection {
             this._filter(this._childs, func, this._childs);
@@ -199,13 +184,7 @@ module dyRt {
 
         //todo need test
 
-        //private _map(arr:any[], handlerName:string, valueArr?:any[], context?:any) {
         private _map(arr:any[], func:Function) {
-            //if (valueArr && !JudgeUtils.isArray(valueArr)) {
-            //    Log.error(valueArr && !JudgeUtils.isArray(valueArr), "参数必须为数组");
-            //    return;
-            //}
-
             var resultArr = [];
 
             this._forEach(arr, function (e, index) {

@@ -20,18 +20,15 @@ module dyRt{
             var array = this._array,
                 len = array.length;
 
-            //function loopRecursive(i, selfFunc) {
-                function loopRecursive(i, next, completed) {
+            function loopRecursive(i, next, completed) {
                 if (i < len) {
                     next(array[i]);
-                    //observer.next(array[i]);
                     arguments.callee(i + 1, next, completed);
-                    //selfFunc(i + 1, selfFunc);
                 } else {
                     completed();
-                    //observer.completed();
                 }
             }
+
             this.scheduler.publishRecursive(0, loopRecursive);
         }
     }

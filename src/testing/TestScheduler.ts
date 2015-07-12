@@ -37,7 +37,6 @@ module dyRt {
         private _subscribedTime:number = null;
         private _disposedTime:number = null;
 
-
         public setStreamMap(messages:[Record]){
             var self = this;
 
@@ -70,19 +69,13 @@ module dyRt {
         }
 
         public remove(observer:Observer) {
-            //this._queue.removeChild(function (ob:Observer) {
-            //    return ob.uid === observer.uid;
-            //});
-
             this._isDisposed = true;
         }
 
-        //todo refactor, need abstract
         public publishRecursive(initial:any, recursiveFunc:Function) {
             var self = this;
             var messages = [];
 
-            //todo judge dispose
             recursiveFunc(initial, function (value) {
                 messages.push(TestScheduler.next(self._clock, value));
                 self._tick(1);
@@ -93,31 +86,11 @@ module dyRt {
         }
 
         public publishInterval(initial:any, interval:number, action:Function):number{
-            //    var self = this;
-            //
-            //this.queue.forEach(function(ob:Observer){
-            //    //produce 10 val for test
-            //    var COUNT = 10;
-            //
-            //    while (COUNT > 0 && !self._isDisposed) {
-            //        //self._clock += interval;
-            //        self._tick(interval);
-            //
-            //        action(ob, initial);
-            //
-            //        initial++;
-            //        COUNT--;
-            //    }
-            //});
-            //
-            //return Collection.create();
-
             //produce 10 val for test
             var COUNT = 10;
             var messages = [];
 
             while (COUNT > 0 && !this._isDisposed) {
-                //this._clock += interval;
                 this._tick(interval);
                 messages.push(TestScheduler.next(this._clock, initial));
 
@@ -142,15 +115,12 @@ module dyRt {
 
             this._clock = subscribedTime;
 
-            //source = create();
-
             this._runAt(subscribedTime, function () {
                 source = create();
                 subscription = source.subscribe(observer);
             });
 
             this._runAt(disposedTime, function () {
-                //observer.dispose();
                 subscription.dispose();
             });
 
@@ -168,10 +138,7 @@ module dyRt {
         }
 
         public publicAbsolute(time, handler) {
-            //var self = this;
-
             this._runAt(time, function () {
-                //self._clock = time;
                 handler();
             });
         }
@@ -183,19 +150,22 @@ module dyRt {
                 time = min;
 
             while (time <= max) {
+                //because "_exec,_runStream" may change "_clock",
+                //so it should reset the _clock
+
                 this._clock = time;
 
                 this._exec(time, this._timerMap);
 
-                //because "source.subscribe(xxx)" in "_exec" may change "_clock",
-                //so it should set the _clock after "_exec"
                 this._clock = time;
 
                 this._runStream(time);
 
                 time++;
 
-                //refresh max time, because if timerMap has callback that run creat infinite stream(as interval),
+                //todo get max time only from streamMap?
+                //need refresh max time.
+                //because if timerMap has callback that create infinite stream(as interval),
                 //it will set streamMap so that the max time will change
                 max = this._getMinAndMaxTime()[1];
             }
@@ -205,10 +175,6 @@ module dyRt {
             return TestStream.create(Array.prototype.slice.call(arguments, 0), this);
         }
 
-        /**
-         * Creates an observer that records received notification messages and timestamps those.
-         * @return Observer that can be used to assert the timing of received notifications.
-         */
         public createObserver() {
             return MockObserver.create(this);
         }

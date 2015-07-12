@@ -1,36 +1,8 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class AutoDetachObserver extends Observer{
-        public static create(onNext, onError, onCompleted) {
+        public static create(onNext:Function, onError:Function, onCompleted:Function) {
             return new this(onNext, onError, onCompleted);
-        }
-
-        //private _cleanCallback:Function = function(){};
-        //get cleanCallback(){
-        //    return this._cleanCallback;
-        //}
-        //set cleanCallback(cleanCallback:Function){
-        //    this._cleanCallback = cleanCallback;
-        //}
-        //
-        //private _cleanCallback2:Function = function(){};
-        //get cleanCallback2(){
-        //    return this._cleanCallback2;
-        //}
-        //set cleanCallback2(cleanCallback2:Function){
-        //    this._cleanCallback2 = cleanCallback2;
-        //}
-
-        //private _shouldDispose:boolean = null;
-        //get shouldDispose(){
-        //    return this._shouldDispose;
-        //}
-        //set shouldDispose(shouldDispose:boolean){
-        //    this._shouldDispose = shouldDispose;
-        //}
-
-        constructor(onNext, onError, onCompleted){
-            super(onNext, onError, onCompleted);
         }
 
         public dispose(){
@@ -40,14 +12,6 @@ module dyRt{
             }
 
             super.dispose();
-
-            //this.disposeHandler.forEach(function(handler){
-            //   handler();
-            //});
-
-            ////todo refactor, retain one?
-            //this._cleanCallback();
-            //this._cleanCallback2();
         }
 
         protected onNext(value) {
@@ -55,8 +19,6 @@ module dyRt{
                 this.onUserNext(value);
             }
             catch (e) {
-                //this.dispose();
-                //throw e;
                 this.error(e);
             }
         }
@@ -70,7 +32,6 @@ module dyRt{
             }
             finally{
                 this.dispose();
-                //this.shouldDispose = true;
             }
         }
 
@@ -78,16 +39,10 @@ module dyRt{
             try {
                 this.onUserCompleted();
                 this.dispose();
-                //this.shouldDispose = true;
             }
             catch (e) {
-                //throw e;
                 this.error(e);
             }
-            //finally{
-            //    this.dispose();
-            //}
         }
     }
-
 }

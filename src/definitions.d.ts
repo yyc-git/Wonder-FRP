@@ -1,5 +1,5 @@
 /// <reference path="disposable/IDisposable"/>
-/// <reference path="IObserver"/>
+/// <reference path="observer/IObserver"/>
 
 /// <reference path="Collection"/>
 /// <reference path="Hash"/>
@@ -22,6 +22,11 @@
 
 /// <reference path="stream/BaseStream"/>
 /// <reference path="stream/DoStream"/>
+/// <reference path="stream/FromArrayStream"/>
+/// <reference path="stream/AnonymousStream"/>
+/// <reference path="stream/IntervalStream"/>
+
+/// <reference path="global/Operator"/>
 
 /// <reference path="observer/AnonymousObserver"/>
 /// <reference path="observer/AutoDetachObserver"/>

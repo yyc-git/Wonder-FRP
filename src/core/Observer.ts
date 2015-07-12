@@ -34,20 +34,12 @@ module dyRt {
             this.uid = Observer.UID++;
         }
 
-        /**
-         * Notifies the observer of a new element in the sequence.
-         * @param {Any} value Next element in the sequence.
-         */
         public next(value) {
             if (!this._isStop) {
                 this.onNext(value);
             }
         }
 
-        /**
-         * Notifies the observer that an exception has occurred.
-         * @param {Any} error The error that has occurred.
-         */
         public error(error) {
             if (!this._isStop) {
                 this._isStop = true;
@@ -55,9 +47,6 @@ module dyRt {
             }
         }
 
-        /**
-         * Notifies the observer of the end of the sequence.
-         */
         public completed() {
             if (!this._isStop) {
                 this._isStop = true;
@@ -65,9 +54,6 @@ module dyRt {
             }
         }
 
-        /**
-         * Disposes the observer, causing it to transition to the stopped state.
-         */
         public dispose() {
             this._isStop = true;
             this._isDisposed = true;
@@ -87,9 +73,6 @@ module dyRt {
         //    return false;
         //}
 
-        //public addDisposeHandler(func:Function){
-        //    this.disposeHandler.addChild(func);
-        //}
         public setDisposeHandler(disposeHandler:Collection){
             this._disposeHandler = disposeHandler;
         }

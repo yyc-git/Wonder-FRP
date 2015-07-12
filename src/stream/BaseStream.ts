@@ -12,35 +12,19 @@ module dyRt{
                 return;
             }
 
-            //todo not force set <Autoxxx>?
             observer = arg1 instanceof Observer
-                ? <AutoDetachObserver>arg1
-                //: AutoDetachObserver.create(this.scheduler, arg1, onError, onCompleted);
-                : AutoDetachObserver.create(arg1, onError, onCompleted);
+                ? arg1
+                : AutoDetachObserver.create(<Function>arg1, onError, onCompleted);
 
             observer.setDisposeHandler(this.scheduler.disposeHandler);
 
             //todo encapsulate it to scheduleItem
-            //this.scheduler.add(observer);
             this.scheduler.target = observer;
 
-            //todo refactor
-            //if(observer.cleanCallback){
-            //if(this._canBuildStream()){
             Log.error(this._hasMultiObservers(), "should use Subject to handle multi observers");
-            //this._isStart = true;
-            //setTimeout(function(){
-            //observer.cleanCallback2 = this.buildStream();
             this.buildStream();
-            //}, 0);
-            //}
-
-            //if(observer.shouldDispose){
-            //    observer.dispose();
-            //}
 
             return observer;
-            //return Disposable.create(this.scheduler, observer);
         }
 
         public buildStream(){

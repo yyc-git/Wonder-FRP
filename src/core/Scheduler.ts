@@ -30,14 +30,11 @@ module dyRt {
             var self = this;
 
             action(initial, function(value){
-                //self.publishNext(value);
                 self.next(value);
             }, function(){
                 self.completed();
-                //self.publishCompleted();
             });
         }
-
 
         public publishInterval(initial:any, interval:number, action:Function):number{
             var self = this;
@@ -62,26 +59,12 @@ module dyRt {
         }
 
         public createStreamBySubscribeFunc(subscribeFunc:Function){
-            //todo not force set <Autoxxx>?
-            //this.queue.forEach(function(observer:AutoDetachObserver){
-            //    observer.cleanCallback = subscribeFunc(observer);
-            //});
-            var observer = <AutoDetachObserver>this.target;
-
-            //observer.cleanCallback = subscribeFunc(this);
             subscribeFunc(this);
         }
 
         public addDisposeHandler(func:Function){
-            //this._proxyTarget.addDisposeHandler(func);
             this._disposeHandler.addChild(func);
         }
-
-        //public execDisposeHandler(){
-        //    this._disposeHandler.forEach(function(handler){
-        //        handler();
-        //    });
-        //}
 
         public next(value) {
             this._proxyTarget.next(value);

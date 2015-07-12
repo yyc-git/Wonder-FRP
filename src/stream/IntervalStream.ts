@@ -4,6 +4,8 @@ module dyRt{
         public static create(interval:number, scheduler:Scheduler) {
             var obj = new this(interval, scheduler);
 
+            obj.initWhenCreate();
+
             return obj;
         }
 
@@ -14,26 +16,25 @@ module dyRt{
 
             this._interval = interval;
             this.scheduler = scheduler;
+        }
 
-            //todo initWhenCreate
+        public initWhenCreate(){
             this._interval = this._interval <= 0 ? 1 : this._interval;
         }
 
-
         public subscribeCore(){
             var self = this,
-                id = this.scheduler.publishInterval(0, this._interval, function(count) {
-                    self.scheduler.next(count);
+                id = null;
 
-                    return count + 1;
-                });
+            id = this.scheduler.publishInterval(0, this._interval, function(count) {
+                self.scheduler.next(count);
+
+                return count + 1;
+            });
 
             this.addDisposeHandler(function(){
                 root.clearInterval(id);
             });
-            //return function(){
-            //    root.clearInterval(id);
-            //};
         }
     }
 }

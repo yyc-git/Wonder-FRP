@@ -83,9 +83,5 @@ module dyRt{
         private _execWrapTarget(func){
             this._wrapTargetList.getCount() > 0 && this._wrapTargetList.forEach(func);
         }
-
-        //public addDisposeHandler(func:Function){
-        //    this._target && this._target.addDisposeHandler(func);
-        //}
     }
 }

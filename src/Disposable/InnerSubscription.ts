@@ -19,8 +19,6 @@ module dyRt{
 			this._subject.remove(this._observer);
 
 			this._observer.dispose();
-
-			//this._subject.execDisposeHandler();
 		}
 	}
 }

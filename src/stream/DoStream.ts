@@ -8,17 +8,13 @@ module dyRt{
         }
 
         private _source:Stream = null;
-        //private _observer:Observer = null;
 
         constructor(source:Stream, onNext:Function, onError:Function, onCompleted:Function){
             super(null);
 
             this._source = source;
 
-            //this._observer = AnonymousObserver.create(onNext, onError,onCompleted);
-
             this.scheduler = this._source.scheduler;
-            //this.scheduler.wrapTarget = this._observer;
             this.scheduler.addWrapTarget(AnonymousObserver.create(onNext, onError,onCompleted));
         }
 
