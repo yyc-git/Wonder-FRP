@@ -17,8 +17,10 @@ module.exports = function(config) {
         'bower_components/jquery/dist/jquery.js',
         'bower_components/yyctoolbox/tool/yTool.js',
 
+        //'reference/RxJS/dist/rx.all.js',
+        'reference/rsvp.js/dist/rsvp.js',
+
         'dist/dyRt.js',
-        'reference/RxJS/dist/rx.all.js',
 
         //'test/helper/jsExtend.js',
         'test/helper/jasmine/**',

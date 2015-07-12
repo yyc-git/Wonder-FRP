@@ -23,6 +23,7 @@
 /// <reference path="stream/BaseStream"/>
 /// <reference path="stream/DoStream"/>
 /// <reference path="stream/FromArrayStream"/>
+/// <reference path="stream/FromPromiseStream"/>
 /// <reference path="stream/AnonymousStream"/>
 /// <reference path="stream/IntervalStream"/>
 

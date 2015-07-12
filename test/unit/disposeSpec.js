@@ -25,8 +25,8 @@ describe("dispose", function () {
                     next(201, 4),
                     next(205, 5),
                     next(206, 6),
-                    next(250, 6),
-                    next(300, 6),
+                    next(250, 7),
+                    next(300, 8),
                     completed(301)
                 );
                 var subject = null;

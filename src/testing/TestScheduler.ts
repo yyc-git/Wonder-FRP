@@ -150,6 +150,7 @@ module dyRt {
                 max = extremeNumArr[1],
                 time = min;
 
+            //todo reduce loop time
             while (time <= max) {
                 //because "_exec,_runStream" may change "_clock",
                 //so it should reset the _clock
