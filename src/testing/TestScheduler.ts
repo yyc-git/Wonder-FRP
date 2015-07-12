@@ -77,9 +77,10 @@ module dyRt {
             var messages = [];
 
             recursiveFunc(initial, function (value) {
-                messages.push(TestScheduler.next(self._clock, value));
                 self._tick(1);
+                messages.push(TestScheduler.next(self._clock, value));
             }, function () {
+                self._tick(1);
                 messages.push(TestScheduler.completed(self._clock));
                 self.setStreamMap(<[Record]>messages);
             });

@@ -33,34 +33,6 @@ describe("core", function () {
                     expect(a).toEqual(30);
                 });
         });
-
-
-
-//        var scheduler = new rt.TestScheduler();
-//
-//// Create hot observable which will start firing
-////        var xs = scheduler.createHotStream(
-//        var xs = scheduler.createStream(
-//            next(0, 42),
-//            //next(210, 2),
-//            //next(220, 3),
-//            completed(0)
-//        );
-//
-//// Note we'll start at 200 for subscribe, hence missing the 150 mark
-//        var res = scheduler.startWithCreate(function () {
-//            return xs;
-//        });
-//
-//        expect(res.messages).toEqual([
-//            next(0, 42),
-//            onComplete(0)
-//        ]);
-//        // Check for subscribe/unsubscribe
-//        expect(xs.subscriptions).toEqual([
-//            subscribe(0, 0)
-//        ]);
-
     });
 
     describe("the Error event does not terminate a stream. So, a stream may contain multiple errors.", function () {
@@ -96,6 +68,54 @@ describe("core", function () {
     });
 
 
-    //todo hot
+    it("all is hot Observer", function(){
+        var stream = scheduler.createStream(
+            next(100, 1),
+            next(152, 2),
+            next(200, 3),
+            next(201, 4),
+            next(205, 5),
+            next(206, 6),
+            next(250, 7),
+            next(300, 8),
+            completed(301)
+        );
+        var subject = null;
+        var result1 = scheduler.createObserver();
+        var result2 = scheduler.createObserver();
+        var subscription1 = null,
+            subscription2 = null;
+
+        scheduler.publicAbsolute(100, function () {
+            subject = rt.Subject.create();
+        });
+        scheduler.publicAbsolute(150, function () {
+            stream.subscribe(subject);
+        });
+        scheduler.publicAbsolute(200, function () {
+            subscription1 = subject.subscribe(result1);
+        });
+        scheduler.publicAbsolute(250, function () {
+            subscription2 = subject.subscribe(result2);
+        });
+        scheduler.publicAbsolute(151, function () {
+            subject.start();
+        });
+        scheduler.publicAbsolute(206, function () {
+            subject.dispose();
+        });
+        scheduler.start();
+
+        expect(result1.messages).toStreamEqual(
+            next(200, 3),
+            next(201, 4),
+            next(205, 5)
+        );
+        expect(result2.messages).toStreamEqual(
+            next(250, 7),
+            next(300, 8),
+            completed(301)
+        );
+    });
 });
 
