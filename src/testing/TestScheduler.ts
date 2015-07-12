@@ -181,6 +181,14 @@ module dyRt {
             return MockObserver.create(this);
         }
 
+        public createResolvedPromise(time:number, value:any){
+            return MockPromise.create(this, [TestScheduler.next(time, value), TestScheduler.completed(time+1)]);
+        }
+
+        public createRejectPromise(time:number, error:any){
+            return MockPromise.create(this, [TestScheduler.error(time, error)]);
+        }
+
         private _getMinAndMaxTime(){
             var timeArr = this._timerMap.getKeys().concat(this._streamMap.getKeys())
                 .map(function(key){
@@ -201,12 +209,12 @@ module dyRt {
         private _runStream(time){
             var handler = this._streamMap.getChild(String(time));
 
-            if(handler && this._hasObservers()){
+            if(handler && this._hasObserver()){
                 handler();
             }
         }
 
-        private _hasObservers(){
+        private _hasObserver(){
             if(this.target instanceof Subject){
                 let subject = <Subject>this.target;
 

@@ -1,4 +1,4 @@
-describe("do", function () {
+describe("fromPromise", function () {
     var rt = dyRt,
         TestScheduler = rt.TestScheduler,
         next = TestScheduler.next,
@@ -15,36 +15,7 @@ describe("do", function () {
         sandbox.restore();
     });
 
-    //it("FromPromise Success Mock", function () {
-    //    var promise = scheduler.createResolvedPromise(201, 1);
-    //
-    //    var results = scheduler.startWithSubscribe(function () {
-    //        return rt.fromPromise(promise);
-    //    });
-    //
-    //    expect(results.messages).toStreamEqual(
-    //        next(201, 1),
-    //        completed(201)
-    //    );
-    //});
-
-    //test("FromPromise Failure Mock", function () {
-    //    //var error = new Error();
-    //    //
-    //    //var scheduler = new TestScheduler();
-    //    //
-    //    //var xs = scheduler.createRejectedPromise(201, error);
-    //    //
-    //    //var results = scheduler.startWithCreate(function () {
-    //    //    return Observable.fromPromise(xs);
-    //    //});
-    //    //
-    //    //results.messages.assertEqual(
-    //    //    onError(201, error)
-    //    //);
-    //});
-
-    it("Promise Success", function (done) {
+    it("success", function (done) {
         var a = 0,
             b = 0;
         var promise = new RSVP.Promise(function (resolve, reject) {
@@ -66,7 +37,7 @@ describe("do", function () {
                 expect(b).toBeTruthy();
             });
     });
-    it("Promise Fail", function (done) {
+    it("fail", function (done) {
         var a = 0,
             b = 0;
         var error = new Error("woops");
@@ -86,28 +57,29 @@ describe("do", function () {
             function () {
             });
     });
-    //
-    //asyncTest("Promise_Failure", function () {
-    //    var error = new Error("woops");
-    //
-    //    var promise = new RSVP.Promise(function (resolve, reject) {
-    //        reject(error);
-    //    });
-    //
-    //    var source = Observable.fromPromise(promise);
-    //
-    //    var subscription = source.subscribe(
-    //        function (x) {
-    //            ok(false);
-    //        },
-    //        function (err) {
-    //            strictEqual(err, error);
-    //            start();
-    //        },
-    //        function () {
-    //            ok(false);
-    //        });
-    //
-    //});
+    it("success mock", function () {
+        var promise = scheduler.createResolvedPromise(201, 1);
+
+        var results = scheduler.startWithSubscribe(function () {
+            return rt.fromPromise(promise, scheduler);
+        });
+
+        expect(results.messages).toStreamEqual(
+            next(201, 1),
+            completed(202)
+        );
+    });
+    it("fail mock", function () {
+        var err = new Error("err");
+        var promise = scheduler.createRejectPromise(201, err);
+
+        var results = scheduler.startWithSubscribe(function () {
+            return rt.fromPromise(promise, scheduler);
+        });
+
+        expect(results.messages).toStreamEqual(
+            error(201, err)
+        );
+    });
 });
 

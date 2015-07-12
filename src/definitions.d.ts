@@ -35,6 +35,7 @@
 
 /// <reference path="testing/Record"/>
 /// <reference path="testing/MockObserver"/>
+/// <reference path="testing/MockPromise"/>
 /// <reference path="testing/TestScheduler"/>
 /// <reference path="testing/ActionType"/>
 /// <reference path="testing/TestStream"/>
