@@ -19,9 +19,14 @@
 /// <reference path="core/Subject"/>
 /// <reference path="core/Scheduler"/>
 /// <reference path="core/Observer"/>
+t
+/// <reference path="observer/AnonymousObserver"/>
+/// <reference path="observer/AutoDetachObserver"/>
+/// <reference path="observer/MapObserver"/>
 
 /// <reference path="stream/BaseStream"/>
 /// <reference path="stream/DoStream"/>
+/// <reference path="stream/MapStream"/>
 /// <reference path="stream/FromArrayStream"/>
 /// <reference path="stream/FromPromiseStream"/>
 /// <reference path="stream/AnonymousStream"/>
@@ -29,8 +34,6 @@
 
 /// <reference path="global/Operator"/>
 
-/// <reference path="observer/AnonymousObserver"/>
-/// <reference path="observer/AutoDetachObserver"/>
 
 
 /// <reference path="testing/Record"/>

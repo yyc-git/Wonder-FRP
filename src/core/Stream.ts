@@ -36,6 +36,10 @@ module dyRt{
             return DoStream.create(this, onNext, onError, onCompleted);
         }
 
+        public map(selector:Function) {
+            return MapStream.create(this, selector);
+        }
+
         private _isSubject(subject){
             return subject instanceof Subject;
         }

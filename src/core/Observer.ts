@@ -36,7 +36,7 @@ module dyRt {
 
         public next(value) {
             if (!this._isStop) {
-                this.onNext(value);
+                return this.onNext(value);
             }
         }
 

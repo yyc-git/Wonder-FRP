@@ -18,12 +18,18 @@ module dyRt{
         private _wrapTargetList:Collection = Collection.create();
 
         public next(value) {
-            var self = this;
+            var self = this,
+                resultValue = null;
 
             if(this._target){
+                resultValue = value;
+
                 this._execWrapTarget(function(wrapTarget){
                     try{
-                        wrapTarget.next(value);
+                        resultValue = wrapTarget.next(resultValue);
+                        if(!resultValue){
+                            resultValue = value;
+                        }
                     }
                     catch (e) {
                         wrapTarget.error(e);
@@ -32,7 +38,7 @@ module dyRt{
                 });
 
                 try{
-                    this._target.next(value);
+                    this._target.next(resultValue);
                 }
                 catch (e) {
                     this._target.error(e);
