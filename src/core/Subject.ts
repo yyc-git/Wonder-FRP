@@ -22,7 +22,7 @@ module dyRt{
                 ? <AutoDetachObserver>arg1
                 : AutoDetachObserver.create(<Function>arg1, onError, onCompleted);
 
-            observer.setDisposeHandler(this._source.scheduler.disposeHandler);
+            observer.setDisposeHandler(this._source.disposeHandler);
 
             this._observers.addChild(observer);
 

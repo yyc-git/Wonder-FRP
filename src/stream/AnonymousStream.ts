@@ -22,7 +22,7 @@ module dyRt{
 
             observer = AutoDetachObserver.create(onNext, onError, onCompleted);
 
-            observer.setDisposeHandler(this.scheduler.disposeHandler);
+            observer.setDisposeHandler(this.disposeHandler);
 
             //todo encapsulate it to scheduleItem
             //this.scheduler.target = observer;

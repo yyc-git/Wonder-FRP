@@ -3,8 +3,15 @@ module dyRt{
 
     export class Stream{
         public scheduler:Scheduler = ABSTRACT_ATTRIBUTE;
-
         public subscribeFunc:Function = null;
+
+        private _disposeHandler:Collection = Collection.create();
+        get disposeHandler(){
+            return this._disposeHandler;
+        }
+        set disposeHandler(disposeHandler:Collection){
+            this._disposeHandler = disposeHandler;
+        }
 
         constructor(subscribeFunc){
             this.subscribeFunc = subscribeFunc || function(){ };
@@ -19,8 +26,7 @@ module dyRt{
         }
 
         public addDisposeHandler(func:Function){
-            //todo move to Stream?
-            this.scheduler.addDisposeHandler(func);
+            this._disposeHandler.addChild(func);
         }
 
         protected handleSubject(arg){

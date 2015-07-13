@@ -7,14 +7,6 @@ module dyRt {
             return obj;
         }
 
-        private _disposeHandler:Collection = Collection.create();
-        get disposeHandler(){
-            return this._disposeHandler;
-        }
-        set disposeHandler(disposeHandler:Collection){
-            this._disposeHandler = disposeHandler;
-        }
-
         public publishRecursive(observer:IObserver, initial:any, action:Function){
             action(initial);
         }
@@ -23,10 +15,6 @@ module dyRt {
             return root.setInterval(function(){
                 initial = action(initial);
             }, interval)
-        }
-
-        public addDisposeHandler(func:Function){
-            this._disposeHandler.addChild(func);
         }
     }
 }

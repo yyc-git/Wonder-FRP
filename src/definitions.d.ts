@@ -13,8 +13,6 @@
 
 /// <reference path="disposable/InnerSubscription"/>
 
-/// <reference path="scheduler/ProxyTarget"/>
-
 /// <reference path="core/Stream"/>
 /// <reference path="core/Subject"/>
 /// <reference path="core/Scheduler"/>

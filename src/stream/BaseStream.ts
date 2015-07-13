@@ -16,7 +16,7 @@ module dyRt{
                 ? arg1
                 : AutoDetachObserver.create(<Function>arg1, onError, onCompleted);
 
-            observer.setDisposeHandler(this.scheduler.disposeHandler);
+            observer.setDisposeHandler(this.disposeHandler);
 
             //todo encapsulate it to scheduleItem
             //todo delete target?
