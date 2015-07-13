@@ -1,7 +1,7 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class BaseStream extends Stream{
-        public subscribeCore(){
+        public subscribeCore(observer:IObserver){
             throw ABSTRACT_METHOD();
         }
 
@@ -19,23 +19,24 @@ module dyRt{
             observer.setDisposeHandler(this.scheduler.disposeHandler);
 
             //todo encapsulate it to scheduleItem
-            this.scheduler.target = observer;
+            //todo delete target?
+            //this.scheduler.target = observer;
 
-            Log.error(this._hasMultiObservers(), "should use Subject to handle multi observers");
-            this.buildStream();
+            //Log.error(this._hasMultiObservers(), "should use Subject to handle multi observers");
+            this.buildStream(observer);
 
             return observer;
         }
 
-        public buildStream(){
-            super.buildStream();
+        public buildStream(observer:IObserver){
+            super.buildStream(observer);
 
-            this.subscribeCore();
+            this.subscribeCore(observer);
         }
 
-        private _hasMultiObservers(){
-            return this.scheduler.getObservers() > 1;
-        }
+        //private _hasMultiObservers(){
+        //    return this.scheduler.getObservers() > 1;
+        //}
     }
 }
 

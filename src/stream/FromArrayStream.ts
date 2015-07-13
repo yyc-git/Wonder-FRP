@@ -16,20 +16,32 @@ module dyRt{
             this.scheduler = scheduler;
         }
 
-        public subscribeCore(){
+        public subscribeCore(observer:IObserver){
             var array = this._array,
                 len = array.length;
 
+            //next,completed is for TestScheduler to inject
+            //todo remove inject next,completed?
             function loopRecursive(i, next, completed) {
                 if (i < len) {
-                    next(array[i]);
+                    if(next){
+                        next(array[i]);
+                    }
+                    else{
+                        observer.next(array[i]);
+                    }
                     arguments.callee(i + 1, next, completed);
                 } else {
-                    completed();
+                    if(completed){
+                        completed();
+                    }
+                    else{
+                        observer.completed();
+                    }
                 }
             }
 
-            this.scheduler.publishRecursive(0, loopRecursive);
+            this.scheduler.publishRecursive(observer, 0, loopRecursive);
         }
     }
 }

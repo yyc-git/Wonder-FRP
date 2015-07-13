@@ -27,14 +27,12 @@ describe("fromPromise", function () {
         var subscription = source.subscribe(
             function (x) {
                 a = x;
-                expect(a).toEqual(42);
             },
             function (err) {
             },
             function () {
-                b = true;
+                expect(a).toEqual(42);
                 done();
-                expect(b).toBeTruthy();
             });
     });
     it("fail", function (done) {

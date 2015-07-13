@@ -8,6 +8,7 @@ module dyRt{
         }
 
         private _source:Stream = null;
+        private _selector:Function = null;
 
         constructor(source:Stream, selector:Function){
             super(null);
@@ -15,18 +16,22 @@ module dyRt{
             this._source = source;
 
             this.scheduler = this._source.scheduler;
-            this.scheduler.addWrapTarget(MapObserver.create(selector));
+            //this.scheduler.addWrapTarget(MapObserver.create(selector));
+            this._selector = selector;
         }
 
-        public subscribe(arg1:Function|Observer|Subject, onError?, onCompleted?):IDisposable {
-            return this._source.subscribe.apply(this._source, arguments);
+        public buildStream(observer:IObserver){
+            this._source.buildStream(MapObserver.create(observer, this._selector));
         }
-
-        public subscribeCore(){
-            if(this._source instanceof BaseStream){
-                let baseStream = <BaseStream>this._source;
-                baseStream.subscribeCore();
-            }
-        }
+        //public subscribe(arg1:Function|Observer|Subject, onError?, onCompleted?):IDisposable {
+        //    return this._source.subscribe.apply(this._source, arguments);
+        //}
+        //
+        //public subscribeCore(){
+        //    if(this._source instanceof BaseStream){
+        //        let baseStream = <BaseStream>this._source;
+        //        baseStream.subscribeCore();
+        //    }
+        //}
     }
 }

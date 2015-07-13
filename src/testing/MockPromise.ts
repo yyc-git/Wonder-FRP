@@ -22,10 +22,10 @@ module dyRt{
             this._messages = messages;
         }
 
-        public then(successCb:Function, errorCb:Function){
+        public then(successCb:Function, errorCb:Function, observer:IObserver){
             //var scheduler = <TestScheduler>(this.scheduler);
 
-            this._scheduler.setStreamMap(this._messages);
+            this._scheduler.setStreamMap(observer, this._messages);
         }
     }
 }

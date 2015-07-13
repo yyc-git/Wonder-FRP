@@ -16,15 +16,14 @@ module dyRt{
             this.scheduler = scheduler;
         }
 
-        public subscribeCore(){
-            var self = this;
-
+        public subscribeCore(observer:IObserver){
+            //todo remove test logic from product logic(as Scheduler->publicxxx, FromPromise->then...)
             this._promise.then(function (data) {
-                self.scheduler.next(data);
-                self.scheduler.completed();
+                observer.next(data);
+                observer.completed();
             }, function (err) {
-                self.scheduler.error(err);
-            });
+                observer.error(err);
+            }, observer);
         }
     }
 }

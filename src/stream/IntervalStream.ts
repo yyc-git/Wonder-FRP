@@ -22,12 +22,13 @@ module dyRt{
             this._interval = this._interval <= 0 ? 1 : this._interval;
         }
 
-        public subscribeCore(){
+        public subscribeCore(observer:IObserver){
             var self = this,
                 id = null;
 
-            id = this.scheduler.publishInterval(0, this._interval, function(count) {
-                self.scheduler.next(count);
+            id = this.scheduler.publishInterval(observer, 0, this._interval, function(count) {
+                //self.scheduler.next(count);
+                observer.next(count);
 
                 return count + 1;
             });

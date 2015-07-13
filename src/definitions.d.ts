@@ -19,10 +19,11 @@
 /// <reference path="core/Subject"/>
 /// <reference path="core/Scheduler"/>
 /// <reference path="core/Observer"/>
-t
+
 /// <reference path="observer/AnonymousObserver"/>
 /// <reference path="observer/AutoDetachObserver"/>
 /// <reference path="observer/MapObserver"/>
+/// <reference path="observer/DoObserver"/>
 
 /// <reference path="stream/BaseStream"/>
 /// <reference path="stream/DoStream"/>

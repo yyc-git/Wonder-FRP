@@ -37,7 +37,7 @@ module dyRt {
         private _subscribedTime:number = null;
         private _disposedTime:number = null;
 
-        public setStreamMap(messages:[Record]){
+        public setStreamMap(observer:IObserver, messages:[Record]){
             var self = this;
 
             messages.forEach(function(record:Record){
@@ -46,17 +46,17 @@ module dyRt {
                 switch (record.actionType){
                     case ActionType.NEXT:
                         func = function(){
-                            self.next(record.value);
+                            observer.next(record.value);
                         };
                         break;
                     case ActionType.ERROR:
                         func = function(){
-                            self.error(record.value);
+                            observer.error(record.value);
                         };
                         break;
                     case ActionType.COMPLETED:
                         func = function(){
-                            self.completed();
+                            observer.completed();
                         };
                         break;
                     default:
@@ -72,7 +72,7 @@ module dyRt {
             this._isDisposed = true;
         }
 
-        public publishRecursive(initial:any, recursiveFunc:Function) {
+        public publishRecursive(observer:IObserver, initial:any, recursiveFunc:Function) {
             var self = this;
             var messages = [];
 
@@ -82,11 +82,11 @@ module dyRt {
             }, function () {
                 self._tick(1);
                 messages.push(TestScheduler.completed(self._clock));
-                self.setStreamMap(<[Record]>messages);
+                self.setStreamMap(observer, <[Record]>messages);
             });
         }
 
-        public publishInterval(initial:any, interval:number, action:Function):number{
+        public publishInterval(observer:IObserver, initial:any, interval:number, action:Function):number{
             //produce 10 val for test
             var COUNT = 10;
             var messages = [];
@@ -102,7 +102,7 @@ module dyRt {
                 COUNT--;
             }
 
-            this.setStreamMap(<[Record]>messages);
+            this.setStreamMap(observer, <[Record]>messages);
 
             return NaN;
         }
@@ -209,20 +209,21 @@ module dyRt {
         private _runStream(time){
             var handler = this._streamMap.getChild(String(time));
 
-            if(handler && this._hasObserver()){
+            //if(handler && this._hasObserver()){
+            if(handler){
                 handler();
             }
         }
 
-        private _hasObserver(){
-            if(this.target instanceof Subject){
-                let subject = <Subject>this.target;
-
-                 return subject.getObservers() > 0
-            }
-
-            return !!this.target;
-        }
+        //private _hasObserver(){
+        //    if(this.target instanceof Subject){
+        //        let subject = <Subject>this.target;
+        //
+        //         return subject.getObservers() > 0
+        //    }
+        //
+        //    return !!this.target;
+        //}
 
         private _runAt(time:number, callback:Function) {
             this._timerMap.addChild(String(time), callback);

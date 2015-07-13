@@ -16,7 +16,7 @@ describe("do", function () {
     });
 
     describe("hanle each value", function () {
-        it("test create stream by subscribeFunc", function(){
+        it("test create stream by subscribeFunc", function () {
             var sum = 10 + 20;
             var stream = rt.createStream(function (observer) {
                 observer.next(10);
@@ -24,21 +24,27 @@ describe("do", function () {
                 observer.completed();
             });
 
-            stream.do(function (x) { sum -= x; })
-                .subscribe(function(){});
+            stream.do(function (x) {
+                sum -= x;
+            })
+                .subscribe(function () {
+                });
 
             expect(sum).toEqual(0);
         });
-        it("test create stream by fromArray", function(){
+        it("test create stream by fromArray", function () {
             var sum = 10 + 20;
             var stream = rt.fromArray([10, 20]);
 
-            stream.do(function (x) { sum -= x; })
-                .subscribe(function(){});
+            stream.do(function (x) {
+                sum -= x;
+            })
+                .subscribe(function () {
+                });
 
             expect(sum).toEqual(0);
         });
-        it("test create stream by TestScheduler.createStream", function(){
+        it("test create stream by TestScheduler.createStream", function () {
             var stream = scheduler.createStream(
                 next(150, 1),
                 next(210, 2),
@@ -51,13 +57,16 @@ describe("do", function () {
             var sum = 2 + 3 + 4 + 5;
 
             scheduler.startWithSubscribe(function () {
-                return stream.do(function (x) { i++; return sum -= x; });
+                return stream.do(function (x) {
+                    i++;
+                    return sum -= x;
+                });
             });
 
             expect(i).toEqual(4);
             expect(sum).toEqual(0);
         });
-        it("test multi observer", function(){
+        it("test multi observer", function () {
             var a = 0,
                 b = 0;
             var stream = scheduler.createStream(
@@ -72,13 +81,16 @@ describe("do", function () {
             var result1 = scheduler.createObserver();
             var result2 = scheduler.createObserver();
             var i = 0;
-            var sum = 3 + 4 + 5;
+            var sum = 2 + 3 + 4 + 5;
 
             scheduler.publicAbsolute(100, function () {
                 subject = rt.Subject.create();
             });
             scheduler.publicAbsolute(150, function () {
-                stream.do(function (x) { i++; return sum -= x; })
+                stream.do(function (x) {
+                    i++;
+                    return sum -= x;
+                })
                     .subscribe(subject);
             });
             scheduler.publicAbsolute(215, function () {
@@ -92,60 +104,45 @@ describe("do", function () {
             });
             scheduler.start();
 
-            //exec "do" 3 times
-            expect(i).toEqual(3);
+            //exec "do" 4 times from 151 to 250(not contain 250)
+            expect(i).toEqual(4);
             expect(sum).toEqual(0);
         });
     });
 
-    it("test multi do", function(){
+    it("test multi do", function () {
         var sum = 10 + 20 + 10 + 20;
         var stream = rt.fromArray([10, 20]);
 
-        stream.do(function (x) { sum -= x; })
-            .do(function (x) { sum -= x; })
-            .subscribe(function(){});
+        stream.do(function (x) {
+            sum -= x;
+        })
+            .do(function (x) {
+                sum -= x;
+            })
+            .subscribe(function () {
+            });
 
         expect(sum).toEqual(0);
     });
-    it("test error", function(){
-        var stream = rt.fromArray([10, 20]);
-        var errorMsg = "20";
-        var result1 = null,
-            result2 = null;
 
-        stream.do(function (x) {
-            if (x === 20) {
-                throw new Error(x);
-            }
-        }, function(error){
-            result1 = error.message;
-        })
-            .subscribe(function (x) {
-            },
-            function (error) {
-                result2 = error.message;
-            },
-            function () {
-            });
-
-        expect(result1).toEqual(errorMsg);
-        expect(result2).toEqual(errorMsg);
-    });
-    it("test completed", function(){
+    it("test completed", function () {
         var stream = rt.fromArray([10, 20]);
         var sum = 10 + 20;
         var result1 = null,
             result2 = null;
 
-        stream.do(function (x) { sum -= x; },
-        function(error){
-        }, function(){
+        stream.do(function (x) {
+                sum -= x;
+            },
+            function (error) {
+            }, function () {
                 result1 = sum;
             })
-            .subscribe(function(x){},
-        function(error){
-        }, function(){
+            .subscribe(function (x) {
+            },
+            function (error) {
+            }, function () {
                 result2 = result1 + 100;
             });
 

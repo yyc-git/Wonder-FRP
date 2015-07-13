@@ -4,22 +4,22 @@ module dyRt{
     export class Stream{
         public scheduler:Scheduler = ABSTRACT_ATTRIBUTE;
 
-        protected subscribeFunc:Function = null;
+        public subscribeFunc:Function = null;
 
         constructor(subscribeFunc){
-            this.subscribeFunc = subscribeFunc || function(){
-                };
+            this.subscribeFunc = subscribeFunc || function(){ };
         }
 
-        public subscribe(arg1, onError, onCompleted):IDisposable {
+        public subscribe(arg1:Function|Observer|Subject, onError?:Function, onCompleted?:Function):IDisposable {
             throw ABSTRACT_METHOD();
         }
 
-        public buildStream(){
-            this.scheduler.createStreamBySubscribeFunc(this.subscribeFunc);
+        public buildStream(observer:IObserver){
+            this.subscribeFunc(observer);
         }
 
         public addDisposeHandler(func:Function){
+            //todo move to Stream?
             this.scheduler.addDisposeHandler(func);
         }
 
@@ -45,7 +45,6 @@ module dyRt{
         }
 
         private _setSubject(subject){
-            this.scheduler.target = subject;
             subject.source = this;
         }
     }

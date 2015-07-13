@@ -48,7 +48,7 @@ module dyRt{
         }
 
         public start(){
-            this._source.buildStream();
+            this._source.buildStream(this);
         }
 
         public remove(observer:Observer){

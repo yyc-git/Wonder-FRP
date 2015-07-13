@@ -25,9 +25,9 @@ module dyRt{
             observer.setDisposeHandler(this.scheduler.disposeHandler);
 
             //todo encapsulate it to scheduleItem
-            this.scheduler.target = observer;
+            //this.scheduler.target = observer;
 
-            this.buildStream();
+            this.buildStream(observer);
 
             return observer;
         }
