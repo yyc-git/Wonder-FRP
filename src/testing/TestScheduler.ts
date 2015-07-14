@@ -33,8 +33,8 @@ module dyRt {
 
         private _initialClock:number = null;
         private _isDisposed:boolean = false;
-        private _timerMap:Hash = Hash.create();
-        private _streamMap:Hash = Hash.create();
+        private _timerMap:dyCb.Hash = dyCb.Hash.create();
+        private _streamMap:dyCb.Hash = dyCb.Hash.create();
         private _subscribedTime:number = null;
         private _disposedTime:number = null;
 
@@ -61,7 +61,7 @@ module dyRt {
                         };
                         break;
                     default:
-                        Log.error(true, Log.info.FUNC_UNKNOW("actionType"));
+                        dyCb.Log.error(true, dyCb.Log.info.FUNC_UNKNOW("actionType"));
                         break;
                 }
 

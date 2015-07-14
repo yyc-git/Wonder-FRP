@@ -1,7 +1,7 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class MergeAllObserver extends Observer{
-        public static create(currentObserver:IObserver, streamGroup:Collection) {
+        public static create(currentObserver:IObserver, streamGroup:dyCb.Collection) {
             return new this(currentObserver, streamGroup);
         }
 
@@ -12,7 +12,7 @@ module dyRt{
         set currentObserver(currentObserver:IObserver){
             this._currentObserver = currentObserver;
         }
-        private _streamGroup:Collection = null;
+        private _streamGroup:dyCb.Collection = null;
 
         private _done:boolean = false;
         get done(){
@@ -22,7 +22,7 @@ module dyRt{
             this._done = done;
         }
 
-        constructor(currentObserver:IObserver, streamGroup:Collection){
+        constructor(currentObserver:IObserver, streamGroup:dyCb.Collection){
             super(null, null, null);
 
             this._currentObserver = currentObserver;
@@ -30,7 +30,7 @@ module dyRt{
         }
 
         protected onNext(innerSource:any){
-            Log.error(!(innerSource instanceof Stream || JudgeUtils.isPromise(innerSource)), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
+            dyCb.Log.error(!(innerSource instanceof Stream || JudgeUtils.isPromise(innerSource)), dyCb.Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
 
             if(JudgeUtils.isPromise(innerSource)){
                 innerSource = fromPromise(innerSource);
@@ -55,17 +55,17 @@ module dyRt{
     }
 
     class InnerObserver extends Observer{
-        public static create(parent:MergeAllObserver, streamGroup:Collection, currentStream:Stream) {
+        public static create(parent:MergeAllObserver, streamGroup:dyCb.Collection, currentStream:Stream) {
         	var obj = new this(parent, streamGroup, currentStream);
 
         	return obj;
         }
 
         private _parent:MergeAllObserver = null;
-        private _streamGroup:Collection = null;
+        private _streamGroup:dyCb.Collection = null;
         private _currentStream:Stream = null;
 
-        constructor(parent:MergeAllObserver, streamGroup:Collection, currentStream:Stream){
+        constructor(parent:MergeAllObserver, streamGroup:dyCb.Collection, currentStream:Stream){
             super(null, null, null);
 
             this._parent = parent;

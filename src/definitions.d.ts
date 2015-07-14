@@ -1,12 +1,9 @@
-/// <reference path="disposable/IDisposable"/>
-/// <reference path="observer/IObserver"/>
-
-/// <reference path="Collection"/>
-/// <reference path="Hash"/>
+/// <reference path="../lib/inner/DYCommonLib/dist/dyCb.d.ts"/>
 
 /// <reference path="JudgeUtils"/>
 
-/// <reference path="Log"/>
+/// <reference path="disposable/IDisposable"/>
+/// <reference path="observer/IObserver"/>
 
 /// <reference path="global/Variable"/>
 /// <reference path="global/Const"/>
@@ -35,8 +32,6 @@
 /// <reference path="stream/MergeAllStream"/>
 
 /// <reference path="global/Operator"/>
-
-
 
 /// <reference path="testing/Record"/>
 /// <reference path="testing/MockObserver"/>

@@ -22,7 +22,7 @@ module dyRt{
             //todo delete target?
             //this.scheduler.target = observer;
 
-            //Log.error(this._hasMultiObservers(), "should use Subject to handle multi observers");
+            //dyCb.Log.error(this._hasMultiObservers(), "should use Subject to handle multi observers");
             this.buildStream(observer);
 
             return observer;

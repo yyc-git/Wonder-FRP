@@ -22,7 +22,6 @@ module.exports = function(config) {
 
         'dist/dyRt.js',
 
-        //'test/helper/jsExtend.js',
         'test/helper/jasmine/**',
         'test/helper/sinonJs/*.js',
 

@@ -7,7 +7,7 @@ module dyRt{
 
         public dispose(){
             if(this.isDisposed){
-                Log.log("only can dispose once");
+                dyCb.Log.log("only can dispose once");
                 return;
             }
 
