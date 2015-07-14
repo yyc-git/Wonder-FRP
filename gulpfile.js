@@ -66,11 +66,85 @@ gulp.task("build", gulpSync.sync(["clean", "compileTs"]));
 var karma = require("karma").server;
 var karmaConfPath = path.join(process.cwd(), "test/karma.conf.js");
 
+
+
 gulp.task("test", gulpSync.sync(["build"]), function (done) {
     karma.start({
         configFile: karmaConfPath
-        //singleRun:true,
-        //autoWatch:false
     }, done);
 });
+
+
+//ci test(single test)
+
+//todo if test failed, the "singleTest" task will error and it will log error info!how to eliminate it?
+//reference:https://github.com/lazd/gulp-karma-test, https://github.com/lazd/gulp-karma/issues/21
+
+gulp.task("singleTest", gulpSync.sync(["build"]), function (done) {
+    karma.start({
+        configFile: karmaConfPath,
+        singleRun:true
+    }, done);
+});
+
+var testFilePaths = ["test/unit/*Spec.js", "test/unit/**/*Spec.js"];
+
+gulp.task("watch", function(){
+    var watcher = gulp.watch(tsFilePaths.concat(testFilePaths), ["singleTest"]);
+    //var watcher = gulp.watch(tsFilePaths, function(){
+    //    try{
+    //        gulp.run("test");
+    //    }
+    //    catch(e){
+    //
+    //    }
+    //});
+    //
+    //watcher.on("error", function(e){
+    //    //console.log(e);
+    //})
+});
+
+//
+//
+//var karma = require('gulp-karma')({
+//    configFile: karmaConfPath
+//});
+//
+////// Run tests once
+//gulp.task('test', gulpSync.sync(["build"]), function(done) {
+//    console.log(karma);
+//    // Override configuration for CI, etc
+//    //return karma.once({
+//    //    // reporters: ['coverage']
+//    //});
+//    karma.stop();
+//    return karma.start({
+//        //autoWatch: true
+//    }, done);
+//
+//
+//
+//    //karma.run();
+//    //done();
+//    //karma.start({
+//    //    configFile: karmaConfPath
+//    //}, done);
+//});
+//
+//// WATCH OPTION 1: gulp.watch style
+//var watcher = gulp.task('watch', function() {
+//    // Start a server, then, once it's ready, run tests
+//    //karma.start().then(karma.run);
+//
+//    // Watch for changes with gulp and run tests accordingly
+//    gulp.watch(tsFilePaths, function() {
+//        //karma.run();
+//        gulp.run("test")
+//    });
+//});
+//
+//watcher.on("error", function(){
+//
+//});
 
