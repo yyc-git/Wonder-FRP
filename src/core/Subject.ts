@@ -57,10 +57,6 @@ module dyRt{
             });
         }
 
-        public getObservers():number{
-            return this._observers.getCount();
-        }
-
         public dispose(){
             this._observers.forEach(function(ob:Observer){
                 ob.dispose();
