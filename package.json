@@ -1,6 +1,6 @@
 {
   "name": "DYReactive",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "devDependencies": {
     "del": "^1.2.0",
     "gulp": "^3.8.11",

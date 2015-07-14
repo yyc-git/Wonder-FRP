@@ -76,15 +76,16 @@ function getInnerLibDTsPathArr(definitionDTsPath){
 
     while((result = regex.exec(content)) !== null){
         resultArr.push(
-            path.join(process.cwd(), result[0].slice(1, -1).slice(3))
+            parseInnerLibDTsPath(result[0].slice(1, -1))
         );
     }
 
     return resultArr;
 }
 
-//gulp.task("combineInnerLib", gulpSync.sync(["combineDefinitionFile","combineContent"]));
-
+function parseInnerLibDTsPath(pathInDefinitionFile){
+    return path.join(process.cwd(), pathInDefinitionFile.slice(3));
+}
 
 gulp.task("build", gulpSync.sync(["clean", "compileTs", "combineInnerLib"]));
 
