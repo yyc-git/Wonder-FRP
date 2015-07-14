@@ -1,4 +1,4 @@
-describe("mergeAll", function () {
+describe("flatMap", function () {
     var rt = dyRt,
         TestScheduler = rt.TestScheduler,
         next = TestScheduler.next,
@@ -15,17 +15,17 @@ describe("mergeAll", function () {
         sandbox.restore();
     });
 
-    describe("merge all promise", function () {
+    describe("map and merge all promise", function () {
         it("all success", function(done){
             var res = [];
             var sources = rt.fromArray([1, 2])
-                .map(function (value) {
+                .flatMap(function (value) {
                     return new RSVP.Promise(function (res, rej) {
                         res(value);
                     });
                 });
 
-            sources.mergeAll().subscribe(
+            sources.subscribe(
                 function (x) {
                     res.push(x);
                 },
@@ -39,7 +39,7 @@ describe("mergeAll", function () {
         it("error", function(done){
             var res = [];
             var sources = rt.fromArray([1, 2])
-                .map(function (value) {
+                .flatMap(function (value) {
                     return new RSVP.Promise(function (res, rej) {
                         if(value === 2){
                             rej(value);
@@ -50,7 +50,7 @@ describe("mergeAll", function () {
                     });
                 });
 
-            sources.mergeAll().subscribe(
+            sources.subscribe(
                 function (x) {
                     res.push(x);
                 },
@@ -64,12 +64,12 @@ describe("mergeAll", function () {
         });
     });
 
-    describe("merge stream", function(){
-        it("merge fromPromise and do stream", function(){
+    describe("map and merge stream", function(){
+        it("map fromPromise and do stream", function(){
             var res = [];
             var result = 0;
             var sources = rt.fromArray([1, 2])
-                .map(function (value) {
+                .flatMap(function (value) {
                     return rt.fromPromise(new RSVP.Promise(function (res, rej) {
                         res(value);
                     })).do(function(x){
@@ -81,7 +81,7 @@ describe("mergeAll", function () {
                     });
                 });
 
-            sources.mergeAll().subscribe(
+            sources.subscribe(
                 function (x) {
                     res.push(x);
                 },
@@ -93,15 +93,15 @@ describe("mergeAll", function () {
                     done();
                 });
         });
-        it("merge array stream", function(){
+        it("map array stream", function(){
             var res = [];
             var result = null;
             var sources = rt.fromArray([1, 2, 3])
-                .map(function(value){
+                .flatMap(function(value){
                     return rt.fromArray([value, value + 1]);
                 });
 
-            sources.mergeAll().subscribe(
+            sources.subscribe(
                 function (x) {
                     res.push(x);
                 },
@@ -113,9 +113,9 @@ describe("mergeAll", function () {
 
             expect(result).toEqual([1, 2, 2, 3, 3, 4]);
         });
-        it("merge interval stream", function(){
+        it("map interval stream", function(){
             var sources = rt.fromArray([1, 2])
-                .map(function(value){
+                .flatMap(function(value){
                     if(value === 2){
                         return rt.interval(100, scheduler);
                     }
@@ -124,7 +124,7 @@ describe("mergeAll", function () {
                     }
                 });
             results = scheduler.startWithSubscribe(function () {
-                return sources.mergeAll();
+                return sources;
             });
 
             expect(results.messages).toStreamContain(
@@ -133,17 +133,16 @@ describe("mergeAll", function () {
         });
     });
 
-    it("do after mergeAll", function(){
+    it("do after flatMap", function(){
         var res = [];
         var result = null;
         var sum = 0;
         var sources = rt.fromArray([1, 2, 3])
-            .map(function(value){
+            .flatMap(function(value){
                 return rt.fromArray([value, value + 1]);
             });
 
-        sources.mergeAll()
-            .do(function(x){
+        sources.do(function(x){
                 sum += x;
             })
             .subscribe(

@@ -23,6 +23,7 @@
 /// <reference path="observer/AutoDetachObserver"/>
 /// <reference path="observer/MapObserver"/>
 /// <reference path="observer/DoObserver"/>
+/// <reference path="observer/MergeAllObserver"/>
 
 /// <reference path="stream/BaseStream"/>
 /// <reference path="stream/DoStream"/>
@@ -31,6 +32,7 @@
 /// <reference path="stream/FromPromiseStream"/>
 /// <reference path="stream/AnonymousStream"/>
 /// <reference path="stream/IntervalStream"/>
+/// <reference path="stream/MergeAllStream"/>
 
 /// <reference path="global/Operator"/>
 

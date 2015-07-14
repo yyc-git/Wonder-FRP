@@ -47,6 +47,11 @@ module dyRt{
             return MapStream.create(this, selector);
         }
 
+        public flatMap(selector:Function){
+            //return FlatMapStream.create(this, selector);
+            return this.map(selector).mergeAll();
+        }
+
         public mergeAll(){
             return MergeAllStream.create(this);
         }
