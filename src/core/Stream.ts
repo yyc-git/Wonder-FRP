@@ -1,7 +1,6 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
-
-    export class Stream{
+    export class Stream extends Entity{
         public scheduler:Scheduler = ABSTRACT_ATTRIBUTE;
         public subscribeFunc:Function = null;
 
@@ -14,6 +13,8 @@ module dyRt{
         }
 
         constructor(subscribeFunc){
+            super("Stream");
+
             this.subscribeFunc = subscribeFunc || function(){ };
         }
 
@@ -44,6 +45,10 @@ module dyRt{
 
         public map(selector:Function) {
             return MapStream.create(this, selector);
+        }
+
+        public mergeAll(){
+            return MergeAllStream.create(this);
         }
 
         private _isSubject(subject){

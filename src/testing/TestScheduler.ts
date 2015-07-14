@@ -31,6 +31,7 @@ module dyRt {
             this._clock = clock;
         }
 
+        private _initialClock:number = null;
         private _isDisposed:boolean = false;
         private _timerMap:Hash = Hash.create();
         private _streamMap:Hash = Hash.create();
@@ -76,6 +77,8 @@ module dyRt {
             var self = this;
             var messages = [];
 
+            this._setClock();
+
             recursiveFunc(initial, function (value) {
                 self._tick(1);
                 messages.push(TestScheduler.next(self._clock, value));
@@ -90,6 +93,8 @@ module dyRt {
             //produce 10 val for test
             var COUNT = 10;
             var messages = [];
+
+            this._setClock();
 
             while (COUNT > 0 && !this._isDisposed) {
                 this._tick(interval);
@@ -107,6 +112,14 @@ module dyRt {
             return NaN;
         }
 
+        private _setClock(){
+            if(this._initialClock){
+                this._clock =  Math.min(this._clock, this._initialClock);
+            }
+
+            this._initialClock = this._clock;
+        }
+
         public startWithTime(create:Function, subscribedTime:number, disposedTime:number) {
             var observer = this.createObserver(),
                 source, subscription;
@@ -115,6 +128,8 @@ module dyRt {
             this._disposedTime = disposedTime;
 
             this._clock = subscribedTime;
+
+            var self = this;
 
             this._runAt(subscribedTime, function () {
                 source = create();

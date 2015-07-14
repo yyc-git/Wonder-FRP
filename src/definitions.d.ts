@@ -13,6 +13,7 @@
 
 /// <reference path="disposable/InnerSubscription"/>
 
+/// <reference path="core/Entity"/>
 /// <reference path="core/Stream"/>
 /// <reference path="core/Subject"/>
 /// <reference path="core/Scheduler"/>

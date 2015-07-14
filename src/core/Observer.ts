@@ -1,16 +1,6 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt {
-    export class Observer implements IObserver{
-        public static UID:number = 1;
-
-        private _uid:number = null;
-        get uid(){
-            return this._uid;
-        }
-        set uid(uid:number){
-            this._uid = uid;
-        }
-
+    export class Observer extends Entity implements IObserver{
         private _isDisposed:boolean = null;
         get isDisposed(){
             return this._isDisposed;
@@ -27,11 +17,11 @@ module dyRt {
         private _disposeHandler:Collection = Collection.create();
 
         constructor(onNext:Function, onError:Function, onCompleted:Function) {
+            super("Observer");
+
             this.onUserNext = onNext || function(){};
             this.onUserError = onError || function(){};
             this.onUserCompleted = onCompleted || function(){};
-
-            this.uid = Observer.UID++;
         }
 
         public next(value) {

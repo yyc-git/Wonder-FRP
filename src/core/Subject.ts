@@ -53,7 +53,7 @@ module dyRt{
 
         public remove(observer:Observer){
             this._observers.removeChild(function(ob:Observer){
-                return ob.uid === observer.uid;
+                return JudgeUtils.isEqual(ob, observer);
             });
         }
 

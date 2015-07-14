@@ -5,14 +5,28 @@ module dyRt {
             //ABSTRACT_ATTRIBUTE: "abstract attribute need override",
             //ABSTRACT_METHOD: "abstract method need override",
 
-            helperFunc: function(msg, value){
-                return msg + " " + String(value);
+            helperFunc: function(...args){
+                var result = "";
+
+                Array.prototype.slice.call(arguments, 0).forEach(function(val){
+                    result += String(val) + " ";
+                });
+
+                return result.slice(0, -1);
             },
             FUNC_INVALID: function (value) {
                 return this.helperFunc("invalid", value);
             },
-            FUNC_MUST_BE: function (value) {
-                return this.helperFunc("must be", value);
+            FUNC_MUST_BE: function (...args) {
+                if(arguments.length === 1){
+                    return this.helperFunc("must be", arguments[0]);
+                }
+                else if(arguments.length === 2){
+                    return this.helperFunc(arguments[0], "must be", arguments[1]);
+                }
+                else{
+                    throw new Error("arguments.length must <= 2");
+                }
             },
             FUNC_NOT_SUPPORT: function(value){
                 return this.helperFunc("not support", value);

@@ -63,28 +63,53 @@
 
 
 
+//
+//var a = 0;
+//
+//var subject = dyRt.Subject.create();
+//var source = dyRt.fromArray([1,2,3]);
+//source.do(function(x){
+//    a += x;
+//}).subscribe(subject);
+//
+//        subject.subscribe(function(x){
+//            console.log(x);
+//        }, null, function(){
+//            console.log("a = ", a);
+//        });
+//
+//subject.subscribe(function(x){
+//    console.log("x = ", x);
+//}, null, function(){
+//    console.log("total a = ", a);
+//});
+//
+//subject.start();
 
-var a = 0;
 
-var subject = dyRt.Subject.create();
-var source = dyRt.fromArray([1,2,3]);
-source.do(function(x){
-    a += x;
-}).subscribe(subject);
 
-        subject.subscribe(function(x){
-            console.log(x);
-        }, null, function(){
-            console.log("a = ", a);
-        });
 
-subject.subscribe(function(x){
-    console.log("x = ", x);
-}, null, function(){
-    console.log("total a = ", a);
-});
+//
+//var sources = dyRt.fromArray([1, 2])
+//        .map(function(value){
+//            if(value === 2){
+//                return dyRt.interval(100);
+//            }
+//            else{
+//                return dyRt.interval(60);
+//            }
+//        });
+//    sources.mergeAll().subscribe(function(x){
+//        console.log(x);
+//    });
 
-subject.start();
+
+
+
+
+
+
+
 
 
 

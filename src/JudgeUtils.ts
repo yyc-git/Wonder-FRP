@@ -1,7 +1,5 @@
+/// <reference path="definitions.d.ts"/>
 module dyRt {
-    declare var document:any;
-    declare var window:any;
-
     export class JudgeUtils {
         public static isArray(val) {
             return Object.prototype.toString.call(val) === "[object Array]";
@@ -53,6 +51,16 @@ module dyRt {
             return type === "function" ||
                 (type === "object" && !!object[property]) ||
                 type === "unknown";
+        }
+
+        public static isPromise(obj){
+            return !!obj
+                && !JudgeUtils.isFunction(obj.subscribe)
+                && JudgeUtils.isFunction(obj.then);
+        }
+
+        public static isEqual(ob1:Entity, ob2:Entity){
+            return ob1.uid === ob2.uid;
         }
     }
 }
