@@ -65,14 +65,15 @@ gulp.task("buildMultiDistFiles", function(done){
 });
 
 function buildCoreFile(){
-    console.log(path.join(distPath, "dyRt.d.ts"),path.join(distPath, "dyRt.core.d.ts"));
     fs.copySync(path.join(distPath, "dyRt.d.ts"),path.join(distPath, "dyRt.core.d.ts"));
     fs.copySync(path.join(distPath, "dyRt.js"),path.join(distPath, "dyRt.core.js"));
+    fs.copySync(path.join(distPath, "dyRt.js.map"),path.join(distPath, "dyRt.core.js.map"));
 }
 
 function buildAllFile(){
     fs.copySync(path.join(distPath, "dyRt.d.ts"),path.join(distPath, "dyRt.all.d.ts"));
     fs.copySync(path.join(distPath, "dyRt.js"),path.join(distPath, "dyRt.all.js"));
+    fs.copySync(path.join(distPath, "dyRt.js.map"),path.join(distPath, "dyRt.all.js.map"));
 
     combineInnerLib(
         path.join(distPath, "dyRt.all.js"),
