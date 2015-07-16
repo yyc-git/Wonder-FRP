@@ -148,6 +148,285 @@ var dyCb;
 
 var dyCb;
 (function (dyCb) {
+    var YEQuery = (function () {
+        function YEQuery() {
+        }
+        /*!
+         实现ajax
+
+         ajax({
+         type:"post",//post或者get，非必须
+         url:"test.jsp",//必须的
+         data:"name=dipoo&info=good",//非必须
+         dataType:"json",//text/xml/json，非必须
+         success:function(data){//回调函数，非必须
+         alert(data.name);
+         }
+         });*/
+        YEQuery.ajax = function (conf) {
+            var type = conf.type; //type参数,可选
+            var url = conf.url; //url参数，必填
+            var data = conf.data; //data参数可选，只有在post请求时需要
+            var dataType = conf.dataType; //datatype参数可选
+            var success = conf.success; //回调函数可选
+            var error = conf.error;
+            var xhr = null;
+            var self = this;
+            if (type === null) {
+                type = "get";
+            }
+            if (dataType === null) {
+                dataType = "text";
+            }
+            xhr = this._createAjax(error);
+            if (!xhr) {
+                return;
+            }
+            try {
+                xhr.open(type, url, true);
+                if (this._isSoundFile(dataType)) {
+                    xhr.responseType = "arraybuffer";
+                }
+                if (type === "GET" || type === "get") {
+                    xhr.send(null);
+                }
+                else if (type === "POST" || type === "post") {
+                    xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+                    xhr.send(data);
+                }
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4
+                        && (xhr.status === 200 || self._isLocalFile(xhr.status))) {
+                        if (dataType === "text" || dataType === "TEXT") {
+                            if (success !== null) {
+                                success(xhr.responseText);
+                            }
+                        }
+                        else if (dataType === "xml" || dataType === "XML") {
+                            if (success !== null) {
+                                success(xhr.responseXML);
+                            }
+                        }
+                        else if (dataType === "json" || dataType === "JSON") {
+                            if (success !== null) {
+                                success(eval("(" + xhr.responseText + ")"));
+                            }
+                        }
+                        else if (self._isSoundFile(dataType)) {
+                            if (success !== null) {
+                                success(xhr.response);
+                            }
+                        }
+                    }
+                };
+            }
+            catch (e) {
+                error(xhr, e);
+            }
+        };
+        YEQuery._createAjax = function (error) {
+            var xhr = null;
+            try {
+                xhr = new ActiveXObject("microsoft.xmlhttp");
+            }
+            catch (e1) {
+                try {
+                    xhr = new XMLHttpRequest();
+                }
+                catch (e2) {
+                    error(xhr, { message: "您的浏览器不支持ajax，请更换！" });
+                    return null;
+                }
+            }
+            return xhr;
+        };
+        YEQuery._isLocalFile = function (status) {
+            return document.URL.contain("file://") && status === 0;
+        };
+        YEQuery._isSoundFile = function (dataType) {
+            return dataType === "arraybuffer";
+        };
+        return YEQuery;
+    })();
+    dyCb.YEQuery = YEQuery;
+})(dyCb || (dyCb = {}));
+
+/// <reference path="../definitions.d.ts"/>
+var dyCb;
+(function (dyCb) {
+    var ConvertUtils = (function () {
+        function ConvertUtils() {
+        }
+        ConvertUtils.toString = function (obj) {
+            if (dyCb.JudgeUtils.isNumber(obj)) {
+                return String(obj);
+            }
+            //if (JudgeUtils.isjQuery(obj)) {
+            //    return _jqToString(obj);
+            //}
+            if (dyCb.JudgeUtils.isFunction(obj)) {
+                return this._convertCodeToString(obj);
+            }
+            if (dyCb.JudgeUtils.isDirectObject(obj) || dyCb.JudgeUtils.isArray(obj)) {
+                return JSON.stringify(obj);
+            }
+            return String(obj);
+        };
+        ConvertUtils._convertCodeToString = function (fn) {
+            return fn.toString().split('\n').slice(1, -1).join('\n') + '\n';
+        };
+        return ConvertUtils;
+    })();
+    dyCb.ConvertUtils = ConvertUtils;
+})(dyCb || (dyCb = {}));
+
+/// <reference path="../definitions.d.ts"/>
+var dyCb;
+(function (dyCb) {
+    //declare var window:any;
+    var EventUtils = (function () {
+        function EventUtils() {
+        }
+        EventUtils.bindEvent = function (context, func) {
+            //var args = Array.prototype.slice.call(arguments, 2),
+            //    self = this;
+            return function (event) {
+                //return fun.apply(object, [self.wrapEvent(event)].concat(args)); //对事件对象进行包装
+                return func.call(context, event);
+            };
+        };
+        EventUtils.addEvent = function (dom, eventName, handler) {
+            if (dyCb.JudgeUtils.isHostMethod(dom, "addEventListener")) {
+                dom.addEventListener(eventName, handler, false);
+            }
+            else if (dyCb.JudgeUtils.isHostMethod(dom, "attachEvent")) {
+                dom.attachEvent("on" + eventName, handler);
+            }
+            else {
+                dom["on" + eventName] = handler;
+            }
+        };
+        EventUtils.removeEvent = function (dom, eventName, handler) {
+            if (dyCb.JudgeUtils.isHostMethod(dom, "removeEventListener")) {
+                dom.removeEventListener(eventName, handler, false);
+            }
+            else if (dyCb.JudgeUtils.isHostMethod(dom, "detachEvent")) {
+                dom.detachEvent("on" + eventName, handler);
+            }
+            else {
+                dom["on" + eventName] = null;
+            }
+        };
+        return EventUtils;
+    })();
+    dyCb.EventUtils = EventUtils;
+})(dyCb || (dyCb = {}));
+
+/// <reference path="../definitions.d.ts"/>
+var dyCb;
+(function (dyCb) {
+    var ExtendUtils = (function () {
+        function ExtendUtils() {
+        }
+        /**
+         * 深拷贝
+         *
+         * 示例：
+         * 如果拷贝对象为数组，能够成功拷贝（不拷贝Array原型链上的成员）
+         * expect(extend.extendDeep([1, { x: 1, y: 1 }, "a", { x: 2 }, [2]])).toEqual([1, { x: 1, y: 1 }, "a", { x: 2 }, [2]]);
+         *
+         * 如果拷贝对象为对象，能够成功拷贝（能拷贝原型链上的成员）
+         * var result = null;
+         function A() {
+                };
+         A.prototype.a = 1;
+
+         function B() {
+                };
+         B.prototype = new A();
+         B.prototype.b = { x: 1, y: 1 };
+         B.prototype.c = [{ x: 1 }, [2]];
+
+         var t = new B();
+
+         result = extend.extendDeep(t);
+
+         expect(result).toEqual(
+         {
+             a: 1,
+             b: { x: 1, y: 1 },
+             c: [{ x: 1 }, [2]]
+         });
+         * @param parent
+         * @param child
+         * @returns
+         */
+        ExtendUtils.extendDeep = function (parent, child, filter) {
+            if (filter === void 0) { filter = function (val, i) { return true; }; }
+            var i = null, len = 0, toStr = Object.prototype.toString, sArr = "[object Array]", sOb = "[object Object]", type = "", _child = null;
+            //数组的话，不获得Array原型上的成员。
+            if (toStr.call(parent) === sArr) {
+                _child = child || [];
+                for (i = 0, len = parent.length; i < len; i++) {
+                    if (!filter(parent[i], i)) {
+                        continue;
+                    }
+                    type = toStr.call(parent[i]);
+                    if (type === sArr || type === sOb) {
+                        _child[i] = type === sArr ? [] : {};
+                        arguments.callee(parent[i], _child[i]);
+                    }
+                    else {
+                        _child[i] = parent[i];
+                    }
+                }
+            }
+            else if (toStr.call(parent) === sOb) {
+                _child = child || {};
+                for (i in parent) {
+                    if (!filter(parent[i], i)) {
+                        continue;
+                    }
+                    type = toStr.call(parent[i]);
+                    if (type === sArr || type === sOb) {
+                        _child[i] = type === sArr ? [] : {};
+                        arguments.callee(parent[i], _child[i]);
+                    }
+                    else {
+                        _child[i] = parent[i];
+                    }
+                }
+            }
+            else {
+                _child = parent;
+            }
+            return _child;
+        };
+        /**
+         * 浅拷贝
+         */
+        ExtendUtils.extend = function (destination, source) {
+            var property = "";
+            for (property in source) {
+                destination[property] = source[property];
+            }
+            return destination;
+        };
+        ExtendUtils.copyPublicAttri = function (source) {
+            var property = null, destination = {};
+            this.extendDeep(source, destination, function (item, property) {
+                return property.slice(0, 1) !== "_"
+                    && !dyCb.JudgeUtils.isFunction(item);
+            });
+            return destination;
+        };
+        return ExtendUtils;
+    })();
+    dyCb.ExtendUtils = ExtendUtils;
+})(dyCb || (dyCb = {}));
+
+var dyCb;
+(function (dyCb) {
     var Log = (function () {
         function Log() {
         }
@@ -440,6 +719,28 @@ var dyCb;
         return Collection;
     })();
     dyCb.Collection = Collection;
+})(dyCb || (dyCb = {}));
+
+/// <reference path="../definitions.d.ts"/>
+var dyCb;
+(function (dyCb) {
+    var DomQuery = (function () {
+        function DomQuery(domStr) {
+            this._doms = null;
+            if (dyCb.JudgeUtils.isDom(arguments[0])) {
+                this._doms = [arguments[0]];
+            }
+            else {
+                this._doms = document.querySelectorAll(domStr);
+            }
+            return this;
+        }
+        DomQuery.prototype.get = function (index) {
+            return this._doms[index];
+        };
+        return DomQuery;
+    })();
+    dyCb.DomQuery = DomQuery;
 })(dyCb || (dyCb = {}));
 
 //# sourceMappingURL=dyCb.js.map

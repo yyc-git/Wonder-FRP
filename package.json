@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "devDependencies": {
     "del": "^1.2.0",
+    "fs-extra": "^0.22.1",
     "gulp": "^3.8.11",
     "gulp-concat": "^2.6.0",
     "gulp-karma": "git+https://github.com/lazd/gulp-karma.git#helper",

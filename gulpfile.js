@@ -11,7 +11,7 @@ var tsFilePaths = [
     'src/*.ts',
     'src/**/*.ts'
 ];
-var distPath = "dist";
+var distPath = path.join(process.cwd(), "dist");
 
 gulp.task('clean', function() {
     return del.sync([distPath], {
@@ -48,12 +48,39 @@ gulp.task('compileTs', function() {
 //var gulp = require("gulp");
 //var gulpSync = require("gulp-sync")(gulp);
 //var path = require("path");
-var fs = require("fs");
+var fs = require("fs-extra");
 
-gulp.task("combineInnerLib", function(done){
-    var mainFilePath = path.join(process.cwd(), "dist/dyRt.js"),
-        definitionDTsPath = path.join(process.cwd(), "src/definitions.d.ts");
+//gulp.task("combineInnerLib", function(done){
+//
+//    done();
+//});
 
+
+gulp.task("buildMultiDistFiles", function(done){
+    buildCoreFile();
+    buildAllFile();
+    removeOriginFile();
+
+    done();
+});
+
+function buildCoreFile(){
+    console.log(path.join(distPath, "dyRt.d.ts"),path.join(distPath, "dyRt.core.d.ts"));
+    fs.copySync(path.join(distPath, "dyRt.d.ts"),path.join(distPath, "dyRt.core.d.ts"));
+    fs.copySync(path.join(distPath, "dyRt.js"),path.join(distPath, "dyRt.core.js"));
+}
+
+function buildAllFile(){
+    fs.copySync(path.join(distPath, "dyRt.d.ts"),path.join(distPath, "dyRt.all.d.ts"));
+    fs.copySync(path.join(distPath, "dyRt.js"),path.join(distPath, "dyRt.all.js"));
+
+    combineInnerLib(
+        path.join(distPath, "dyRt.all.js"),
+        path.join(process.cwd(), "src/definitions.d.ts")
+    );
+}
+
+function combineInnerLib(mainFilePath, definitionDTsPath){
     getInnerLibDTsPathArr(definitionDTsPath).forEach(function(innerLibDtsPath){
         fs.writeFileSync(
             mainFilePath,
@@ -62,9 +89,7 @@ gulp.task("combineInnerLib", function(done){
             + fs.readFileSync(mainFilePath, "utf8")
         );
     });
-
-    done();
-});
+}
 
 function getInnerLibDTsPathArr(definitionDTsPath){
     var regex = /"[^"]+\.d\.ts"/g,
@@ -87,7 +112,17 @@ function parseInnerLibDTsPath(pathInDefinitionFile){
     return path.join(process.cwd(), pathInDefinitionFile.slice(3));
 }
 
-gulp.task("build", gulpSync.sync(["clean", "compileTs", "combineInnerLib"]));
+
+
+function removeOriginFile(){
+    fs.removeSync(path.join(distPath, "dyRt.d.ts"));
+    fs.removeSync(path.join(distPath, "dyRt.js"));
+    fs.removeSync(path.join(distPath, "dyRt.js.map"));
+}
+
+
+
+gulp.task("build", gulpSync.sync(["clean", "compileTs", "buildMultiDistFiles"]));
 
 
 
