@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title></title>
-    <script src="dist/dyRt.js"></script>
+    <script src="dist/dyRt.all.js"></script>
 </head>
 <body>
 <script>
@@ -90,18 +90,18 @@
 
 
 //
-//var sources = dyRt.fromArray([1, 2])
-//        .map(function(value){
-//            if(value === 2){
-//                return dyRt.interval(100);
-//            }
-//            else{
-//                return dyRt.interval(60);
-//            }
-//        });
-//    sources.mergeAll().subscribe(function(x){
-//        console.log(x);
-//    });
+var sources = dyRt.fromArray([1, 2])
+        .map(function(value){
+            if(value === 2){
+                return dyRt.interval(100);
+            }
+            else{
+                return dyRt.interval(60);
+            }
+        });
+    sources.mergeAll().subscribe(function(x){
+        console.log(x);
+    });
 
 
 

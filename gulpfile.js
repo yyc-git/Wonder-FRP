@@ -21,7 +21,6 @@ gulp.task('clean', function() {
 
 gulp.task('compileTs', function() {
     var tsResult = gulp.src(tsFilePaths)
-        .pipe(gulpSourcemaps.init())
         .pipe(gulpTs({
             declarationFiles: true,
             target: 'ES5',
@@ -37,12 +36,28 @@ gulp.task('compileTs', function() {
             .pipe(gulp.dest(distPath)),
         tsResult.js
             .pipe(gulpConcat('dyRt.js'))
-            .pipe(gulpSourcemaps.write('./'))
             .pipe(gulp.dest(distPath))
     ])
 });
 
 
+gulp.task('compileTsDebug', function() {
+    var tsResult = gulp.src(tsFilePaths)
+        .pipe(gulpSourcemaps.init())
+        .pipe(gulpTs({
+            declarationFiles: true,
+            target: 'ES5',
+            sortOutput:true,
+            //out: 'dyR.js'
+            typescript: require('typescript')
+        }));
+
+
+    return tsResult.js
+        .pipe(gulpConcat('dyRt.debug.js'))
+        .pipe(gulpSourcemaps.write())
+        .pipe(gulp.dest(distPath));
+});
 
 
 //var gulp = require("gulp");
@@ -59,6 +74,7 @@ var fs = require("fs-extra");
 gulp.task("buildMultiDistFiles", function(done){
     buildCoreFile();
     buildAllFile();
+    createInnerLibJs();
     removeOriginFile();
 
     done();
@@ -67,16 +83,24 @@ gulp.task("buildMultiDistFiles", function(done){
 function buildCoreFile(){
     fs.copySync(path.join(distPath, "dyRt.d.ts"),path.join(distPath, "dyRt.core.d.ts"));
     fs.copySync(path.join(distPath, "dyRt.js"),path.join(distPath, "dyRt.core.js"));
-    fs.copySync(path.join(distPath, "dyRt.js.map"),path.join(distPath, "dyRt.core.js.map"));
 }
 
 function buildAllFile(){
     fs.copySync(path.join(distPath, "dyRt.d.ts"),path.join(distPath, "dyRt.all.d.ts"));
     fs.copySync(path.join(distPath, "dyRt.js"),path.join(distPath, "dyRt.all.js"));
-    fs.copySync(path.join(distPath, "dyRt.js.map"),path.join(distPath, "dyRt.all.js.map"));
 
     combineInnerLib(
         path.join(distPath, "dyRt.all.js"),
+        path.join(process.cwd(), "src/definitions.d.ts")
+    );
+}
+
+
+function createInnerLibJs(){
+    fs.createFileSync( path.join(distPath, "dyRt.innerLib.js") );
+
+    combineInnerLib(
+        path.join(distPath, "dyRt.innerLib.js"),
         path.join(process.cwd(), "src/definitions.d.ts")
     );
 }
@@ -106,7 +130,8 @@ function getInnerLibDTsPathArr(definitionDTsPath){
         );
     }
 
-    return resultArr;
+    //to make finial file is build based on definitions.d.ts's sequence
+    return resultArr.reverse();
 }
 
 function parseInnerLibDTsPath(pathInDefinitionFile){
@@ -118,12 +143,12 @@ function parseInnerLibDTsPath(pathInDefinitionFile){
 function removeOriginFile(){
     fs.removeSync(path.join(distPath, "dyRt.d.ts"));
     fs.removeSync(path.join(distPath, "dyRt.js"));
-    fs.removeSync(path.join(distPath, "dyRt.js.map"));
 }
 
 
 
-gulp.task("build", gulpSync.sync(["clean", "compileTs", "buildMultiDistFiles"]));
+//todo removeReference
+gulp.task("build", gulpSync.sync(["clean", "compileTs",  "compileTsDebug", "buildMultiDistFiles"]));
 
 
 

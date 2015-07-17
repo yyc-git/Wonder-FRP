@@ -20,16 +20,17 @@ module.exports = function(config) {
         //'reference/RxJS/dist/rx.all.js',
         'reference/rsvp.js/dist/rsvp.js',
 
-        'dist/dyRt.all.js',
+        'dist/dyRt.innerLib.js',
+        'dist/dyRt.debug.js',
 
         'test/helper/jasmine/**',
         'test/helper/sinonJs/*.js',
 
-        'test/unit/**',
+        'test/unit/**'
 
-        {pattern: 'dist/dyRt.all.d.ts', watched: false, included: false, served: true},
-        {pattern: 'dist/dyRt.all.js.map', watched: false, included: false, served: true},
-        {pattern: 'src/**', watched: false, included: false, served: true}
+        //{pattern: 'dist/dyRt.all.d.ts', watched: false, included: false, served: true},
+        //{pattern: 'dist/dyRt.all.js.map', watched: false, included: false, served: true}
+        //{pattern: 'src/**', watched: false, included: false, served: true}
     ],
 
 
