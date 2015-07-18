@@ -1224,10 +1224,10 @@ var dyRt;
             return dyRt.MockPromise.create(this, [TestScheduler.error(time, error)]);
         };
         TestScheduler.prototype._getMinAndMaxTime = function () {
-            var timeArr = this._timerMap.getKeys().concat(this._streamMap.getKeys())
+            var timeArr = this._timerMap.getKeys().addChilds(this._streamMap.getKeys())
                 .map(function (key) {
                 return Number(key);
-            });
+            }).toArray();
             return [Math.min.apply(Math, timeArr), Math.max.apply(Math, timeArr)];
         };
         TestScheduler.prototype._exec = function (time, map) {
