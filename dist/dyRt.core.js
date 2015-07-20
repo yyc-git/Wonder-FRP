@@ -796,6 +796,44 @@ var __extends = this.__extends || function (d, b) {
 /// <reference path="../definitions.d.ts"/>
 var dyRt;
 (function (dyRt) {
+    var FromEventPatternStream = (function (_super) {
+        __extends(FromEventPatternStream, _super);
+        function FromEventPatternStream(addHandler, removeHandler) {
+            _super.call(this, null);
+            this._addHandler = null;
+            this._removeHandler = null;
+            this._addHandler = addHandler;
+            this._removeHandler = removeHandler;
+            //this.scheduler = scheduler;
+        }
+        FromEventPatternStream.create = function (addHandler, removeHandler) {
+            var obj = new this(addHandler, removeHandler);
+            return obj;
+        };
+        FromEventPatternStream.prototype.subscribeCore = function (observer) {
+            var self = this;
+            function innerHandler(event) {
+                observer.next(event);
+            }
+            this._addHandler(innerHandler);
+            this.addDisposeHandler(function () {
+                self._removeHandler(innerHandler);
+            });
+        };
+        return FromEventPatternStream;
+    })(dyRt.BaseStream);
+    dyRt.FromEventPatternStream = FromEventPatternStream;
+})(dyRt || (dyRt = {}));
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="../definitions.d.ts"/>
+var dyRt;
+(function (dyRt) {
     var AnonymousStream = (function (_super) {
         __extends(AnonymousStream, _super);
         function AnonymousStream(subscribeFunc) {
@@ -908,7 +946,10 @@ var dyRt;
     };
     dyRt.fromPromise = function (promise, scheduler) {
         if (scheduler === void 0) { scheduler = dyRt.Scheduler.create(); }
-        return new dyRt.FromPromiseStream(promise, scheduler);
+        return dyRt.FromPromiseStream.create(promise, scheduler);
+    };
+    dyRt.fromEventPattern = function (addHandler, removeHandler) {
+        return dyRt.FromEventPatternStream.create(addHandler, removeHandler);
     };
     dyRt.interval = function (interval, scheduler) {
         if (scheduler === void 0) { scheduler = dyRt.Scheduler.create(); }

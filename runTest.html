@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <title></title>
     <script src="dist/dyRt.all.js"></script>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
 </head>
 <body>
+<div style="width:100px;height:100px;border:1px solid red;" id="a">
+    <div style="width:50px;height:50px;border:1px solid red;" id="b"></div>
+</div>
 <script>
 //    var source = dyRt.interval(500);
 ////    var source = dyRt.fromArray([1,2,3,4,5]);
@@ -90,18 +94,19 @@
 
 
 //
-var sources = dyRt.fromArray([1, 2])
-        .map(function(value){
-            if(value === 2){
-                return dyRt.interval(100);
-            }
-            else{
-                return dyRt.interval(60);
-            }
-        });
-    sources.mergeAll().subscribe(function(x){
-        console.log(x);
-    });
+//var sources = dyRt.fromArray([1, 2])
+//        .map(function(value){
+//            if(value === 2){
+//                return dyRt.interval(100);
+//            }
+//            else{
+//                return dyRt.interval(60);
+//            }
+//        });
+//    sources.mergeAll().subscribe(function(x){
+//        console.log(x);
+//    });
+
 
 
 
@@ -137,6 +142,21 @@ var sources = dyRt.fromArray([1, 2])
 //    console.log("b = ", b);
 //});
 //subject.start();
+
+
+
+
+
+    $("#a").on("click", function(e){
+        console.log("a");
+    })
+
+$("#b").on("click", function(e){
+    console.log("b");
+});
+$("#b").on("click", function(e){
+    console.log("222222222");
+});
 
 </script>
 </body>

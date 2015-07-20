@@ -227,6 +227,17 @@ declare module dyRt {
 
 /// <reference path="../definitions.d.ts" />
 declare module dyRt {
+    class FromEventPatternStream extends BaseStream {
+        static create(addHandler: Function, removeHandler: Function): FromEventPatternStream;
+        private _addHandler;
+        private _removeHandler;
+        constructor(addHandler: Function, removeHandler: Function);
+        subscribeCore(observer: IObserver): void;
+    }
+}
+
+/// <reference path="../definitions.d.ts" />
+declare module dyRt {
     class AnonymousStream extends Stream {
         static create(subscribeFunc: Function): AnonymousStream;
         constructor(subscribeFunc: Function);
@@ -261,6 +272,7 @@ declare module dyRt {
     var createStream: (subscribeFunc: any) => AnonymousStream;
     var fromArray: (array: [any], scheduler?: Scheduler) => FromArrayStream;
     var fromPromise: (promise: any, scheduler?: Scheduler) => FromPromiseStream;
+    var fromEventPattern: (addHandler: Function, removeHandler: Function) => FromEventPatternStream;
     var interval: (interval: any, scheduler?: Scheduler) => IntervalStream;
 }
 

@@ -1,8 +1,9 @@
 var dyCb;
 (function (dyCb) {
     dyCb.$BREAK = {
-        CollectionBreak: true
+        break: true
     };
+    dyCb.$REMOVE = void 0;
 })(dyCb || (dyCb = {}));
 
 /// <reference path="definitions.d.ts"/>
@@ -113,6 +114,17 @@ var dyCb;
                 result[key] = val;
             });
             return Hash.create(result);
+        };
+        Hash.prototype.map = function (func) {
+            var resultMap = {};
+            this.forEach(function (val, key) {
+                var result = func(val, key);
+                if (result !== dyCb.$REMOVE) {
+                    dyCb.Log.error(!dyCb.JudgeUtils.isArray(result) || result.length !== 2, dyCb.Log.info.FUNC_MUST_BE("iterator", "[key, value]"));
+                    resultMap[result[0]] = result[1];
+                }
+            });
+            return Hash.create(resultMap);
         };
         return Hash;
     })();
@@ -529,35 +541,53 @@ var dyCb;
                 });
                 return result.slice(0, -1);
             },
+            assertion: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                if (arguments.length === 2) {
+                    return this.helperFunc(arguments[0], arguments[1]);
+                }
+                else if (arguments.length === 3) {
+                    return this.helperFunc(arguments[1], arguments[0], arguments[2]);
+                }
+                else {
+                    throw new Error("arguments.length must <= 3");
+                }
+            },
             FUNC_INVALID: function (value) {
-                return this.helperFunc("invalid", value);
+                return this.assertion("invalid", value);
             },
             FUNC_MUST_BE: function () {
                 var args = [];
                 for (var _i = 0; _i < arguments.length; _i++) {
                     args[_i - 0] = arguments[_i];
                 }
-                if (arguments.length === 1) {
-                    return this.helperFunc("must be", arguments[0]);
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("must be");
+                return this.assertion.apply(this, arr);
+            },
+            FUNC_MUST_NOT_BE: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
                 }
-                else if (arguments.length === 2) {
-                    return this.helperFunc(arguments[0], "must be", arguments[1]);
-                }
-                else {
-                    throw new Error("arguments.length must <= 2");
-                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("must not be");
+                return this.assertion.apply(this, arr);
             },
             FUNC_NOT_SUPPORT: function (value) {
-                return this.helperFunc("not support", value);
+                return this.assertion("not support", value);
             },
             FUNC_MUST_DEFINE: function (value) {
-                return this.helperFunc("must define", value);
+                return this.assertion("must define", value);
             },
             FUNC_UNKNOW: function (value) {
-                return this.helperFunc("unknow", value);
+                return this.assertion("unknow", value);
             },
             FUNC_UNEXPECT: function (value) {
-                return this.helperFunc("unexpected", value);
+                return this.assertion("unexpected", value);
             }
         };
         return Log;
@@ -621,7 +651,6 @@ var dyCb;
             return this;
         };
         Collection.prototype.addChilds = function (arg) {
-            var i = 0, len = 0;
             if (dyCb.JudgeUtils.isArray(arg)) {
                 var childs = arg;
                 this._childs = this._childs.concat(childs);
@@ -685,8 +714,7 @@ var dyCb;
             return this;
         };
         Collection.prototype.map = function (func) {
-            this._map(this._childs, func);
-            return this;
+            return this._map(this._childs, func);
         };
         Collection.prototype.toArray = function () {
             return this._childs;
@@ -730,14 +758,12 @@ var dyCb;
             var resultArr = [];
             this._forEach(arr, function (e, index) {
                 var result = func(e, index);
-                if (result !== void 0) {
+                if (result !== dyCb.$REMOVE) {
                     resultArr.push(result);
                 }
                 //e && e[handlerName] && e[handlerName].apply(context || e, valueArr);
             });
-            if (resultArr.length > 0) {
-                this._childs = resultArr;
-            }
+            return Collection.create(resultArr);
         };
         Collection.prototype._removeChild = function (arr, func) {
             var self = this, index = null;
@@ -755,239 +781,6 @@ var dyCb;
     })();
     dyCb.Collection = Collection;
 })(dyCb || (dyCb = {}));
-///// <reference path="definitions.d.ts"/>
-//module dyCb {
-//    export class Collection<T> {
-//        public static create(childs = []){
-//            var obj = new this(childs);
-//
-//            return obj;
-//        }
-//
-//        constructor(childs:Array<T> = <any>[]){
-//            this._childs = childs;
-//        }
-//
-//        private _childs:Array<T> = null;
-//
-//        public getCount():number {
-//            return this._childs.length;
-//        }
-//
-//        public hasChild(arg):boolean {
-//            if (JudgeUtils.isFunction(arguments[0])) {
-//                let func = <Function>arguments[0];
-//
-//                return this._contain(this._childs, (c, i)  => {
-//                    return func(c, i);
-//                });
-//            }
-//
-//            let child = <any>arguments[0];
-//
-//            return this._contain(this._childs, (c, i) => {
-//                if (c === child
-//                    || (c.uid && child.uid && c.uid === child.uid)) {
-//                    return true;
-//                }
-//                else {
-//                    return false;
-//                }
-//            });
-//        }
-//
-//        public getChilds () {
-//            return this._childs;
-//        }
-//
-//        public getChild(index:number) {
-//            return this._childs[index];
-//        }
-//
-//        public addChild(child) {
-//            this._childs.push(child);
-//
-//            return this;
-//        }
-//
-//        public addChilds(arg:any[]|any) {
-//            var i = 0,
-//                len = 0;
-//
-//            if (!JudgeUtils.isArray(arg)) {
-//                let child = <any>arg;
-//
-//                this.addChild(child);
-//            }
-//            else {
-//                let childs = <any[]>arg;
-//
-//                this._childs = this._childs.concat(childs);
-//            }
-//
-//            return this;
-//        }
-//
-//        public removeAllChilds() {
-//            this._childs = [];
-//
-//            return this;
-//        }
-//
-//        public forEach(func:Function, context?:any) {
-//            this._forEach(this._childs, func, context);
-//
-//            return this;
-//        }
-//
-//        public filter(func) {
-//            return this._filter(this._childs, func, this._childs);
-//        }
-//
-//        //public removeChildAt (index) {
-//        //    Log.error(index < 0, "序号必须大于等于0");
-//        //
-//        //    this._childs.splice(index, 1);
-//        //}
-//        //
-//        //public copy () {
-//        //    return ExtendUtils.extendDeep(this._childs);
-//        //}
-//        //
-//        //public reverse () {
-//        //    this._childs.reverse();
-//        //}
-//
-//        public removeChild(arg:any) {
-//            if (JudgeUtils.isFunction(arg)) {
-//                let func = <Function>arg;
-//
-//                this._removeChild(this._childs, func);
-//            }
-//            else if (arg.uid) {
-//                this._removeChild(this._childs, (e) => {
-//                    if (!e.uid) {
-//                        return false;
-//                    }
-//                    return e.uid === arg.uid;
-//                });
-//            }
-//            else {
-//                this._removeChild(this._childs,  (e) => {
-//                    return e === arg;
-//                });
-//            }
-//
-//            return this;
-//        }
-//
-//        public sort(func:(a:T, b:T)=>number){
-//            this._childs.sort(func);
-//
-//            return this;
-//        }
-//
-//        public map(func:Function){
-//            this._map(this._childs, func);
-//
-//            return this;
-//        }
-//
-//        private _indexOf(arr:any[], arg:any) {
-//            var result = -1;
-//
-//            if (JudgeUtils.isFunction(arg)) {
-//                let func = <Function>arg;
-//
-//                this._forEach(arr, (value, index) => {
-//                    if (!!func.call(null, value, index)) {
-//                        result = index;
-//                        return $BREAK;   //如果包含，则置返回值为true,跳出循环
-//                    }
-//                });
-//            }
-//            else {
-//                let val = <any>arg;
-//
-//                this._forEach(arr, (value, index) => {
-//                    if (val === value
-//                        || (value.contain && value.contain(val))
-//                        || (value.indexOf && value.indexOf(val) > -1)) {
-//                        result = index;
-//                        return $BREAK;   //如果包含，则置返回值为true,跳出循环
-//                    }
-//                });
-//            }
-//
-//            return result;
-//        }
-//
-//        private _contain(arr:any[], arg:any) {
-//            return this._indexOf(arr, arg) > -1;
-//        }
-//
-//        private _forEach(arr:any[], func:Function, context?:any) {
-//            var scope = context || window,
-//                i = 0,
-//                len = arr.length;
-//
-//
-//            for(i = 0; i < len; i++){
-//                if (func.call(scope, arr[i], i) === $BREAK) {
-//                    break;
-//                }
-//            }
-//        }
-//
-//        private _map(arr:any[], func:Function) {
-//            var resultArr = [];
-//
-//            this._forEach(arr, function (e, index) {
-//                var result = func(e, index);
-//
-//                if(result !== void 0){
-//                    resultArr.push(result);
-//                }
-//                //e && e[handlerName] && e[handlerName].apply(context || e, valueArr);
-//            });
-//
-//            if(resultArr.length > 0){
-//                this._childs = resultArr;
-//            }
-//        }
-//
-//        private _removeChild(arr:any[], func:Function) {
-//            var self = this,
-//                index = null;
-//
-//            index = this._indexOf(arr, (e, index) => {
-//                return !!func.call(self, e);
-//            });
-//
-//            //if (index !== null && index !== -1) {
-//            if (index !== -1) {
-//                arr.splice(index, 1);
-//                //return true;
-//            }
-//            //return false;
-//            return arr;
-//        }
-//
-//        private _filter = function (arr, func, context) {
-//            var scope = context || window,
-//                result = [];
-//
-//            this._forEach(arr, (value, index) => {
-//                if (!func.call(scope, value, index)) {
-//                    return;
-//                }
-//                result.push(value);
-//            });
-//
-//            return Collection.create(result);
-//        };
-//    }
-//}
 
 /// <reference path="../definitions.d.ts"/>
 var dyCb;
@@ -1813,6 +1606,44 @@ var __extends = this.__extends || function (d, b) {
 /// <reference path="../definitions.d.ts"/>
 var dyRt;
 (function (dyRt) {
+    var FromEventPatternStream = (function (_super) {
+        __extends(FromEventPatternStream, _super);
+        function FromEventPatternStream(addHandler, removeHandler) {
+            _super.call(this, null);
+            this._addHandler = null;
+            this._removeHandler = null;
+            this._addHandler = addHandler;
+            this._removeHandler = removeHandler;
+            //this.scheduler = scheduler;
+        }
+        FromEventPatternStream.create = function (addHandler, removeHandler) {
+            var obj = new this(addHandler, removeHandler);
+            return obj;
+        };
+        FromEventPatternStream.prototype.subscribeCore = function (observer) {
+            var self = this;
+            function innerHandler(event) {
+                observer.next(event);
+            }
+            this._addHandler(innerHandler);
+            this.addDisposeHandler(function () {
+                self._removeHandler(innerHandler);
+            });
+        };
+        return FromEventPatternStream;
+    })(dyRt.BaseStream);
+    dyRt.FromEventPatternStream = FromEventPatternStream;
+})(dyRt || (dyRt = {}));
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="../definitions.d.ts"/>
+var dyRt;
+(function (dyRt) {
     var AnonymousStream = (function (_super) {
         __extends(AnonymousStream, _super);
         function AnonymousStream(subscribeFunc) {
@@ -1925,7 +1756,10 @@ var dyRt;
     };
     dyRt.fromPromise = function (promise, scheduler) {
         if (scheduler === void 0) { scheduler = dyRt.Scheduler.create(); }
-        return new dyRt.FromPromiseStream(promise, scheduler);
+        return dyRt.FromPromiseStream.create(promise, scheduler);
+    };
+    dyRt.fromEventPattern = function (addHandler, removeHandler) {
+        return dyRt.FromEventPatternStream.create(addHandler, removeHandler);
     };
     dyRt.interval = function (interval, scheduler) {
         if (scheduler === void 0) { scheduler = dyRt.Scheduler.create(); }

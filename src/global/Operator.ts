@@ -9,7 +9,11 @@ module dyRt{
     };
 
     export var fromPromise = function(promise:any, scheduler = Scheduler.create()){
-        return new FromPromiseStream(promise, scheduler);
+        return FromPromiseStream.create(promise, scheduler);
+    };
+
+    export var fromEventPattern = function(addHandler:Function, removeHandler:Function){
+        return FromEventPatternStream.create(addHandler, removeHandler);
     };
 
     export var interval = function (interval, scheduler = Scheduler.create()) {

@@ -23,6 +23,8 @@ module.exports = function(config) {
         'dist/dyRt.innerLib.js',
         'dist/dyRt.debug.js',
 
+        'test/unit/lib/Engine.debug.js',
+
         'test/helper/jasmine/**',
         'test/helper/sinonJs/*.js',
 

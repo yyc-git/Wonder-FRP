@@ -27,6 +27,7 @@
 /// <reference path="stream/MapStream"/>
 /// <reference path="stream/FromArrayStream"/>
 /// <reference path="stream/FromPromiseStream"/>
+/// <reference path="stream/FromEventPatternStream"/>
 /// <reference path="stream/AnonymousStream"/>
 /// <reference path="stream/IntervalStream"/>
 /// <reference path="stream/MergeAllStream"/>
