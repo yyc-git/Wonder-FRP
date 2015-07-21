@@ -1,15 +1,15 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class FromArrayStream extends BaseStream{
-        public static create(array:[any], scheduler:Scheduler) {
+        public static create(array:Array<any>, scheduler:Scheduler) {
             var obj = new this(array, scheduler);
 
             return obj;
         }
 
-        private _array:[any] = null;
+        private _array:Array<any> = null;
 
-        constructor(array:[any], scheduler:Scheduler){
+        constructor(array:Array<any>, scheduler:Scheduler){
             super(null);
 
             this._array = array;

@@ -208,9 +208,9 @@ declare module dyRt {
 /// <reference path="../definitions.d.ts" />
 declare module dyRt {
     class FromArrayStream extends BaseStream {
-        static create(array: [any], scheduler: Scheduler): FromArrayStream;
+        static create(array: Array<any>, scheduler: Scheduler): FromArrayStream;
         private _array;
-        constructor(array: [any], scheduler: Scheduler);
+        constructor(array: Array<any>, scheduler: Scheduler);
         subscribeCore(observer: IObserver): void;
     }
 }
@@ -270,7 +270,7 @@ declare module dyRt {
 /// <reference path="../definitions.d.ts" />
 declare module dyRt {
     var createStream: (subscribeFunc: any) => AnonymousStream;
-    var fromArray: (array: [any], scheduler?: Scheduler) => FromArrayStream;
+    var fromArray: (array: any[], scheduler?: Scheduler) => FromArrayStream;
     var fromPromise: (promise: any, scheduler?: Scheduler) => FromPromiseStream;
     var fromEventPattern: (addHandler: Function, removeHandler: Function) => FromEventPatternStream;
     var interval: (interval: any, scheduler?: Scheduler) => IntervalStream;

@@ -4,7 +4,7 @@ module dyRt{
         return AnonymousStream.create(subscribeFunc);
     };
 
-    export var fromArray = function(array:[any], scheduler = Scheduler.create()){
+    export var fromArray = function(array:Array<any>, scheduler = Scheduler.create()){
         return FromArrayStream.create(array, scheduler);
     };
 

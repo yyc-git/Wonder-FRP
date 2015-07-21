@@ -1614,7 +1614,6 @@ var dyRt;
             this._removeHandler = null;
             this._addHandler = addHandler;
             this._removeHandler = removeHandler;
-            //this.scheduler = scheduler;
         }
         FromEventPatternStream.create = function (addHandler, removeHandler) {
             var obj = new this(addHandler, removeHandler);
