@@ -205,7 +205,7 @@ module dyRt {
         }
 
         private _getMinAndMaxTime(){
-            var timeArr = this._timerMap.getKeys().addChilds(this._streamMap.getKeys())
+            var timeArr = this._timerMap.getKeys().addChildren(this._streamMap.getKeys())
                 .map(function(key){
                     return Number(key);
                 }).toArray();

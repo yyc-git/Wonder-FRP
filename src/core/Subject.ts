@@ -62,7 +62,7 @@ module dyRt{
                 ob.dispose();
             });
 
-            this._observers.removeAllChilds();
+            this._observers.removeAllChildren();
         }
     }
 }

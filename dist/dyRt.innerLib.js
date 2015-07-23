@@ -10,71 +10,72 @@ var dyCb;
 var dyCb;
 (function (dyCb) {
     var Hash = (function () {
-        function Hash(childs) {
-            if (childs === void 0) { childs = {}; }
-            this._childs = null;
-            this._childs = childs;
+        function Hash(children) {
+            if (children === void 0) { children = {}; }
+            this._children = null;
+            this._children = children;
         }
-        Hash.create = function (childs) {
-            if (childs === void 0) { childs = {}; }
-            var obj = new this(childs);
+        Hash.create = function (children) {
+            if (children === void 0) { children = {}; }
+            var obj = new this(children);
             return obj;
         };
-        Hash.prototype.getChilds = function () {
-            return this._childs;
+        Hash.prototype.getChildren = function () {
+            return this._children;
         };
         Hash.prototype.getCount = function () {
-            var result = 0, childs = this._childs, key = null;
-            for (key in childs) {
-                if (childs.hasOwnProperty(key)) {
+            var result = 0, children = this._children, key = null;
+            for (key in children) {
+                if (children.hasOwnProperty(key)) {
                     result++;
                 }
             }
             return result;
         };
         Hash.prototype.getKeys = function () {
-            var result = dyCb.Collection.create(), childs = this._childs, key = null;
-            for (key in childs) {
-                if (childs.hasOwnProperty(key)) {
+            var result = dyCb.Collection.create(), children = this._children, key = null;
+            for (key in children) {
+                if (children.hasOwnProperty(key)) {
                     result.addChild(key);
                 }
             }
             return result;
         };
         Hash.prototype.getChild = function (key) {
-            return this._childs[key];
+            return this._children[key];
         };
         Hash.prototype.addChild = function (key, value) {
-            this._childs[key] = value;
+            this._children[key] = value;
             return this;
         };
         Hash.prototype.appendChild = function (key, value) {
-            //if (JudgeUtils.isArray(this._childs[key])) {
-            //    this._childs[key].push(value);
+            //if (JudgeUtils.isArray(this._children[key])) {
+            //    this._children[key].push(value);
             //}
             //else {
-            //    this._childs[key] = [value];
+            //    this._children[key] = [value];
             //}
-            if (this._childs[key] instanceof dyCb.Collection) {
-                this._childs[key].addChild(value);
+            if (this._children[key] instanceof dyCb.Collection) {
+                this._children[key].addChild(value);
             }
             else {
-                this._childs[key] = dyCb.Collection.create().addChild(value);
+                this._children[key] = dyCb.Collection.create().addChild(value);
             }
             return this;
         };
         Hash.prototype.removeChild = function (arg) {
             if (dyCb.JudgeUtils.isString(arg)) {
                 var key = arg;
-                this._childs[key] = undefined;
+                this._children[key] = undefined;
+                delete this._children[key];
             }
             else if (dyCb.JudgeUtils.isFunction(arg)) {
                 var func = arg, self_1 = this;
-                //return this._removeChild(this._childs, arg);
+                //return this._removeChild(this._children, arg);
                 this.forEach(function (val, key) {
                     if (func(val, key)) {
-                        self_1._childs[key] = undefined;
-                        delete self_1._childs[key];
+                        self_1._children[key] = undefined;
+                        delete self_1._children[key];
                     }
                 });
             }
@@ -92,13 +93,13 @@ var dyCb;
                 return result;
             }
             var key = arguments[0];
-            return !!this._childs[key];
+            return !!this._children[key];
         };
         Hash.prototype.forEach = function (func, context) {
-            var i = null, childs = this._childs;
-            for (i in childs) {
-                if (childs.hasOwnProperty(i)) {
-                    if (func.call(context, childs[i], i) === dyCb.$BREAK) {
+            var i = null, children = this._children;
+            for (i in children) {
+                if (children.hasOwnProperty(i)) {
+                    if (func.call(context, children[i], i) === dyCb.$BREAK) {
                         break;
                     }
                 }
@@ -106,7 +107,7 @@ var dyCb;
             return this;
         };
         Hash.prototype.filter = function (func) {
-            var result = {}, scope = this._childs;
+            var result = {}, scope = this._children;
             this.forEach(function (val, key) {
                 if (!func.call(scope, val, key)) {
                     return;
@@ -577,14 +578,23 @@ var dyCb;
                 arr.unshift("must not be");
                 return this.assertion.apply(this, arr);
             },
+            FUNC_SUPPORT: function (value) {
+                return this.assertion("support", value);
+            },
             FUNC_NOT_SUPPORT: function (value) {
                 return this.assertion("not support", value);
             },
             FUNC_MUST_DEFINE: function (value) {
                 return this.assertion("must define", value);
             },
+            FUNC_MUST_NOT_DEFINE: function (value) {
+                return this.assertion("must not define", value);
+            },
             FUNC_UNKNOW: function (value) {
                 return this.assertion("unknow", value);
+            },
+            FUNC_EXPECT: function (value) {
+                return this.assertion("expect", value);
             },
             FUNC_UNEXPECT: function (value) {
                 return this.assertion("unexpected", value);
@@ -599,9 +609,9 @@ var dyCb;
 var dyCb;
 (function (dyCb) {
     var Collection = (function () {
-        function Collection(childs) {
-            if (childs === void 0) { childs = []; }
-            this._childs = null;
+        function Collection(children) {
+            if (children === void 0) { children = []; }
+            this._children = null;
             this._filter = function (arr, func, context) {
                 var scope = context || window, result = [];
                 this._forEach(arr, function (value, index) {
@@ -612,25 +622,25 @@ var dyCb;
                 });
                 return Collection.create(result);
             };
-            this._childs = childs;
+            this._children = children;
         }
-        Collection.create = function (childs) {
-            if (childs === void 0) { childs = []; }
-            var obj = new this(childs);
+        Collection.create = function (children) {
+            if (children === void 0) { children = []; }
+            var obj = new this(children);
             return obj;
         };
         Collection.prototype.getCount = function () {
-            return this._childs.length;
+            return this._children.length;
         };
         Collection.prototype.hasChild = function (arg) {
             if (dyCb.JudgeUtils.isFunction(arguments[0])) {
                 var func = arguments[0];
-                return this._contain(this._childs, function (c, i) {
+                return this._contain(this._children, function (c, i) {
                     return func(c, i);
                 });
             }
             var child = arguments[0];
-            return this._contain(this._childs, function (c, i) {
+            return this._contain(this._children, function (c, i) {
                 if (c === child
                     || (c.uid && child.uid && c.uid === child.uid)) {
                     return true;
@@ -640,24 +650,24 @@ var dyCb;
                 }
             });
         };
-        Collection.prototype.getChilds = function () {
-            return this._childs;
+        Collection.prototype.getChildren = function () {
+            return this._children;
         };
         Collection.prototype.getChild = function (index) {
-            return this._childs[index];
+            return this._children[index];
         };
         Collection.prototype.addChild = function (child) {
-            this._childs.push(child);
+            this._children.push(child);
             return this;
         };
-        Collection.prototype.addChilds = function (arg) {
+        Collection.prototype.addChildren = function (arg) {
             if (dyCb.JudgeUtils.isArray(arg)) {
-                var childs = arg;
-                this._childs = this._childs.concat(childs);
+                var children = arg;
+                this._children = this._children.concat(children);
             }
             else if (arg instanceof Collection) {
-                var childs = arg;
-                this._childs = this._childs.concat(childs.toArray());
+                var children = arg;
+                this._children = this._children.concat(children.toArray());
             }
             else {
                 var child = arg;
@@ -665,37 +675,37 @@ var dyCb;
             }
             return this;
         };
-        Collection.prototype.removeAllChilds = function () {
-            this._childs = [];
+        Collection.prototype.removeAllChildren = function () {
+            this._children = [];
             return this;
         };
         Collection.prototype.forEach = function (func, context) {
-            this._forEach(this._childs, func, context);
+            this._forEach(this._children, func, context);
             return this;
         };
         Collection.prototype.filter = function (func) {
-            return this._filter(this._childs, func, this._childs);
+            return this._filter(this._children, func, this._children);
         };
         //public removeChildAt (index) {
         //    Log.error(index < 0, "序号必须大于等于0");
         //
-        //    this._childs.splice(index, 1);
+        //    this._children.splice(index, 1);
         //}
         //
         //public copy () {
-        //    return ExtendUtils.extendDeep(this._childs);
+        //    return ExtendUtils.extendDeep(this._children);
         //}
         //
         //public reverse () {
-        //    this._childs.reverse();
+        //    this._children.reverse();
         //}
         Collection.prototype.removeChild = function (arg) {
             if (dyCb.JudgeUtils.isFunction(arg)) {
                 var func = arg;
-                this._removeChild(this._childs, func);
+                this._removeChild(this._children, func);
             }
             else if (arg.uid) {
-                this._removeChild(this._childs, function (e) {
+                this._removeChild(this._children, function (e) {
                     if (!e.uid) {
                         return false;
                     }
@@ -703,21 +713,21 @@ var dyCb;
                 });
             }
             else {
-                this._removeChild(this._childs, function (e) {
+                this._removeChild(this._children, function (e) {
                     return e === arg;
                 });
             }
             return this;
         };
         Collection.prototype.sort = function (func) {
-            this._childs.sort(func);
+            this._children.sort(func);
             return this;
         };
         Collection.prototype.map = function (func) {
-            return this._map(this._childs, func);
+            return this._map(this._children, func);
         };
         Collection.prototype.toArray = function () {
-            return this._childs;
+            return this._children;
         };
         Collection.prototype._indexOf = function (arr, arg) {
             var result = -1;

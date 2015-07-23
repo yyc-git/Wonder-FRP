@@ -780,7 +780,7 @@ var Engine3D;
 (function (Engine3D) {
     var ActionManager = (function () {
         function ActionManager() {
-            this._childs = dyCb.Collection.create();
+            this._children = dyCb.Collection.create();
         }
         ActionManager.create = function () {
             var obj = new this();
@@ -790,15 +790,15 @@ var Engine3D;
             if (this.hasChild(action)) {
                 return;
             }
-            this._childs.addChild(action);
+            this._children.addChild(action);
         };
         ActionManager.prototype.hasChild = function (action) {
-            return this._childs.hasChild(action);
+            return this._children.hasChild(action);
         };
         ActionManager.prototype.update = function () {
             var self = this, removeQueue = [];
             //time = null;
-            this._childs.forEach(function (child) {
+            this._children.forEach(function (child) {
                 //修复“如果遍历的动作删除了动作序列中某个动作，则在后面的遍历中会报错”的bug
                 if (!child) {
                     return;
@@ -814,7 +814,7 @@ var Engine3D;
                 child.update();
             });
             removeQueue.forEach(function (child) {
-                self._childs.removeChild(child);
+                self._children.removeChild(child);
             });
         };
         return ActionManager;
@@ -1622,7 +1622,7 @@ var Engine3D;
             Engine3D.WebGLContext.gl.clearColor(this._clearColor.r, this._clearColor.g, this._clearColor.g, this._clearAlpha);
         };
         WebGLRenderer.prototype._clearCommand = function () {
-            this._commandQueue.removeAllChilds();
+            this._commandQueue.removeAllChildren();
         };
         return WebGLRenderer;
     })();
@@ -3412,7 +3412,7 @@ var Engine3D;
             this._position = null;
             this._parent = null;
             this._bubbleParent = null;
-            this._childs = dyCb.Collection.create();
+            this._children = dyCb.Collection.create();
             this._uid = GameObject._count;
             GameObject._count += 1;
         }
@@ -3478,12 +3478,12 @@ var Engine3D;
         GameObject.prototype.onExit = function () {
         };
         GameObject.prototype.hasChild = function (child) {
-            return this._childs.hasChild(child);
+            return this._children.hasChild(child);
         };
         //public addChild(child:GameObject, sort:boolean=true):boolean {
         GameObject.prototype.addChild = function (child) {
             //need user judge it!
-            //if(this._childs.hasChild(child)) {
+            //if(this._children.hasChild(child)) {
             //    return false;
             //}
             if (child.parent) {
@@ -3494,11 +3494,11 @@ var Engine3D;
             //child.dispatchEvent(new CoreEvent('beforeadd', false, {
             //    parent: this
             //}));
-            this._childs.addChild(child);
+            this._children.addChild(child);
             //if(sort) {
             /*!
-            sort when add child/childs, not when get childs.
-            because each loop will get childs(to render), so if using the latter, each loop should sort!
+            sort when add child/children, not when get children.
+            because each loop will get children(to render), so if using the latter, each loop should sort!
              */
             this.sort();
             //}
@@ -3514,16 +3514,16 @@ var Engine3D;
             return this;
         };
         GameObject.prototype.sort = function () {
-            this._childs.sort(this._ascendZ);
+            this._children.sort(this._ascendZ);
             return this;
         };
         GameObject.prototype.forEach = function (func) {
-            this._childs.forEach(func);
+            this._children.forEach(func);
             return this;
         };
         GameObject.prototype.removeChild = function (child) {
             child.onExit();
-            this._childs.removeChild(child);
+            this._children.removeChild(child);
             //var idx = this._children.indexOf(child);
             //if(idx !== -1) {
             //    child.dispatchEvent(new CoreEvent('beforeremove', false));
@@ -3580,11 +3580,11 @@ var Engine3D;
             //    }
             //}
             //return null;
-            var result = null, i = null, childs = null, len = this._childs.getCount();
-            childs = this._childs;
+            var result = null, i = null, children = null, len = this._children.getCount();
+            children = this._children;
             if (len > 0) {
                 for (i = len - 1; i >= 0; i--) {
-                    var child = childs.getChild(i);
+                    var child = children.getChild(i);
                     result = child.getTopUnderPoint(point);
                     if (result) {
                         return result;
@@ -3736,7 +3736,7 @@ var Engine3D;
             this._program = Engine3D.Program.create(vsSource, fsSource);
         };
         //public add(meshesArr:Mesh[]) {
-        //    this._meshes.addChilds(meshesArr);
+        //    this._meshes.addChildren(meshesArr);
         //}
         Scene.prototype.run = function () {
             var self = this;
