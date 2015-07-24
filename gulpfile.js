@@ -189,22 +189,34 @@ gulp.task("singleTest", gulpSync.sync(["build"]), function (done) {
     }, done);
 });
 
-var testFilePaths = ["test/unit/*Spec.js", "test/unit/**/*Spec.js"];
+gulp.task("test", function (done) {
+    karma.start({
+        configFile: karmaConfPath
+        //singleRun:true,
+        //autoWatch:false
+    }, done);
+});
 
+
+//var testFilePaths = ["test/unit/*Spec.js", "test/unit/**/*Spec.js"];
+
+//gulp.task("watch", function(){
+//    var watcher = gulp.watch(tsFilePaths.concat(testFilePaths), ["singleTest"]);
+//    //var watcher = gulp.watch(tsFilePaths, function(){
+//    //    try{
+//    //        gulp.run("test");
+//    //    }
+//    //    catch(e){
+//    //
+//    //    }
+//    //});
+//    //
+//    //watcher.on("error", function(e){
+//    //    //console.log(e);
+//    //})
+//});
 gulp.task("watch", function(){
-    var watcher = gulp.watch(tsFilePaths.concat(testFilePaths), ["singleTest"]);
-    //var watcher = gulp.watch(tsFilePaths, function(){
-    //    try{
-    //        gulp.run("test");
-    //    }
-    //    catch(e){
-    //
-    //    }
-    //});
-    //
-    //watcher.on("error", function(e){
-    //    //console.log(e);
-    //})
+    gulp.watch(tsFilePaths, ["compileTsDebug"]);
 });
 
 //
