@@ -58,6 +58,7 @@ declare module dyRt {
         map(selector: Function): MapStream;
         flatMap(selector: Function): MergeAllStream;
         mergeAll(): MergeAllStream;
+        takeUntil(otherStream: Stream): TakeUntilStream;
         private _isSubject(subject);
         private _setSubject(subject);
     }
@@ -176,6 +177,18 @@ declare module dyRt {
 
 /// <reference path="../definitions.d.ts" />
 declare module dyRt {
+    class TakeUntilObserver extends Observer {
+        static create(prevObserver: IObserver): TakeUntilObserver;
+        private _prevObserver;
+        constructor(prevObserver: IObserver);
+        protected onNext(value: any): void;
+        protected onError(error: any): void;
+        protected onCompleted(): void;
+    }
+}
+
+/// <reference path="../definitions.d.ts" />
+declare module dyRt {
     class BaseStream extends Stream {
         subscribeCore(observer: IObserver): void;
         subscribe(arg1: Function | Observer | Subject, onError?: any, onCompleted?: any): IDisposable;
@@ -263,6 +276,17 @@ declare module dyRt {
         private _source;
         private _observer;
         constructor(source: Stream);
+        buildStream(observer: IObserver): void;
+    }
+}
+
+/// <reference path="../definitions.d.ts" />
+declare module dyRt {
+    class TakeUntilStream extends BaseStream {
+        static create(source: Stream, otherSteam: Stream): TakeUntilStream;
+        private _source;
+        private _otherStream;
+        constructor(source: Stream, otherStream: Stream);
         buildStream(observer: IObserver): void;
     }
 }

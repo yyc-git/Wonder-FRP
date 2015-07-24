@@ -21,6 +21,7 @@
 /// <reference path="observer/MapObserver"/>
 /// <reference path="observer/DoObserver"/>
 /// <reference path="observer/MergeAllObserver"/>
+/// <reference path="observer/TakeUntilObserver"/>
 
 /// <reference path="stream/BaseStream"/>
 /// <reference path="stream/DoStream"/>
@@ -31,6 +32,7 @@
 /// <reference path="stream/AnonymousStream"/>
 /// <reference path="stream/IntervalStream"/>
 /// <reference path="stream/MergeAllStream"/>
+/// <reference path="stream/TakeUntilStream"/>
 
 /// <reference path="global/Operator"/>
 

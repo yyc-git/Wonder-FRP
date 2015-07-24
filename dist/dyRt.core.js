@@ -118,6 +118,9 @@ var dyRt;
         Stream.prototype.mergeAll = function () {
             return dyRt.MergeAllStream.create(this);
         };
+        Stream.prototype.takeUntil = function (otherStream) {
+            return dyRt.TakeUntilStream.create(this, otherStream);
+        };
         Stream.prototype._isSubject = function (subject) {
             return subject instanceof dyRt.Subject;
         };
@@ -605,6 +608,38 @@ var __extends = this.__extends || function (d, b) {
 /// <reference path="../definitions.d.ts"/>
 var dyRt;
 (function (dyRt) {
+    var TakeUntilObserver = (function (_super) {
+        __extends(TakeUntilObserver, _super);
+        function TakeUntilObserver(prevObserver) {
+            _super.call(this, null, null, null);
+            this._prevObserver = null;
+            this._prevObserver = prevObserver;
+        }
+        TakeUntilObserver.create = function (prevObserver) {
+            return new this(prevObserver);
+        };
+        TakeUntilObserver.prototype.onNext = function (value) {
+            this._prevObserver.completed();
+        };
+        TakeUntilObserver.prototype.onError = function (error) {
+            this._prevObserver.error(error);
+        };
+        TakeUntilObserver.prototype.onCompleted = function () {
+        };
+        return TakeUntilObserver;
+    })(dyRt.Observer);
+    dyRt.TakeUntilObserver = TakeUntilObserver;
+})(dyRt || (dyRt = {}));
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="../definitions.d.ts"/>
+var dyRt;
+(function (dyRt) {
     var BaseStream = (function (_super) {
         __extends(BaseStream, _super);
         function BaseStream() {
@@ -931,6 +966,38 @@ var dyRt;
         return MergeAllStream;
     })(dyRt.BaseStream);
     dyRt.MergeAllStream = MergeAllStream;
+})(dyRt || (dyRt = {}));
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="../definitions.d.ts"/>
+var dyRt;
+(function (dyRt) {
+    var TakeUntilStream = (function (_super) {
+        __extends(TakeUntilStream, _super);
+        function TakeUntilStream(source, otherStream) {
+            _super.call(this, null);
+            this._source = null;
+            this._otherStream = null;
+            this._source = source;
+            this._otherStream = dyRt.JudgeUtils.isPromise(otherStream) ? dyRt.fromPromise(otherStream) : otherStream;
+            this.scheduler = this._source.scheduler;
+        }
+        TakeUntilStream.create = function (source, otherSteam) {
+            var obj = new this(source, otherSteam);
+            return obj;
+        };
+        TakeUntilStream.prototype.buildStream = function (observer) {
+            this._source.buildStream(observer);
+            this._otherStream.buildStream(dyRt.TakeUntilObserver.create(observer));
+        };
+        return TakeUntilStream;
+    })(dyRt.BaseStream);
+    dyRt.TakeUntilStream = TakeUntilStream;
 })(dyRt || (dyRt = {}));
 
 /// <reference path="../definitions.d.ts"/>

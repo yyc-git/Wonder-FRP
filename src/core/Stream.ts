@@ -56,6 +56,10 @@ module dyRt{
             return MergeAllStream.create(this);
         }
 
+        public takeUntil(otherStream:Stream){
+            return TakeUntilStream.create(this, otherStream);
+        }
+
         private _isSubject(subject){
             return subject instanceof Subject;
         }
