@@ -19,5 +19,9 @@ module dyRt{
     export var interval = function (interval, scheduler = Scheduler.create()) {
         return IntervalStream.create(interval, scheduler);
     };
+
+    export var intervalRequest = function (scheduler = Scheduler.create()) {
+        return IntervalRequestStream.create(scheduler);
+    };
 }
 

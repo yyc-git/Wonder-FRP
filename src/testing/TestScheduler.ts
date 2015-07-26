@@ -74,8 +74,8 @@ module dyRt {
         }
 
         public publishRecursive(observer:IObserver, initial:any, recursiveFunc:Function) {
-            var self = this;
-            var messages = [];
+            var self = this,
+                messages = [];
 
             this._setClock();
 
@@ -91,8 +91,8 @@ module dyRt {
 
         public publishInterval(observer:IObserver, initial:any, interval:number, action:Function):number{
             //produce 10 val for test
-            var COUNT = 10;
-            var messages = [];
+            var COUNT = 10,
+                messages = [];
 
             this._setClock();
 
@@ -104,6 +104,26 @@ module dyRt {
                 //action(initial);
 
                 initial++;
+                COUNT--;
+            }
+
+            this.setStreamMap(observer, <[Record]>messages);
+
+            return NaN;
+        }
+
+        public publishIntervalRequest(observer:IObserver, action:Function):number{
+            //produce 10 val for test
+            var COUNT = 10,
+                messages = [],
+                interval = 100;
+
+            this._setClock();
+
+            while (COUNT > 0 && !this._isDisposed) {
+                this._tick(interval);
+                messages.push(TestScheduler.next(this._clock, interval));
+
                 COUNT--;
             }
 
