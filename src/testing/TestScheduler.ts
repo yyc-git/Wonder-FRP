@@ -33,8 +33,8 @@ module dyRt {
 
         private _initialClock:number = null;
         private _isDisposed:boolean = false;
-        private _timerMap:dyCb.Hash = dyCb.Hash.create();
-        private _streamMap:dyCb.Hash = dyCb.Hash.create();
+        private _timerMap:dyCb.Hash<Function> = dyCb.Hash.create<Function>();
+        private _streamMap:dyCb.Hash<Function> = dyCb.Hash.create<Function>();
         private _subscribedTime:number = null;
         private _disposedTime:number = null;
 

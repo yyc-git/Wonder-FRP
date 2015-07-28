@@ -14,7 +14,7 @@ module dyRt {
         protected onUserCompleted:Function = null;
 
         private _isStop:boolean = false;
-        private _disposeHandler:dyCb.Collection = dyCb.Collection.create();
+        private _disposeHandler:dyCb.Collection<Function> = dyCb.Collection.create<Function>();
 
         constructor(onNext:Function, onError:Function, onCompleted:Function) {
             super("Observer");
@@ -63,7 +63,7 @@ module dyRt {
         //    return false;
         //}
 
-        public setDisposeHandler(disposeHandler:dyCb.Collection){
+        public setDisposeHandler(disposeHandler:dyCb.Collection<Function>){
             this._disposeHandler = disposeHandler;
         }
 

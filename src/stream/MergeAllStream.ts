@@ -20,7 +20,7 @@ module dyRt{
         }
 
         public buildStream(observer:IObserver){
-            var streamGroup = dyCb.Collection.create();
+            var streamGroup = dyCb.Collection.create<Stream>();
 
             this._source.buildStream(MergeAllObserver.create(observer, streamGroup));
         }

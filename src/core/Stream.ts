@@ -4,11 +4,11 @@ module dyRt{
         public scheduler:Scheduler = ABSTRACT_ATTRIBUTE;
         public subscribeFunc:Function = null;
 
-        private _disposeHandler:dyCb.Collection = dyCb.Collection.create();
+        private _disposeHandler:dyCb.Collection<Function> = dyCb.Collection.create<Function>();
         get disposeHandler(){
             return this._disposeHandler;
         }
-        set disposeHandler(disposeHandler:dyCb.Collection){
+        set disposeHandler(disposeHandler:dyCb.Collection<Function>){
             this._disposeHandler = disposeHandler;
         }
 

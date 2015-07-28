@@ -56,10 +56,11 @@ var dyCb;
             //    this._children[key] = [value];
             //}
             if (this._children[key] instanceof dyCb.Collection) {
-                this._children[key].addChild(value);
+                var c = (this._children[key]);
+                c.addChild(value);
             }
             else {
-                this._children[key] = dyCb.Collection.create().addChild(value);
+                this._children[key] = (dyCb.Collection.create().addChild(value));
             }
             return this;
         };
@@ -148,6 +149,9 @@ var dyCb;
         };
         JudgeUtils.isString = function (str) {
             return Object.prototype.toString.call(str) === "[object String]";
+        };
+        JudgeUtils.isBoolean = function (obj) {
+            return Object.prototype.toString.call(obj) === "[object Boolean]";
         };
         JudgeUtils.isDom = function (obj) {
             return obj instanceof HTMLElement;
@@ -560,6 +564,15 @@ var dyCb;
             FUNC_INVALID: function (value) {
                 return this.assertion("invalid", value);
             },
+            FUNC_MUST: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("must");
+                return this.assertion.apply(this, arr);
+            },
             FUNC_MUST_BE: function () {
                 var args = [];
                 for (var _i = 0; _i < arguments.length; _i++) {
@@ -576,6 +589,15 @@ var dyCb;
                 }
                 var arr = Array.prototype.slice.call(arguments, 0);
                 arr.unshift("must not be");
+                return this.assertion.apply(this, arr);
+            },
+            FUNC_SHOULD: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("should");
                 return this.assertion.apply(this, arr);
             },
             FUNC_SUPPORT: function (value) {

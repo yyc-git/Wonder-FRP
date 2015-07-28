@@ -1056,6 +1056,39 @@ var __extends = this.__extends || function (d, b) {
 /// <reference path="../definitions.d.ts"/>
 var dyRt;
 (function (dyRt) {
+    var IntervalRequestStream = (function (_super) {
+        __extends(IntervalRequestStream, _super);
+        function IntervalRequestStream(scheduler) {
+            _super.call(this, null);
+            this.scheduler = scheduler;
+        }
+        IntervalRequestStream.create = function (scheduler) {
+            var obj = new this(scheduler);
+            return obj;
+        };
+        IntervalRequestStream.prototype.subscribeCore = function (observer) {
+            var self = this;
+            this.scheduler.publishIntervalRequest(observer, function (time) {
+                observer.next(time);
+            });
+            this.addDisposeHandler(function () {
+                dyRt.root.cancelNextRequestAnimationFrame(self.scheduler.requestLoopId);
+            });
+        };
+        return IntervalRequestStream;
+    })(dyRt.BaseStream);
+    dyRt.IntervalRequestStream = IntervalRequestStream;
+})(dyRt || (dyRt = {}));
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="../definitions.d.ts"/>
+var dyRt;
+(function (dyRt) {
     var MergeAllStream = (function (_super) {
         __extends(MergeAllStream, _super);
         function MergeAllStream(source) {
@@ -1561,37 +1594,4 @@ var dyRt;
         return JudgeUtils;
     })(dyCb.JudgeUtils);
     dyRt.JudgeUtils = JudgeUtils;
-})(dyRt || (dyRt = {}));
-
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-/// <reference path="../definitions.d.ts"/>
-var dyRt;
-(function (dyRt) {
-    var IntervalRequestStream = (function (_super) {
-        __extends(IntervalRequestStream, _super);
-        function IntervalRequestStream(scheduler) {
-            _super.call(this, null);
-            this.scheduler = scheduler;
-        }
-        IntervalRequestStream.create = function (scheduler) {
-            var obj = new this(scheduler);
-            return obj;
-        };
-        IntervalRequestStream.prototype.subscribeCore = function (observer) {
-            var self = this;
-            this.scheduler.publishIntervalRequest(observer, function (time) {
-                observer.next(time);
-            });
-            this.addDisposeHandler(function () {
-                dyRt.root.cancelNextRequestAnimationFrame(self.scheduler.requestLoopId);
-            });
-        };
-        return IntervalRequestStream;
-    })(dyRt.BaseStream);
-    dyRt.IntervalRequestStream = IntervalRequestStream;
 })(dyRt || (dyRt = {}));

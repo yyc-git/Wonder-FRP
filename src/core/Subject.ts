@@ -15,7 +15,7 @@ module dyRt{
             this._source = source;
         }
 
-        private _observers:dyCb.Collection = dyCb.Collection.create();
+        private _observers:dyCb.Collection<IObserver> = dyCb.Collection.create<IObserver>();
 
         public subscribe(arg1?:Function|Observer, onError?:Function, onCompleted?:Function):IDisposable{
             var observer = arg1 instanceof Observer

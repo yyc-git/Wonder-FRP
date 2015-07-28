@@ -31,6 +31,7 @@
 /// <reference path="stream/FromEventPatternStream"/>
 /// <reference path="stream/AnonymousStream"/>
 /// <reference path="stream/IntervalStream"/>
+/// <reference path="stream/IntervalRequestStream"/>
 /// <reference path="stream/MergeAllStream"/>
 /// <reference path="stream/TakeUntilStream"/>
 

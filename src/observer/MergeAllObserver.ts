@@ -1,7 +1,7 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class MergeAllObserver extends Observer{
-        public static create(currentObserver:IObserver, streamGroup:dyCb.Collection) {
+        public static create(currentObserver:IObserver, streamGroup:dyCb.Collection<Stream>) {
             return new this(currentObserver, streamGroup);
         }
 
@@ -12,7 +12,7 @@ module dyRt{
         set currentObserver(currentObserver:IObserver){
             this._currentObserver = currentObserver;
         }
-        private _streamGroup:dyCb.Collection = null;
+        private _streamGroup:dyCb.Collection<Stream> = null;
 
         private _done:boolean = false;
         get done(){
@@ -22,7 +22,7 @@ module dyRt{
             this._done = done;
         }
 
-        constructor(currentObserver:IObserver, streamGroup:dyCb.Collection){
+        constructor(currentObserver:IObserver, streamGroup:dyCb.Collection<Stream>){
             super(null, null, null);
 
             this._currentObserver = currentObserver;
@@ -55,17 +55,17 @@ module dyRt{
     }
 
     class InnerObserver extends Observer{
-        public static create(parent:MergeAllObserver, streamGroup:dyCb.Collection, currentStream:Stream) {
+        public static create(parent:MergeAllObserver, streamGroup:dyCb.Collection<Stream>, currentStream:Stream) {
         	var obj = new this(parent, streamGroup, currentStream);
 
         	return obj;
         }
 
         private _parent:MergeAllObserver = null;
-        private _streamGroup:dyCb.Collection = null;
+        private _streamGroup:dyCb.Collection<Stream> = null;
         private _currentStream:Stream = null;
 
-        constructor(parent:MergeAllObserver, streamGroup:dyCb.Collection, currentStream:Stream){
+        constructor(parent:MergeAllObserver, streamGroup:dyCb.Collection<Stream>, currentStream:Stream){
             super(null, null, null);
 
             this._parent = parent;

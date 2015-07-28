@@ -48,7 +48,7 @@ declare module dyRt {
         scheduler: Scheduler;
         subscribeFunc: Function;
         private _disposeHandler;
-        disposeHandler: dyCb.Collection;
+        disposeHandler: dyCb.Collection<Function>;
         constructor(subscribeFunc: any);
         subscribe(arg1: Function | Observer | Subject, onError?: Function, onCompleted?: Function): IDisposable;
         buildStream(observer: IObserver): void;
@@ -108,7 +108,7 @@ declare module dyRt {
         error(error: any): void;
         completed(): void;
         dispose(): void;
-        setDisposeHandler(disposeHandler: dyCb.Collection): void;
+        setDisposeHandler(disposeHandler: dyCb.Collection<Function>): void;
         protected onNext(value: any): void;
         protected onError(error: any): void;
         protected onCompleted(): void;
@@ -165,13 +165,13 @@ declare module dyRt {
 /// <reference path="../definitions.d.ts" />
 declare module dyRt {
     class MergeAllObserver extends Observer {
-        static create(currentObserver: IObserver, streamGroup: dyCb.Collection): MergeAllObserver;
+        static create(currentObserver: IObserver, streamGroup: dyCb.Collection<Stream>): MergeAllObserver;
         private _currentObserver;
         currentObserver: IObserver;
         private _streamGroup;
         private _done;
         done: boolean;
-        constructor(currentObserver: IObserver, streamGroup: dyCb.Collection);
+        constructor(currentObserver: IObserver, streamGroup: dyCb.Collection<Stream>);
         protected onNext(innerSource: any): void;
         protected onError(error: any): void;
         protected onCompleted(): void;
@@ -268,6 +268,15 @@ declare module dyRt {
         private _interval;
         constructor(interval: number, scheduler: Scheduler);
         initWhenCreate(): void;
+        subscribeCore(observer: IObserver): void;
+    }
+}
+
+/// <reference path="../definitions.d.ts" />
+declare module dyRt {
+    class IntervalRequestStream extends BaseStream {
+        static create(scheduler: Scheduler): IntervalRequestStream;
+        constructor(scheduler: Scheduler);
         subscribeCore(observer: IObserver): void;
     }
 }
@@ -407,14 +416,5 @@ declare module dyRt {
     class JudgeUtils extends dyCb.JudgeUtils {
         static isPromise(obj: any): boolean;
         static isEqual(ob1: Entity, ob2: Entity): boolean;
-    }
-}
-
-/// <reference path="../definitions.d.ts" />
-declare module dyRt {
-    class IntervalRequestStream extends BaseStream {
-        static create(scheduler: Scheduler): IntervalRequestStream;
-        constructor(scheduler: Scheduler);
-        subscribeCore(observer: IObserver): void;
     }
 }
