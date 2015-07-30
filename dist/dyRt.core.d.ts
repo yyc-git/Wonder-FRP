@@ -23,6 +23,10 @@ declare module dyRt {
 
 /// <reference path="../definitions.d.ts" />
 declare module dyRt {
+}
+
+/// <reference path="../definitions.d.ts" />
+declare module dyRt {
     class InnerSubscription implements IDisposable {
         static create(subject: Subject, observer: Observer): InnerSubscription;
         private _subject;

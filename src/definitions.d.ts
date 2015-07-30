@@ -7,6 +7,7 @@
 
 /// <reference path="global/Variable"/>
 /// <reference path="global/Const"/>
+/// <reference path="global/init"/>
 
 /// <reference path="disposable/InnerSubscription"/>
 

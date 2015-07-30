@@ -17,6 +17,18 @@ var dyRt;
 /// <reference path="../definitions.d.ts"/>
 var dyRt;
 (function (dyRt) {
+    //not swallow the error
+    if (RSVP) {
+        RSVP.onerror = function (e) {
+            throw e;
+        };
+        RSVP.on('error', RSVP.onerror);
+    }
+})(dyRt || (dyRt = {}));
+
+/// <reference path="../definitions.d.ts"/>
+var dyRt;
+(function (dyRt) {
     var InnerSubscription = (function () {
         function InnerSubscription(subject, observer) {
             this._subject = null;
