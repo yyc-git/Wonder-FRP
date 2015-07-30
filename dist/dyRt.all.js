@@ -1204,7 +1204,9 @@ var dyRt;
             this._isStop = false;
             this._disposeHandler = dyCb.Collection.create();
             this.onUserNext = onNext || function () { };
-            this.onUserError = onError || function () { };
+            this.onUserError = onError || function (e) {
+                throw e;
+            };
             this.onUserCompleted = onCompleted || function () { };
         }
         Object.defineProperty(Observer.prototype, "isDisposed", {

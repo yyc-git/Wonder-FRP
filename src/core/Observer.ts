@@ -20,7 +20,9 @@ module dyRt {
             super("Observer");
 
             this.onUserNext = onNext || function(){};
-            this.onUserError = onError || function(){};
+            this.onUserError = onError || function(e){
+                    throw e;
+                };
             this.onUserCompleted = onCompleted || function(){};
         }
 
