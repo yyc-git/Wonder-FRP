@@ -8,6 +8,7 @@ var merge = require('merge2');
 var path = require('path');
 
 var tsFilePaths = [
+    'src/definitions.d.ts',
     'src/*.ts',
     'src/**/*.ts'
 ];
