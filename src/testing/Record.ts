@@ -1,6 +1,6 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt {
-    var defaultIsEqual = function (a, b) {
+    var defaultIsEqual = (a, b) => {
         return a === b;
     };
 

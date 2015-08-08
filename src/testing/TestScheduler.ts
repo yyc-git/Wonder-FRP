@@ -41,22 +41,22 @@ module dyRt {
         public setStreamMap(observer:IObserver, messages:[Record]){
             var self = this;
 
-            messages.forEach(function(record:Record){
+            messages.forEach((record:Record) =>{
                 var func = null;
 
                 switch (record.actionType){
                     case ActionType.NEXT:
-                        func = function(){
+                        func = () =>{
                             observer.next(record.value);
                         };
                         break;
                     case ActionType.ERROR:
-                        func = function(){
+                        func = () =>{
                             observer.error(record.value);
                         };
                         break;
                     case ActionType.COMPLETED:
-                        func = function(){
+                        func = () =>{
                             observer.completed();
                         };
                         break;
@@ -79,10 +79,10 @@ module dyRt {
 
             this._setClock();
 
-            recursiveFunc(initial, function (value) {
+            recursiveFunc(initial, (value) => {
                 self._tick(1);
                 messages.push(TestScheduler.next(self._clock, value));
-            }, function () {
+            }, () => {
                 self._tick(1);
                 messages.push(TestScheduler.completed(self._clock));
                 self.setStreamMap(observer, <[Record]>messages);
@@ -151,12 +151,12 @@ module dyRt {
 
             var self = this;
 
-            this._runAt(subscribedTime, function () {
+            this._runAt(subscribedTime, () => {
                 source = create();
                 subscription = source.subscribe(observer);
             });
 
-            this._runAt(disposedTime, function () {
+            this._runAt(disposedTime, () => {
                 subscription.dispose();
             });
 
@@ -174,7 +174,7 @@ module dyRt {
         }
 
         public publicAbsolute(time, handler) {
-            this._runAt(time, function () {
+            this._runAt(time, () => {
                 handler();
             });
         }
@@ -226,7 +226,7 @@ module dyRt {
 
         private _getMinAndMaxTime(){
             var timeArr = this._timerMap.getKeys().addChildren(this._streamMap.getKeys())
-                .map(function(key){
+                .map((key) => {
                     return Number(key);
                 }).toArray();
 

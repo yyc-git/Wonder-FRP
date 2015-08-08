@@ -18,10 +18,10 @@ module dyRt{
 
         public subscribeCore(observer:IObserver){
             //todo remove test logic from product logic(as Scheduler->publicxxx, FromPromise->then...)
-            this._promise.then(function (data) {
+            this._promise.then((data) => {
                 observer.next(data);
                 observer.completed();
-            }, function (err) {
+            }, (err) => {
                 observer.error(err);
             }, observer);
         }

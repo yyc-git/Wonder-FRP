@@ -85,7 +85,7 @@ module dyRt{
             var currentStream = this._currentStream,
                 parent = this._parent;
 
-            this._streamGroup.removeChild(function(stream:Stream){
+            this._streamGroup.removeChild((stream:Stream) => {
                 return JudgeUtils.isEqual(stream, currentStream);
             });
 

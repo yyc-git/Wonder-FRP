@@ -1,3 +1,11 @@
+/// <reference path="definitions.d.ts" />
+declare module dyRt {
+    class JudgeUtils extends dyCb.JudgeUtils {
+        static isPromise(obj: any): boolean;
+        static isEqual(ob1: Entity, ob2: Entity): boolean;
+    }
+}
+
 declare module dyRt {
     interface IDisposable {
         dispose(): any;
@@ -415,10 +423,3 @@ declare module dyRt {
     }
 }
 
-/// <reference path="definitions.d.ts" />
-declare module dyRt {
-    class JudgeUtils extends dyCb.JudgeUtils {
-        static isPromise(obj: any): boolean;
-        static isEqual(ob1: Entity, ob2: Entity): boolean;
-    }
-}

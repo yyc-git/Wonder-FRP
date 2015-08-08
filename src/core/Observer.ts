@@ -50,7 +50,7 @@ module dyRt {
             this._isStop = true;
             this._isDisposed = true;
 
-            this._disposeHandler.forEach(function(handler){
+            this._disposeHandler.forEach((handler) => {
                 handler();
             });
         }

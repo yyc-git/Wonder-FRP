@@ -65,7 +65,7 @@ describe("flatMap", function () {
     });
 
     describe("map and merge stream", function(){
-        it("map fromPromise and do stream", function(){
+        it("map fromPromise and do stream", function(done){
             var res = [];
             var result = 0;
             var sources = rt.fromArray([1, 2])

@@ -30,19 +30,19 @@ module dyRt{
         }
 
         public next(value:any){
-            this._observers.forEach(function(ob:Observer){
+            this._observers.forEach((ob:Observer) => {
                 ob.next(value);
             });
         }
 
         public error(error:any){
-            this._observers.forEach(function(ob:Observer){
+            this._observers.forEach((ob:Observer) => {
                 ob.error(error);
             });
         }
 
         public completed(){
-            this._observers.forEach(function(ob:Observer){
+            this._observers.forEach((ob:Observer) => {
                 ob.completed();
             });
         }
@@ -52,13 +52,13 @@ module dyRt{
         }
 
         public remove(observer:Observer){
-            this._observers.removeChild(function(ob:Observer){
+            this._observers.removeChild((ob:Observer) => {
                 return JudgeUtils.isEqual(ob, observer);
             });
         }
 
         public dispose(){
-            this._observers.forEach(function(ob:Observer){
+            this._observers.forEach((ob:Observer) => {
                 ob.dispose();
             });
 

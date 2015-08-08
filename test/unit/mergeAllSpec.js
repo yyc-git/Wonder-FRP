@@ -65,7 +65,7 @@ describe("mergeAll", function () {
     });
 
     describe("merge stream", function(){
-        it("merge fromPromise and do stream", function(){
+        it("merge fromPromise and do stream", function(done){
             var res = [];
             var result = 0;
             var sources = rt.fromArray([1, 2])

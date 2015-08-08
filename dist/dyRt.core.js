@@ -1,3 +1,30 @@
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="definitions.d.ts"/>
+var dyRt;
+(function (dyRt) {
+    var JudgeUtils = (function (_super) {
+        __extends(JudgeUtils, _super);
+        function JudgeUtils() {
+            _super.apply(this, arguments);
+        }
+        JudgeUtils.isPromise = function (obj) {
+            return !!obj
+                && !_super.isFunction.call(this, obj.subscribe)
+                && _super.isFunction.call(this, obj.then);
+        };
+        JudgeUtils.isEqual = function (ob1, ob2) {
+            return ob1.uid === ob2.uid;
+        };
+        return JudgeUtils;
+    })(dyCb.JudgeUtils);
+    dyRt.JudgeUtils = JudgeUtils;
+})(dyRt || (dyRt = {}));
+
 
 
 /// <reference path="../definitions.d.ts"/>
@@ -1583,29 +1610,32 @@ var dyRt;
     dyRt.TestStream = TestStream;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-/// <reference path="definitions.d.ts"/>
-var dyRt;
-(function (dyRt) {
-    var JudgeUtils = (function (_super) {
-        __extends(JudgeUtils, _super);
-        function JudgeUtils() {
-            _super.apply(this, arguments);
-        }
-        JudgeUtils.isPromise = function (obj) {
-            return !!obj
-                && !_super.isFunction.call(this, obj.subscribe)
-                && _super.isFunction.call(this, obj.then);
-        };
-        JudgeUtils.isEqual = function (ob1, ob2) {
-            return ob1.uid === ob2.uid;
-        };
-        return JudgeUtils;
-    })(dyCb.JudgeUtils);
-    dyRt.JudgeUtils = JudgeUtils;
-})(dyRt || (dyRt = {}));
+///// <reference path="../definitions.d.ts"/>
+//module dyRt{
+//    export class FromActionStream extends BaseStream{
+//        //public static create(promise:any, scheduler:Scheduler) {
+//        //    var obj = new this(promise, scheduler);
+//        //
+//        //    return obj;
+//        //}
+//        //
+//        //private _promise:any = null;
+//        //
+//        //constructor(promise:any, scheduler:Scheduler){
+//        //    super(null);
+//        //
+//        //    this._promise = promise;
+//        //    this.scheduler = scheduler;
+//        //}
+//
+//        public subscribeCore(observer:IObserver){
+//            this._action.onNext = (data) => {
+//                this.update(data);
+//                observer.next(data);
+//            };
+//            //this._action.onUpdate((data) => {
+//            //    observer.next(data);
+//            //});
+//        }
+//    }
+//}

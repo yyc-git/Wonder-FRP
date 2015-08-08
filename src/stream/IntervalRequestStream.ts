@@ -16,11 +16,11 @@ module dyRt{
         public subscribeCore(observer:IObserver){
             var self = this;
 
-            this.scheduler.publishIntervalRequest(observer, function(time) {
+            this.scheduler.publishIntervalRequest(observer, (time) => {
                 observer.next(time);
             });
 
-            this.addDisposeHandler(function(){
+            this.addDisposeHandler(() => {
                 root.cancelNextRequestAnimationFrame(self.scheduler.requestLoopId);
             });
         }
