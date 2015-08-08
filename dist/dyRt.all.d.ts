@@ -36,10 +36,10 @@ declare module dyRt {
 /// <reference path="../definitions.d.ts" />
 declare module dyRt {
     class InnerSubscription implements IDisposable {
-        static create(subject: Subject, observer: Observer): InnerSubscription;
+        static create(subject: Subject | AsyncSubject, observer: Observer): InnerSubscription;
         private _subject;
         private _observer;
-        constructor(subject: Subject, observer: Observer);
+        constructor(subject: Subject | AsyncSubject, observer: Observer);
         dispose(): void;
     }
 }
@@ -71,6 +71,8 @@ declare module dyRt {
         flatMap(selector: Function): MergeAllStream;
         mergeAll(): MergeAllStream;
         takeUntil(otherStream: Stream): TakeUntilStream;
+        concat(streamArr: Array<Stream>): any;
+        concat(...otherStream: any[]): any;
         private _isSubject(subject);
         private _setSubject(subject);
     }
@@ -78,18 +80,10 @@ declare module dyRt {
 
 /// <reference path="../definitions.d.ts" />
 declare module dyRt {
-    class Subject implements IObserver {
-        static create(): Subject;
-        private _source;
-        source: Stream;
-        private _observers;
-        subscribe(arg1?: Function | Observer, onError?: Function, onCompleted?: Function): IDisposable;
-        next(value: any): void;
-        error(error: any): void;
-        completed(): void;
-        start(): void;
-        remove(observer: Observer): void;
-        dispose(): void;
+    class BaseStream extends Stream {
+        subscribeCore(observer: IObserver): void;
+        subscribe(arg1: Function | Observer | Subject, onError?: any, onCompleted?: any): IDisposable;
+        buildStream(observer: IObserver): void;
     }
 }
 
@@ -124,6 +118,38 @@ declare module dyRt {
         protected onNext(value: any): void;
         protected onError(error: any): void;
         protected onCompleted(): void;
+    }
+}
+
+/// <reference path="../definitions.d.ts" />
+declare module dyRt {
+    class Subject implements IObserver {
+        static create(): Subject;
+        private _source;
+        source: Stream;
+        private _observers;
+        subscribe(arg1?: Function | Observer, onError?: Function, onCompleted?: Function): IDisposable;
+        next(value: any): void;
+        error(error: any): void;
+        completed(): void;
+        start(): void;
+        remove(observer: Observer): void;
+        dispose(): void;
+    }
+    class AsyncSubject extends BaseStream implements IObserver {
+        static create(scheduler: Scheduler): AsyncSubject;
+        private _observers;
+        constructor(scheduler: Scheduler);
+        subscribe(arg1?: Function | Observer, onError?: Function, onCompleted?: Function): IDisposable;
+        next(value: any): void;
+        error(error: any): void;
+        completed(): void;
+        start(): void;
+        remove(observer: Observer): void;
+        dispose(): void;
+        subscribeCore(observer: IObserver): void;
+        concat(subjectArr: Array<AsyncSubject>): any;
+        concat(...otherSubject: any[]): any;
     }
 }
 
@@ -204,10 +230,14 @@ declare module dyRt {
 
 /// <reference path="../definitions.d.ts" />
 declare module dyRt {
-    class BaseStream extends Stream {
-        subscribeCore(observer: IObserver): void;
-        subscribe(arg1: Function | Observer | Subject, onError?: any, onCompleted?: any): IDisposable;
-        buildStream(observer: IObserver): void;
+    class ConcatObserver extends Observer {
+        static create(currentObserver: IObserver, startNextStream: Function): ConcatObserver;
+        private _currentObserver;
+        private _startNextStream;
+        constructor(currentObserver: IObserver, startNextStream: Function);
+        protected onNext(value: any): void;
+        protected onError(error: any): void;
+        protected onCompleted(): void;
     }
 }
 
@@ -249,6 +279,20 @@ declare module dyRt {
         static create(promise: any, scheduler: Scheduler): FromPromiseStream;
         private _promise;
         constructor(promise: any, scheduler: Scheduler);
+        subscribeCore(observer: IObserver): void;
+    }
+}
+
+/// <reference path="../definitions.d.ts" />
+declare module dyRt {
+    interface IAction {
+        isFinish: boolean;
+        update(time: number): void;
+    }
+    class FromActionStream extends BaseStream {
+        static create(action: IAction, scheduler: Scheduler): FromActionStream;
+        private _action;
+        constructor(action: IAction, scheduler: Scheduler);
         subscribeCore(observer: IObserver): void;
     }
 }
@@ -317,9 +361,29 @@ declare module dyRt {
 
 /// <reference path="../definitions.d.ts" />
 declare module dyRt {
+    class ConcatStream extends BaseStream {
+        static create(source: Stream, otherSources: Array<Stream>): ConcatStream;
+        private _sources;
+        constructor(source: Stream, otherSources: Array<Stream>);
+        buildStream(observer: IObserver): void;
+        subscribeCore(observer: IObserver): void;
+    }
+    class ConcatSubject extends AsyncSubject {
+        private _sources;
+        private _i;
+        constructor(source: AsyncSubject, otherSources: Array<AsyncSubject>);
+        next(value: any): void;
+        error(err: any): void;
+        completed(): void;
+    }
+}
+
+/// <reference path="../definitions.d.ts" />
+declare module dyRt {
     var createStream: (subscribeFunc: any) => AnonymousStream;
     var fromArray: (array: any[], scheduler?: Scheduler) => FromArrayStream;
     var fromPromise: (promise: any, scheduler?: Scheduler) => FromPromiseStream;
+    var fromAction: (action: IAction, scheduler?: Scheduler) => AsyncSubject;
     var fromEventPattern: (addHandler: Function, removeHandler: Function) => FromEventPatternStream;
     var interval: (interval: any, scheduler?: Scheduler) => IntervalStream;
     var intervalRequest: (scheduler?: Scheduler) => IntervalRequestStream;
@@ -422,4 +486,3 @@ declare module dyRt {
         subscribeCore(observer: IObserver): void;
     }
 }
-

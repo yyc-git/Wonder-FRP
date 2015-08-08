@@ -33,7 +33,7 @@ module dyRt{
                 this._prevObserver.error(error);
             }
             catch(e){
-                this._currentObserver.error(error);
+                //this._currentObserver.error(error);
             }
             finally{
                 this._currentObserver.error(error);

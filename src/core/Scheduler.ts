@@ -124,8 +124,10 @@ module dyRt {
         || root.msCancelRequestAnimationFrame
         || clearTimeout;
 
+
     export class Scheduler{
-        public static create() {
+        //todo remove "...args"
+        public static create(...args) {
             var obj = new this();
 
             return obj;

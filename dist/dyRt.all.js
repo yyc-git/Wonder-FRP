@@ -1002,6 +1002,19 @@ var dyRt;
         Stream.prototype.takeUntil = function (otherStream) {
             return dyRt.TakeUntilStream.create(this, otherStream);
         };
+        Stream.prototype.concat = function () {
+            var args = null;
+            if (dyRt.JudgeUtils.isArray(arguments[0])) {
+                args = arguments[0];
+            }
+            else {
+                args = Array.prototype.slice.call(arguments, 0);
+            }
+            //todo judge args
+            //return ConcatSubject.create(this, args);
+            //return new ConcatSubject(this, args);
+            return dyRt.ConcatStream.create(this, args);
+        };
         Stream.prototype._isSubject = function (subject) {
             return subject instanceof dyRt.Subject;
         };
@@ -1013,68 +1026,46 @@ var dyRt;
     dyRt.Stream = Stream;
 })(dyRt || (dyRt = {}));
 
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
 /// <reference path="../definitions.d.ts"/>
 var dyRt;
 (function (dyRt) {
-    var Subject = (function () {
-        function Subject() {
-            this._source = null;
-            this._observers = dyCb.Collection.create();
+    var BaseStream = (function (_super) {
+        __extends(BaseStream, _super);
+        function BaseStream() {
+            _super.apply(this, arguments);
         }
-        Subject.create = function () {
-            var obj = new this();
-            return obj;
+        BaseStream.prototype.subscribeCore = function (observer) {
+            throw dyRt.ABSTRACT_METHOD();
         };
-        Object.defineProperty(Subject.prototype, "source", {
-            get: function () {
-                return this._source;
-            },
-            set: function (source) {
-                this._source = source;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Subject.prototype.subscribe = function (arg1, onError, onCompleted) {
-            var observer = arg1 instanceof dyRt.Observer
+        BaseStream.prototype.subscribe = function (arg1, onError, onCompleted) {
+            var observer = null;
+            if (this.handleSubject(arg1)) {
+                return;
+            }
+            observer = arg1 instanceof dyRt.Observer
                 ? arg1
                 : dyRt.AutoDetachObserver.create(arg1, onError, onCompleted);
-            observer.setDisposeHandler(this._source.disposeHandler);
-            this._observers.addChild(observer);
-            return dyRt.InnerSubscription.create(this, observer);
+            observer.setDisposeHandler(this.disposeHandler);
+            //todo encapsulate it to scheduleItem
+            //todo delete target?
+            //this.scheduler.target = observer;
+            //dyCb.Log.error(this._hasMultiObservers(), "should use Subject to handle multi observers");
+            this.buildStream(observer);
+            return observer;
         };
-        Subject.prototype.next = function (value) {
-            this._observers.forEach(function (ob) {
-                ob.next(value);
-            });
+        BaseStream.prototype.buildStream = function (observer) {
+            _super.prototype.buildStream.call(this, observer);
+            this.subscribeCore(observer);
         };
-        Subject.prototype.error = function (error) {
-            this._observers.forEach(function (ob) {
-                ob.error(error);
-            });
-        };
-        Subject.prototype.completed = function () {
-            this._observers.forEach(function (ob) {
-                ob.completed();
-            });
-        };
-        Subject.prototype.start = function () {
-            this._source.buildStream(this);
-        };
-        Subject.prototype.remove = function (observer) {
-            this._observers.removeChild(function (ob) {
-                return dyRt.JudgeUtils.isEqual(ob, observer);
-            });
-        };
-        Subject.prototype.dispose = function () {
-            this._observers.forEach(function (ob) {
-                ob.dispose();
-            });
-            this._observers.removeAllChildren();
-        };
-        return Subject;
-    })();
-    dyRt.Subject = Subject;
+        return BaseStream;
+    })(dyRt.Stream);
+    dyRt.BaseStream = BaseStream;
 })(dyRt || (dyRt = {}));
 
 /// <reference path="../definitions.d.ts"/>
@@ -1305,6 +1296,184 @@ var __extends = this.__extends || function (d, b) {
 /// <reference path="../definitions.d.ts"/>
 var dyRt;
 (function (dyRt) {
+    var Subject = (function () {
+        function Subject() {
+            this._source = null;
+            this._observers = dyCb.Collection.create();
+        }
+        Subject.create = function () {
+            var obj = new this();
+            return obj;
+        };
+        Object.defineProperty(Subject.prototype, "source", {
+            get: function () {
+                return this._source;
+            },
+            set: function (source) {
+                this._source = source;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Subject.prototype.subscribe = function (arg1, onError, onCompleted) {
+            var observer = arg1 instanceof dyRt.Observer
+                ? arg1
+                : dyRt.AutoDetachObserver.create(arg1, onError, onCompleted);
+            this._source && observer.setDisposeHandler(this._source.disposeHandler);
+            this._observers.addChild(observer);
+            return dyRt.InnerSubscription.create(this, observer);
+        };
+        Subject.prototype.next = function (value) {
+            this._observers.forEach(function (ob) {
+                ob.next(value);
+            });
+        };
+        Subject.prototype.error = function (error) {
+            this._observers.forEach(function (ob) {
+                ob.error(error);
+            });
+        };
+        Subject.prototype.completed = function () {
+            this._observers.forEach(function (ob) {
+                ob.completed();
+            });
+        };
+        Subject.prototype.start = function () {
+            this._source && this._source.buildStream(this);
+        };
+        Subject.prototype.remove = function (observer) {
+            this._observers.removeChild(function (ob) {
+                return dyRt.JudgeUtils.isEqual(ob, observer);
+            });
+        };
+        Subject.prototype.dispose = function () {
+            this._observers.forEach(function (ob) {
+                ob.dispose();
+            });
+            this._observers.removeAllChildren();
+        };
+        return Subject;
+    })();
+    dyRt.Subject = Subject;
+    //todo extract Base class?
+    var AsyncSubject = (function (_super) {
+        __extends(AsyncSubject, _super);
+        function AsyncSubject(scheduler) {
+            _super.call(this, null);
+            //private _source:Stream = null;
+            //get source(){
+            //    return this._source;
+            //}
+            //set source(source:Stream){
+            //    this._source = source;
+            //}
+            this._observers = dyCb.Collection.create();
+            this.scheduler = scheduler;
+        }
+        AsyncSubject.create = function (scheduler) {
+            var obj = new this(scheduler);
+            return obj;
+        };
+        AsyncSubject.prototype.subscribe = function (arg1, onError, onCompleted) {
+            var observer = arg1 instanceof dyRt.Observer
+                ? arg1
+                : dyRt.AutoDetachObserver.create(arg1, onError, onCompleted);
+            //this._source && observer.setDisposeHandler(this._source.disposeHandler);
+            this._observers.addChild(observer);
+            return dyRt.InnerSubscription.create(this, observer);
+            //var observer = null;
+            //
+            //if(this.handleSubject(arg1)){
+            //    return;
+            //}
+            //
+            //observer = arg1 instanceof Observer
+            //    ? arg1
+            //    : AutoDetachObserver.create(<Function>arg1, onError, onCompleted);
+            //
+            //observer.setDisposeHandler(this.disposeHandler);
+            //
+            ////todo encapsulate it to scheduleItem
+            ////todo delete target?
+            ////this.scheduler.target = observer;
+            //
+            ////dyCb.Log.error(this._hasMultiObservers(), "should use Subject to handle multi observers");
+            //this.buildStream(observer);
+            //
+            //return observer;
+        };
+        AsyncSubject.prototype.next = function (value) {
+            this._observers.forEach(function (ob) {
+                ob.next(value);
+            });
+        };
+        AsyncSubject.prototype.error = function (error) {
+            this._observers.forEach(function (ob) {
+                ob.error(error);
+            });
+        };
+        AsyncSubject.prototype.completed = function () {
+            this._observers.forEach(function (ob) {
+                ob.completed();
+            });
+        };
+        AsyncSubject.prototype.start = function () {
+            //this._source && this._source.buildStream(this);
+            this.buildStream(this);
+        };
+        AsyncSubject.prototype.remove = function (observer) {
+            this._observers.removeChild(function (ob) {
+                return dyRt.JudgeUtils.isEqual(ob, observer);
+            });
+        };
+        AsyncSubject.prototype.dispose = function () {
+            this._observers.forEach(function (ob) {
+                ob.dispose();
+            });
+            this._observers.removeAllChildren();
+        };
+        AsyncSubject.prototype.subscribeCore = function (observer) {
+            //var self = this,
+            //    id = null;
+            //
+            //id = this.scheduler.publishInterval(observer, 0, this._interval, (count) => {
+            //    //self.scheduler.next(count);
+            //    observer.next(count);
+            //
+            //    return count + 1;
+            //});
+            //
+            //this.addDisposeHandler(() => {
+            //    root.clearInterval(id);
+            //});
+        };
+        AsyncSubject.prototype.concat = function () {
+            var args = null;
+            if (dyRt.JudgeUtils.isArray(arguments[0])) {
+                args = arguments[0];
+            }
+            else {
+                args = Array.prototype.slice.call(arguments, 0);
+            }
+            //todo check be AsyncSubject
+            //return ConcatSubject.create(this, args);
+            return new dyRt.ConcatSubject(this, args);
+            //return ConcatStream.create(this, args);
+        };
+        return AsyncSubject;
+    })(dyRt.BaseStream);
+    dyRt.AsyncSubject = AsyncSubject;
+})(dyRt || (dyRt = {}));
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="../definitions.d.ts"/>
+var dyRt;
+(function (dyRt) {
     var AnonymousObserver = (function (_super) {
         __extends(AnonymousObserver, _super);
         function AnonymousObserver() {
@@ -1467,7 +1636,6 @@ var dyRt;
                 this._prevObserver.error(error);
             }
             catch (e) {
-                this._currentObserver.error(error);
             }
             finally {
                 this._currentObserver.error(error);
@@ -1634,37 +1802,39 @@ var __extends = this.__extends || function (d, b) {
 /// <reference path="../definitions.d.ts"/>
 var dyRt;
 (function (dyRt) {
-    var BaseStream = (function (_super) {
-        __extends(BaseStream, _super);
-        function BaseStream() {
-            _super.apply(this, arguments);
+    var ConcatObserver = (function (_super) {
+        __extends(ConcatObserver, _super);
+        function ConcatObserver(currentObserver, startNextStream) {
+            _super.call(this, null, null, null);
+            //private _currentObserver:IObserver = null;
+            this._currentObserver = null;
+            this._startNextStream = null;
+            this._currentObserver = currentObserver;
+            this._currentObserver.target = this;
+            this._startNextStream = startNextStream;
         }
-        BaseStream.prototype.subscribeCore = function (observer) {
-            throw dyRt.ABSTRACT_METHOD();
+        ConcatObserver.create = function (currentObserver, startNextStream) {
+            return new this(currentObserver, startNextStream);
         };
-        BaseStream.prototype.subscribe = function (arg1, onError, onCompleted) {
-            var observer = null;
-            if (this.handleSubject(arg1)) {
-                return;
+        ConcatObserver.prototype.onNext = function (value) {
+            //todo no catch?
+            try {
+                this._currentObserver.next(value);
             }
-            observer = arg1 instanceof dyRt.Observer
-                ? arg1
-                : dyRt.AutoDetachObserver.create(arg1, onError, onCompleted);
-            observer.setDisposeHandler(this.disposeHandler);
-            //todo encapsulate it to scheduleItem
-            //todo delete target?
-            //this.scheduler.target = observer;
-            //dyCb.Log.error(this._hasMultiObservers(), "should use Subject to handle multi observers");
-            this.buildStream(observer);
-            return observer;
+            catch (e) {
+                this._currentObserver.error(e);
+            }
         };
-        BaseStream.prototype.buildStream = function (observer) {
-            _super.prototype.buildStream.call(this, observer);
-            this.subscribeCore(observer);
+        ConcatObserver.prototype.onError = function (error) {
+            this._currentObserver.error(error);
         };
-        return BaseStream;
-    })(dyRt.Stream);
-    dyRt.BaseStream = BaseStream;
+        ConcatObserver.prototype.onCompleted = function () {
+            //this._currentObserver.completed();
+            this._startNextStream();
+        };
+        return ConcatObserver;
+    })(dyRt.Observer);
+    dyRt.ConcatObserver = ConcatObserver;
 })(dyRt || (dyRt = {}));
 
 var __extends = this.__extends || function (d, b) {
@@ -1814,6 +1984,99 @@ var dyRt;
         return FromPromiseStream;
     })(dyRt.BaseStream);
     dyRt.FromPromiseStream = FromPromiseStream;
+})(dyRt || (dyRt = {}));
+
+///// <reference path="../definitions.d.ts"/>
+//module dyRt{
+//    export interface IAction{
+//        isFinish:boolean;
+//
+//        update(time:number):void;
+//    }
+//
+//    export class FromActionStream extends BaseStream{
+//        //public static create(actionArr:dyCb.Collection<IAction>, scheduler:Scheduler) {
+//        public static create(action:IAction, scheduler:Scheduler) {
+//            var obj = new this(action, scheduler);
+//
+//            return obj;
+//        }
+//
+//        private _action:IAction = null;
+//
+//        constructor(action:IAction, scheduler:Scheduler){
+//            super(null);
+//
+//            this._action= action;
+//            this.scheduler = scheduler;
+//        }
+//
+//        //public subscribeCore(observer:IObserver){
+//        public subscribeCore(obser:any){
+//            //var observer = obser._currentObserver ? obser._currentObserver : obser;
+//            var observer = obser;
+//            var next = observer.next;
+//            var self = this;
+//            observer.next = (data) => {
+//                try{
+//                    self._action.update(data);
+//                    next.call(observer, data);
+//
+//                    if(self._action.isFinish){
+//                        observer.completed();
+//                    }
+//                }
+//                catch(e){
+//                    observer.error(e);
+//                }
+//            };
+//        }
+//    }
+//}
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="../definitions.d.ts"/>
+var dyRt;
+(function (dyRt) {
+    var FromActionStream = (function (_super) {
+        __extends(FromActionStream, _super);
+        function FromActionStream(action, scheduler) {
+            _super.call(this, null);
+            this._action = null;
+            this._action = action;
+            this.scheduler = scheduler;
+        }
+        //public static create(actionArr:dyCb.Collection<IAction>, scheduler:Scheduler) {
+        FromActionStream.create = function (action, scheduler) {
+            var obj = new this(action, scheduler);
+            return obj;
+        };
+        FromActionStream.prototype.subscribeCore = function (observer) {
+            //public subscribeCore(obser:any){
+            //var observer = obser._currentObserver ? obser._currentObserver : obser;
+            //var observer = obser;
+            var next = observer.next;
+            var self = this;
+            observer.next = function (data) {
+                try {
+                    self._action.update(data);
+                    next.call(observer, data);
+                    if (self._action.isFinish) {
+                        observer.completed();
+                    }
+                }
+                catch (e) {
+                    observer.error(e);
+                }
+            };
+        };
+        return FromActionStream;
+    })(dyRt.BaseStream);
+    dyRt.FromActionStream = FromActionStream;
 })(dyRt || (dyRt = {}));
 
 var __extends = this.__extends || function (d, b) {
@@ -2027,6 +2290,177 @@ var dyRt;
     dyRt.TakeUntilStream = TakeUntilStream;
 })(dyRt || (dyRt = {}));
 
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="../definitions.d.ts"/>
+var dyRt;
+(function (dyRt) {
+    var ConcatStream = (function (_super) {
+        __extends(ConcatStream, _super);
+        function ConcatStream(source, otherSources) {
+            _super.call(this, null);
+            //private _source:Stream = null;
+            this._sources = null;
+            //this._source = source;
+            this.scheduler = source.scheduler;
+            this._sources = dyCb.Collection.create([source].concat(otherSources));
+            //this._sources = dyCb.Collection.create<Stream>(sources);
+        }
+        ConcatStream.create = function (source, otherSources) {
+            var obj = new this(source, otherSources);
+            return obj;
+        };
+        ConcatStream.prototype.buildStream = function (observer) {
+            //this._source.buildStream(MapObserver.create(observer, this._selector));
+            var self = this, count = this._sources.getCount();
+            //self._sources.getChild(0).buildStream(observer);
+            function loopRecursive(i) {
+                if (i === count) {
+                    observer.completed();
+                    return;
+                }
+                self._sources.getChild(i).buildStream(dyRt.ConcatObserver.create(observer, function () {
+                    loopRecursive(i + 1);
+                }));
+                //self._sources.getChild(i).subscribe(
+                //    (x) => {
+                //        observer.next(x);
+                //    }, (e) => {
+                //        observer.error(e);
+                //    }, () => {
+                //        loopRecursive(i+1);
+                //    }
+                //);
+                //if (i < len) {
+                //    if(next){
+                //        next(array[i]);
+                //    }
+                //    else{
+                //        observer.next(array[i]);
+                //    }
+                //    arguments.callee(i + 1, next, completed);
+                //} else {
+                //    if(completed){
+                //        completed();
+                //    }
+                //    else{
+                //        observer.completed();
+                //    }
+                //}
+            }
+            this.scheduler.publishRecursive(observer, 0, loopRecursive);
+        };
+        ConcatStream.prototype.subscribeCore = function (observer) {
+            //var self = this,
+            //    count = this._sources.getCount();
+            //
+            //    self._sources.getChild(0).subscribeCore(observer)
+            //.subscribe(
+            //(x) => {
+            //    observer.next(x);
+            //}, (e) => {
+            //    observer.error(e);
+            //}, () => {
+            //    loopRecursive(i+1);
+            //}
+            //);
+            //
+            //function loopRecursive(i) {
+            //    if(i === count){
+            //        observer.completed();
+            //
+            //        return;
+            //    }
+            //
+            //    self._sources.getChild(i).subscribe(
+            //        (x) => {
+            //            observer.next(x);
+            //        }, (e) => {
+            //            observer.error(e);
+            //        }, () => {
+            //            loopRecursive(i+1);
+            //        }
+            //    );
+            //    //if (i < len) {
+            //    //    if(next){
+            //    //        next(array[i]);
+            //    //    }
+            //    //    else{
+            //    //        observer.next(array[i]);
+            //    //    }
+            //    //    arguments.callee(i + 1, next, completed);
+            //    //} else {
+            //    //    if(completed){
+            //    //        completed();
+            //    //    }
+            //    //    else{
+            //    //        observer.completed();
+            //    //    }
+            //    //}
+            //}
+            //
+            //this.scheduler.publishRecursive(observer, 0, loopRecursive);
+            //this.addDisposeHandler(() => {
+            //    root.cancelNextRequestAnimationFrame(self.scheduler.requestLoopId);
+            //});
+        };
+        return ConcatStream;
+    })(dyRt.BaseStream);
+    dyRt.ConcatStream = ConcatStream;
+    var ConcatSubject = (function (_super) {
+        __extends(ConcatSubject, _super);
+        function ConcatSubject(source, otherSources) {
+            _super.call(this, source.scheduler);
+            //todo create method
+            //public static create(source:AsyncSubject, otherSources:Array<AsyncSubject>) {
+            //    var obj = new this(source, otherSources);
+            //
+            //    return obj;
+            //}
+            //private _source:AsyncSubject = null;
+            this._sources = null;
+            this._i = 0;
+            //this._source = source;
+            //this.scheduler = source.scheduler;
+            this._sources = dyCb.Collection.create([source].concat(otherSources));
+            //this._sources = dyCb.Collection.create<AsyncSubject>(sources);
+        }
+        ConcatSubject.prototype.next = function (value) {
+            //todo try catch?
+            //try{
+            //this._currentObserver.next(value);
+            this._sources.getChild(this._i).next(value);
+            //}
+            //catch(e){
+            //    this._currentObserver.error(e);
+            //}
+        };
+        ConcatSubject.prototype.error = function (err) {
+            try {
+                this._sources.getChild(this._i).error(err);
+            }
+            catch (e) {
+            }
+            finally {
+                _super.prototype.error.call(this, err);
+            }
+        };
+        ConcatSubject.prototype.completed = function () {
+            //todo try catch?
+            this._i++;
+            if (this._i === this._sources.getCount()) {
+                _super.prototype.completed.call(this);
+            }
+        };
+        return ConcatSubject;
+    })(dyRt.AsyncSubject);
+    dyRt.ConcatSubject = ConcatSubject;
+})(dyRt || (dyRt = {}));
+
 /// <reference path="../definitions.d.ts"/>
 var dyRt;
 (function (dyRt) {
@@ -2040,6 +2474,29 @@ var dyRt;
     dyRt.fromPromise = function (promise, scheduler) {
         if (scheduler === void 0) { scheduler = dyRt.Scheduler.create(); }
         return dyRt.FromPromiseStream.create(promise, scheduler);
+    };
+    //export var fromAction = (action:IAction, scheduler = Scheduler.create()) =>{
+    //    return FromActionStream.create(action, scheduler);
+    //};
+    dyRt.fromAction = function (action, scheduler) {
+        if (scheduler === void 0) { scheduler = dyRt.Scheduler.create(); }
+        //return FromActionStream.create(action, scheduler);
+        var subject = dyRt.AsyncSubject.create(scheduler);
+        var next = subject.next;
+        //var self = this;
+        subject.next = function (data) {
+            try {
+                action.update(data);
+                next.call(subject, data);
+                if (action.isFinish) {
+                    subject.completed();
+                }
+            }
+            catch (e) {
+                subject.error(e);
+            }
+        };
+        return subject;
     };
     dyRt.fromEventPattern = function (addHandler, removeHandler) {
         return dyRt.FromEventPatternStream.create(addHandler, removeHandler);
@@ -2451,33 +2908,3 @@ var dyRt;
     })(dyRt.BaseStream);
     dyRt.TestStream = TestStream;
 })(dyRt || (dyRt = {}));
-
-///// <reference path="../definitions.d.ts"/>
-//module dyRt{
-//    export class FromActionStream extends BaseStream{
-//        //public static create(promise:any, scheduler:Scheduler) {
-//        //    var obj = new this(promise, scheduler);
-//        //
-//        //    return obj;
-//        //}
-//        //
-//        //private _promise:any = null;
-//        //
-//        //constructor(promise:any, scheduler:Scheduler){
-//        //    super(null);
-//        //
-//        //    this._promise = promise;
-//        //    this.scheduler = scheduler;
-//        //}
-//
-//        public subscribeCore(observer:IObserver){
-//            this._action.onNext = (data) => {
-//                this.update(data);
-//                observer.next(data);
-//            };
-//            //this._action.onUpdate((data) => {
-//            //    observer.next(data);
-//            //});
-//        }
-//    }
-//}

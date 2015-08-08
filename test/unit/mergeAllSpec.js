@@ -114,6 +114,7 @@ describe("mergeAll", function () {
             expect(result).toEqual([1, 2, 2, 3, 3, 4]);
         });
         it("merge interval stream", function(){
+            var scheduler = TestScheduler.create(true);
             var sources = rt.fromArray([1, 2])
                 .map(function(value){
                     if(value === 2){

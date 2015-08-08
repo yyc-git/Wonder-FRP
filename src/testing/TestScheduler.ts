@@ -16,10 +16,16 @@ module dyRt {
             return Record.create(tick, null, ActionType.COMPLETED);
         }
 
-        public static create() {
-            var obj = new this();
+        public static create(isReset:boolean = false) {
+            var obj = new this(isReset);
 
             return obj;
+        }
+
+        constructor(isReset:boolean){
+            super();
+
+            this._isReset = isReset;
         }
 
         private _clock:number = null;
@@ -31,7 +37,8 @@ module dyRt {
             this._clock = clock;
         }
 
-        private _initialClock:number = null;
+        private _isReset:boolean = false;
+        //private _initialClock:number = null;
         private _isDisposed:boolean = false;
         private _timerMap:dyCb.Hash<Function> = dyCb.Hash.create<Function>();
         private _streamMap:dyCb.Hash<Function> = dyCb.Hash.create<Function>();
@@ -133,11 +140,14 @@ module dyRt {
         }
 
         private _setClock(){
-            if(this._initialClock){
-                this._clock =  Math.min(this._clock, this._initialClock);
+            if(this._isReset){
+                this._clock = this._subscribedTime;
             }
-
-            this._initialClock = this._clock;
+            //if(this._initialClock){
+            //    this._clock =  Math.min(this._clock, this._initialClock);
+            //}
+            //
+            //this._initialClock = this._clock;
         }
 
         public startWithTime(create:Function, subscribedTime:number, disposedTime:number) {

@@ -60,6 +60,28 @@ module dyRt{
             return TakeUntilStream.create(this, otherStream);
         }
 
+        public concat(streamArr:Array<Stream>);
+        //public concat(subjectArr:Array<Subject>);
+        public concat(...otherStream);
+
+        public concat(){
+            var args = null;
+
+            if(JudgeUtils.isArray(arguments[0])){
+                args = arguments[0];
+            }
+            else{
+                args = Array.prototype.slice.call(arguments, 0);
+            }
+
+            //todo judge args
+
+            //return ConcatSubject.create(this, args);
+            //return new ConcatSubject(this, args);
+
+            return ConcatStream.create(this, args);
+        }
+
         private _isSubject(subject){
             return subject instanceof Subject;
         }

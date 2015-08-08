@@ -12,6 +12,32 @@ module dyRt{
         return FromPromiseStream.create(promise, scheduler);
     };
 
+    //export var fromAction = (action:IAction, scheduler = Scheduler.create()) =>{
+    //    return FromActionStream.create(action, scheduler);
+    //};
+    //todo move to DYEngine
+    export var fromAction = (action:IAction, scheduler = Scheduler.create()) =>{
+        //return FromActionStream.create(action, scheduler);
+        var subject = AsyncSubject.create(scheduler);
+        var next = subject.next;
+        //var self = this;
+        subject.next = (data) => {
+            try{
+                action.update(data);
+                next.call(subject, data);
+
+                if(action.isFinish){
+                    subject.completed();
+                }
+            }
+            catch(e){
+                subject.error(e);
+            }
+        };
+
+        return subject;
+    };
+
     export var fromEventPattern = (addHandler:Function, removeHandler:Function) =>{
         return FromEventPatternStream.create(addHandler, removeHandler);
     };

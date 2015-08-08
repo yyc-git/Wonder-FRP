@@ -49,8 +49,8 @@ describe("fromPromise", function () {
             function (x) {
             },
             function (err) {
-                done();
                 expect(error).toEqual(err);
+                done();
             },
             function () {
             });

@@ -114,6 +114,7 @@ describe("flatMap", function () {
             expect(result).toEqual([1, 2, 2, 3, 3, 4]);
         });
         it("map interval stream", function(){
+            var scheduler = TestScheduler.create(true);
             var sources = rt.fromArray([1, 2])
                 .flatMap(function(value){
                     if(value === 2){

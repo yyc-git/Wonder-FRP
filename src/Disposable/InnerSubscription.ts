@@ -1,16 +1,16 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
 	export class InnerSubscription implements IDisposable{
-		public static create(subject:Subject, observer:Observer) {
+		public static create(subject:Subject|AsyncSubject, observer:Observer) {
 			var obj = new this(subject, observer);
 
 			return obj;
 		}
 
-		private _subject:Subject = null;
+		private _subject:Subject|AsyncSubject = null;
 		private _observer:Observer = null;
 
-		constructor(subject:Subject, observer:Observer){
+		constructor(subject:Subject|AsyncSubject, observer:Observer){
 			this._subject = subject;
 			this._observer = observer;
 		}
