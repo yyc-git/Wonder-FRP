@@ -19,70 +19,42 @@ describe("concat", function () {
 
     describe("concat async subject", function () {
         var error = null;
-
-        function createAction(maxTime, errorTime){
-            return {
-                isFinish: false,
-                time: 0,
-
-                update: function (time) {
-                    this.time += time;
-                    if(this.time> (errorTime || 200)){
-                        throw error;
-                    }
-                    if (this.time >= maxTime) {
-                        this.isFinish = true;
-                        return;
-                    }
-                }
-            };
-        }
+        var subject = null;
 
         beforeEach(function(){
             error = new Error("err");
-        });
-
-        it("test", function(){
-            var isFinish = false;
-            var action1 = createAction(100),
-                action2 = createAction(50),
-                action3 = createAction(10);
-
-            var subject = rt.fromAction(action1)
-
-                .concat(rt.fromAction(action2), rt.fromAction(action3));
+            subject = rt.AsyncSubject.create()
+                .concat(rt.AsyncSubject.create(), rt.AsyncSubject.create());
 
             subject.subscribe(function (data) {
                 result.push(data);
             }, function(err){
-
+                result.push(err);
             }, function(){
-                isFinish = true;
+                result.push(1);
             });
+        });
 
+        it("can concat multi async subject", function(){
             subject.start();
             subject.next(9);
             subject.next(50);
             subject.next(50);
-            subject.next(50);
-            subject.next(50);
-            subject.next(50);
+            subject.completed();
 
-            expect(result).toEqual([9, 50, 50, 50, 50]);
-            expect(isFinish).toBeTruthy();
+            expect(result).toEqual([9, 50, 50, 1]);
         });
         it("error", function(){
-            //var isFinish = false;
-            //var action1 = createAction(100),
-            //    action2 = createAction(50, 55),
-            //    action3 = createAction(10);
-            //
-            //var subject = rt.fromAction(action1)
-            //    .concat(rt.fromAction(action2), rt.fromAction(action3));
-            //todo add map,do,takeUntil,
-            //todo test error
+            subject.start();
+            subject.next(9);
+            subject.next(50);
+            subject.error(error);
+            subject.completed();
+
+            expect(result).toEqual([9, 50, error]);
         });
     });
+
     it("concat array", function(){
         var stream = rt.fromArray([1, 2])
             .concat(rt.fromArray([3, 4]))

@@ -19,7 +19,9 @@
 /// <reference path="core/Scheduler"/>
 /// <reference path="core/Observer"/>
 
-/// <reference path="core/Subject"/>
+/// <reference path="subject/Subject"/>
+/// <reference path="subject/AsyncSubject"/>
+/// <reference path="subject/ConcatSubject"/>
 
 /// <reference path="observer/AnonymousObserver"/>
 /// <reference path="observer/AutoDetachObserver"/>
@@ -34,7 +36,6 @@
 /// <reference path="stream/MapStream"/>
 /// <reference path="stream/FromArrayStream"/>
 /// <reference path="stream/FromPromiseStream"/>
-/// <reference path="stream/FromActionStream"/>
 /// <reference path="stream/FromEventPatternStream"/>
 /// <reference path="stream/AnonymousStream"/>
 /// <reference path="stream/IntervalStream"/>
