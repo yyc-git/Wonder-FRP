@@ -20,18 +20,8 @@ module dyRt{
             this._selector = selector;
         }
 
-        public buildStream(observer:IObserver){
+        public subscribeCore(observer:IObserver){
             this._source.buildStream(MapObserver.create(observer, this._selector));
         }
-        //public subscribe(arg1:Function|Observer|Subject, onError?, onCompleted?):IDisposable {
-        //    return this._source.subscribe.apply(this._source, arguments);
-        //}
-        //
-        //public subscribeCore(){
-        //    if(this._source instanceof BaseStream){
-        //        let baseStream = <BaseStream>this._source;
-        //        baseStream.subscribeCore();
-        //    }
-        //}
     }
 }

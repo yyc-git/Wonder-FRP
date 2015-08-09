@@ -19,7 +19,7 @@ module dyRt{
             this.scheduler = this._source.scheduler;
         }
 
-        public buildStream(observer:IObserver){
+        public subscribeCore(observer:IObserver){
             var streamGroup = dyCb.Collection.create<Stream>();
 
             this._source.buildStream(MergeAllObserver.create(observer, streamGroup));

@@ -19,7 +19,7 @@ module dyRt{
             this.scheduler = this._source.scheduler;
         }
 
-        public buildStream(observer:IObserver){
+        public subscribeCore(observer:IObserver){
             this._source.buildStream(DoObserver.create(observer, this._observer));
         }
     }
