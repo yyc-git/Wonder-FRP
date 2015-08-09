@@ -20,18 +20,17 @@ module dyRt{
         public subscribe(arg1?:Function|Observer, onError?:Function, onCompleted?:Function):IDisposable{
             var observer = arg1 instanceof Observer
                 ? <AutoDetachObserver>arg1
-                : AutoDetachObserver.create(<Function>arg1, onError, onCompleted);
+                    : AutoDetachObserver.create(<Function>arg1, onError, onCompleted),
+                self = this;
 
             this._observers.addChild(observer);
 
-            var self = this;
 
             this.addDisposeHandler(() => {
                 self.dispose();
             });
 
             observer.setDisposeHandler(this.disposeHandler);
-
 
             return InnerSubscription.create(this, observer);
         }
@@ -75,7 +74,7 @@ module dyRt{
         public subscribeCore(observer:IObserver){
         }
 
-        public concat(subjectArr:Array<AsyncSubject>);
+        public concat(subjectArr:Array<GeneratorSubject>);
         public concat(...otherSubject);
 
         public concat(){
@@ -88,10 +87,22 @@ module dyRt{
                 args = Array.prototype.slice.call(arguments, 0);
             }
 
-            //todo check be AsyncSubject
-
+            dyCb.Log.error(!this._areAllParamsGenerorSubject(args), "GeneratorSubject->concat can only concat GeneratorSubject");
 
             return ConcatSubject.create(this, args);
+        }
+
+        private _areAllParamsGenerorSubject(subjectArr:Array<GeneratorSubject>){
+            var result = true;
+
+            subjectArr.forEach((subject:GeneratorSubject) => {
+                if((subject instanceof GeneratorSubject) === false){
+                    result = false;
+                    return dyCb.$BREAK;
+                }
+            });
+
+            return result;
         }
     }
 }

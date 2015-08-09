@@ -1,7 +1,7 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class ConcatSubject extends GeneratorSubject{
-        public static create(source:AsyncSubject, otherSources:Array<AsyncSubject>) {
+        public static create(source:GeneratorSubject, otherSources:Array<GeneratorSubject>) {
             var obj = new this(source, otherSources);
 
             obj.initWhenCreate();
@@ -9,20 +9,20 @@ module dyRt{
             return obj;
         }
 
-        private _sources:dyCb.Collection<AsyncSubject> = null;
+        private _sources:dyCb.Collection<GeneratorSubject> = null;
         private _i:number = 0;
 
-        constructor(source:AsyncSubject, otherSources:Array<AsyncSubject>){
+        constructor(source:GeneratorSubject, otherSources:Array<GeneratorSubject>){
             super(source.scheduler);
 
-            this._sources = dyCb.Collection.create<AsyncSubject>([source].concat(otherSources));
+            this._sources = dyCb.Collection.create<GeneratorSubject>([source].concat(otherSources));
         }
 
         public initWhenCreate(){
             var self = this,
                 count = this._sources.getCount();
 
-            this._sources.forEach((source:AsyncSubject) => {
+            this._sources.forEach((source:GeneratorSubject) => {
                 source.completed = () => {
                     self._i++;
 
@@ -79,7 +79,7 @@ module dyRt{
 
             //this._source && observer.setDisposeHandler(this._source.disposeHandler);
 
-            this._sources.forEach((subject:AsyncSubject) => {
+            this._sources.forEach((subject:GeneratorSubject) => {
                 //subject.subscribe(observer, onError, onCompleted);
                 subject.subscribe(arg1, onError, onCompleted);
             });
@@ -125,7 +125,7 @@ module dyRt{
         }
 
         public remove(observer:Observer){
-            this._sources.forEach((subject:AsyncSubject) => {
+            this._sources.forEach((subject:GeneratorSubject) => {
                 subject.remove(observer);
             });
 
@@ -134,7 +134,7 @@ module dyRt{
 
         //public dispose(observer:Observer){
         public dispose(){
-            this._sources.forEach((subject:AsyncSubject) => {
+            this._sources.forEach((subject:GeneratorSubject) => {
                 subject.dispose();
             });
 
@@ -144,7 +144,7 @@ module dyRt{
         //public buildStream(observer:IObserver){
         //    var self = this;
         //
-        //    this._sources.forEach((source:AsyncSubject) => {
+        //    this._sources.forEach((source:GeneratorSubject) => {
         //      source.buildStream(ConcatSubjectObserver.create(
         //            observer
         //              , ()=>{
