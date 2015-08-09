@@ -1,28 +1,24 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
-    export class ConcatSubject extends AsyncSubject{
-        //todo create method
+    export class ConcatSubject extends GeneratorSubject{
+        public static create(source:AsyncSubject, otherSources:Array<AsyncSubject>) {
+            var obj = new this(source, otherSources);
 
-        //public static create(source:AsyncSubject, otherSources:Array<AsyncSubject>) {
-        //    var obj = new this(source, otherSources);
-        //
-        //    return obj;
-        //}
+            obj.initWhenCreate();
 
-        //private _source:AsyncSubject = null;
+            return obj;
+        }
+
         private _sources:dyCb.Collection<AsyncSubject> = null;
         private _i:number = 0;
 
         constructor(source:AsyncSubject, otherSources:Array<AsyncSubject>){
             super(source.scheduler);
 
-            //this._source = source;
-
-            //this.scheduler = source.scheduler;
-
             this._sources = dyCb.Collection.create<AsyncSubject>([source].concat(otherSources));
-            //this._sources = dyCb.Collection.create<AsyncSubject>(sources);
+        }
 
+        public initWhenCreate(){
             var self = this,
                 count = this._sources.getCount();
 
@@ -30,10 +26,8 @@ module dyRt{
                 source.completed = () => {
                     self._i++;
 
-                    //if(self._i === self._sources.getCount()){
                     if(self._i >= count){
                         self.completed();
-                        //self.dispose();
 
                         self._i = count - 1;
                     }
@@ -42,8 +36,7 @@ module dyRt{
         }
 
         public next(value:any){
-            //todo try catch?
-            //try{
+            try{
             //this._currentObserver.next(value);
             this._sources.getChild(this._i).next(value);
             //this._i++;
@@ -51,10 +44,10 @@ module dyRt{
             //if(this._i === this._sources.getCount()){
             //    this.completed();
             //}
-            //}
-            //catch(e){
-            //    this._currentObserver.error(e);
-            //}
+            }
+            catch(e){
+                this.error(e);
+            }
         }
 
         //public error(err:any){
