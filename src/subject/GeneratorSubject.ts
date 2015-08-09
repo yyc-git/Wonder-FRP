@@ -33,6 +33,7 @@ module dyRt{
             return InnerSubscription.create(this, observer);
         }
 
+        //todo if user should insert user logic, how to do better?add hook method(like onBeforeNext,onIsCompleted)?
         public next(value:any){
             if(!this._isStart){
                 return;

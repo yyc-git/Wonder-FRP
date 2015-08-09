@@ -73,6 +73,9 @@ describe("concat", function () {
                 next3 = subject3.next;
 
                 sandbox.stub(subject1, "next", function(data){
+                    if(!subject1.isStart){
+                        return;
+                    }
                     next1.call(subject1, data);
                     if(data >= 10){
                         subject1.completed();
@@ -80,12 +83,18 @@ describe("concat", function () {
                 });
 
                 sandbox.stub(subject2, "next", function(data){
+                    if(!subject2.isStart){
+                        return;
+                    }
                     next2.call(subject2, data);
                     if(data >= 50){
                         subject2.completed();
                     }
                 });
                 sandbox.stub(subject3, "next", function(data){
+                    if(!subject3.isStart){
+                        return;
+                    }
                     next3.call(subject3, data);
                     if(data >= 20){
                         subject3.completed();

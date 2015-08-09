@@ -23,6 +23,7 @@
 
 /// <reference path="subject/Subject"/>
 /// <reference path="subject/GeneratorSubject"/>
+/// <reference path="subject/OperatorSubject"/>
 /// <reference path="subject/AsyncSubject"/>
 /// <reference path="subject/ConcatSubject"/>
 /// <reference path="subject/MapSubject"/>
