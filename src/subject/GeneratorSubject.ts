@@ -13,7 +13,7 @@ module dyRt{
             super("GeneratorSubject");
         }
 
-        private _observers:dyCb.Collection<IObserver> = dyCb.Collection.create<IObserver>();
+        protected observers:dyCb.Collection<IObserver> = dyCb.Collection.create<IObserver>();
 
         public subscribe(arg1?:Function|Observer, onError?:Function, onCompleted?:Function):IDisposable{
             var observer = arg1 instanceof Observer
@@ -21,7 +21,7 @@ module dyRt{
                     : AutoDetachObserver.create(<Function>arg1, onError, onCompleted),
                 self = this;
 
-            this._observers.addChild(observer);
+            this.observers.addChild(observer);
 
 
             this.addDisposeHandler(() => {
@@ -34,19 +34,31 @@ module dyRt{
         }
 
         public next(value:any){
-            this._observers.forEach((ob:Observer) => {
+            if(!this._isStart){
+                return;
+            }
+
+            this.observers.forEach((ob:Observer) => {
                 ob.next(value);
             });
         }
 
         public error(error:any){
-            this._observers.forEach((ob:Observer) => {
+            if(!this._isStart){
+                return;
+            }
+
+            this.observers.forEach((ob:Observer) => {
                 ob.error(error);
             });
         }
 
         public completed(){
-            this._observers.forEach((ob:Observer) => {
+            if(!this._isStart){
+                return;
+            }
+
+            this.observers.forEach((ob:Observer) => {
                 ob.completed();
             });
         }
@@ -56,17 +68,17 @@ module dyRt{
         }
 
         public remove(observer:Observer){
-            this._observers.removeChild((ob:Observer) => {
+            this.observers.removeChild((ob:Observer) => {
                 return JudgeUtils.isEqual(ob, observer);
             });
         }
 
         public dispose(){
-            this._observers.forEach((ob:Observer) => {
+            this.observers.forEach((ob:Observer) => {
                 ob.dispose();
             });
 
-            this._observers.removeAllChildren();
+            this.observers.removeAllChildren();
         }
 
         public concat(subjectArr:Array<GeneratorSubject>);
@@ -91,17 +103,27 @@ module dyRt{
             return MapSubject.create(this, selector);
         }
 
+        public do(onNext?:Function, onError?:Function, onCompleted?:Function) {
+            return DoSubject.create(this, onNext, onError, onCompleted);
+        }
+
+        public takeUntil(otherSubject:GeneratorSubject){
+            dyCb.Log.error(!this._areAllParamsGenerorSubject([otherSubject]), "GeneratorSubject->takeUntil can only handle GeneratorSubject");
+
+            return TakeUntilSubject.create(this, otherSubject);
+        }
+
         private _areAllParamsGenerorSubject(subjectArr:Array<GeneratorSubject>){
-            var result = true;
+            var i = null,
+                len = subjectArr.length;
 
-            subjectArr.forEach((subject:GeneratorSubject) => {
-                if((subject instanceof GeneratorSubject) === false){
-                    result = false;
-                    return dyCb.$BREAK;
+            for(i = 0; i < len; i++){
+                if((subjectArr[i] instanceof GeneratorSubject) === false){
+                    return false;
                 }
-            });
+            }
 
-            return result;
+            return true;
         }
     }
 }

@@ -8,6 +8,7 @@
 /// <reference path="observer/IObserver"/>
 /// <reference path="disposable/Disposer"/>
 /// <reference path="disposable/InnerSubscription"/>
+/// <reference path="disposable/InnerSubscriptionGroup"/>
 
 /// <reference path="global/Variable"/>
 /// <reference path="global/Const"/>
@@ -25,6 +26,8 @@
 /// <reference path="subject/AsyncSubject"/>
 /// <reference path="subject/ConcatSubject"/>
 /// <reference path="subject/MapSubject"/>
+/// <reference path="subject/DoSubject"/>
+/// <reference path="subject/TakeUntilSubject"/>
 
 /// <reference path="observer/AnonymousObserver"/>
 /// <reference path="observer/AutoDetachObserver"/>

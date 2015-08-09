@@ -18,15 +18,6 @@ module dyRt{
             this.subscribeFunc(observer);
         }
 
-        protected handleSubject(arg){
-            if(this._isSubject(arg)){
-                this._setSubject(arg);
-                return true;
-            }
-
-            return false;
-        }
-
         public do(onNext?:Function, onError?:Function, onCompleted?:Function) {
             return DoStream.create(this, onNext, onError, onCompleted);
         }
@@ -68,6 +59,15 @@ module dyRt{
             //return new ConcatSubject(this, args);
 
             return ConcatStream.create(this, args);
+        }
+
+        protected handleSubject(arg){
+            if(this._isSubject(arg)){
+                this._setSubject(arg);
+                return true;
+            }
+
+            return false;
         }
 
         private _isSubject(subject){

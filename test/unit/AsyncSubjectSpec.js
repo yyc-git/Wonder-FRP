@@ -40,5 +40,22 @@ describe("AsyncSubject", function () {
 
         expect(result).toEqual([10, 50, error]);
     });
+
+    describe("if subject not start, subject.next/error/completed will not work", function(){
+        it("test subject.next/completed", function(){
+            subject.next(10);
+            subject.next(50);
+            subject.completed();
+
+            expect(result).toEqual([]);
+        });
+        it("test subject.error", function(){
+            var error = new Error("err");
+
+            subject.error(error);
+
+            expect(result).toEqual([]);
+        });
+    });
 });
 

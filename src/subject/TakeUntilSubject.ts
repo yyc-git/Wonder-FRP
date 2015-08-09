@@ -1,33 +1,34 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
-    export class MapSubject extends GeneratorSubject{
-        public static create(source:GeneratorSubject, selector:Function) {
-            var obj = new this(source, selector);
+    export class TakeUntilSubject extends GeneratorSubject{
+        public static create(source:GeneratorSubject, otherSteam:GeneratorSubject) {
+            var obj = new this(source, otherSteam);
 
             return obj;
         }
 
         private _source:GeneratorSubject = null;
-        private _selector:Function = null;
+        private _otherGeneratorSubject:GeneratorSubject = null;
 
-        constructor(source:GeneratorSubject, selector:Function){
+        constructor(source:GeneratorSubject, otherGeneratorSubject:GeneratorSubject){
             super();
 
             this._source = source;
-            this._selector = selector;
+            this._otherGeneratorSubject = otherGeneratorSubject;
         }
 
         public next(value:any){
-            try{
-                this._source.next(this._selector(value));
-            }
-            catch(e){
-                this._source.error(e);
-            }
+            var self = this;
+
+            this._source.next(value);
+
+            this._otherGeneratorSubject.next = (data:any) => {
+                self._source.completed();
+            };
         }
 
-        public error(err:any){
-            this._source.error(err);
+        public error(error){
+            this._source.error(error);
         }
 
         public completed(){

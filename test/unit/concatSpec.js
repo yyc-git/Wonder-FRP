@@ -19,6 +19,42 @@ describe("concat", function () {
 
     describe("concat generator subject", function () {
         var error = null;
+        var subscription = null;
+
+        function subscribe(subject){
+            subscription = subject.subscribe(function (data) {
+                result.push(data);
+            }, function(err){
+                result.push(err);
+            }, function(){
+                result.push(1);
+            });
+        }
+
+        describe("if subject not start, subject.next/error/completed will not work", function(){
+            var subject, subject2;
+
+            beforeEach(function(){
+                subject2 = rt.AsyncSubject.create();
+                subject = rt.AsyncSubject.create().concat(subject2);
+
+                subscribe(subject);
+            });
+            it("test subject.next/completed", function(){
+                subject.next(10);
+                subject.next(50);
+                subject.completed();
+
+                expect(result).toEqual([]);
+            });
+            it("test subject.error", function(){
+                var error = new Error("err");
+
+                subject.error(error);
+
+                expect(result).toEqual([]);
+            });
+        });
 
         describe("concat all generator subject", function(){
             var subject = null,
@@ -56,35 +92,139 @@ describe("concat", function () {
                     }
                 });
 
-                subject = subject1.concat(subject2, subject3);
-
-                subject.subscribe(function (data) {
-                    result.push(data);
-                }, function(err){
-                    result.push(err);
-                }, function(){
-                    result.push(1);
-                });
             });
 
-            it("can concat multi generator subject", function(){
+            it("test dispose", function(){
+                subject = subject1.concat(subject2, subject3);
+
+                subscribe(subject);
+
                 subject.start();
-                subject.next(9);
-                subject.next(20);
+                subject.next(1);
+                subscription.dispose();
+                subject.next(50);
                 subject.next(50);
                 subject.next(22);
                 subject.next(50);
 
-                expect(result).toEqual([9, 20, 50, 22, 1]);
+                expect(result).toEqual([1]);
             });
-            it("error", function(){
-                subject.start();
-                subject.next(9);
-                subject.next(50);
-                subject.error(error);
-                subject.completed();
 
-                expect(result).toEqual([9, 50, error]);
+            describe("test concat", function(){
+                beforeEach(function(){
+                    subject = subject1.concat(subject2, subject3);
+                    subscribe(subject);
+                });
+
+                it("can concat multi generator subject", function(){
+                    subject.start();
+                    subject.next(9);
+                    subject.next(20);
+                    subject.next(50);
+                    subject.next(22);
+                    subject.next(50);
+
+                    expect(result).toEqual([9, 20, 50, 22, 1]);
+                });
+
+                describe("error", function(){
+                    it("subject error, first handle by the occured subject, then handle by the subscribed error handler", function(){
+                        var error = subject2.error;
+                        var err = new Error("err");
+                        sandbox.stub(subject2, "error", function(data){
+                            result.push(data);
+                            result.push(0);
+                            error.call(subject2, data);
+                        });
+
+                        subject.start();
+                        subject.next(10);
+                        subject.error(err);
+                        subject.completed();
+
+                        expect(result).toEqual([10, err, 0, err]);
+                    });
+                    it("concated subject error, first handle by the occured subject, then handle by the subscribed error handler", function(){
+                        var error = subject2.error;
+                        var err1 = new Error("err1"),
+                            err2 = new Error("err2");
+                        sandbox.stub(subject2, "error", function(data){
+                            result.push(data);
+                            result.push(0);
+                            error.call(subject2, data);
+                        });
+                        sandbox.stub(subject2, "next", function(data){
+                            if(data >= 10){
+                                throw err1;
+                            }
+
+                            next2.call(subject2, data);
+                        });
+
+                        subject.start();
+                        subject.next(10);
+                        subject.next(5);
+                        subject.next(10);
+                        subject.completed();
+
+                        expect(result).toEqual([10, 5, err1, 0, err1]);
+                    });
+                });
+
+                describe("completed", function(){
+                    it("if concated subject aren't all completed, invoke the occured subject->completed", function(){
+                        var completed = subject2.completed;
+                        sandbox.stub(subject2, "completed", function(){
+                            result.push(0);
+                            completed.call(subject2);
+                        });
+
+                        subject.start();
+                        subject.next(10);
+                        subject.completed();
+
+                        expect(result).toEqual([10, 0]);
+                    });
+                    it("else, invoke subscribed completed handler", function(){
+                        var completed = subject2.completed;
+                        sandbox.stub(subject2, "completed", function(){
+                            result.push(0);
+                            completed.call(subject2);
+                        });
+
+                        subject.start();
+                        subject.next(10);
+                        subject.next(50);
+                        subject.next(20);
+                        subject.completed();
+
+                        expect(result).toEqual([10, 50, 0, 20, 1]);
+                    });
+                });
+            });
+
+            describe("multi opeator", function(){
+                beforeEach(function(){
+
+                });
+
+                it("map", function(){
+                    subject = subject1.concat(subject2, subject3)
+                        .map(function(x) {
+                            return x * 2;
+                        });
+
+                    subscribe(subject);
+
+                    subject.start();
+                    subject.next(9);
+                    subject.next(20);
+                    subject.next(50);
+                    subject.next(22);
+                    subject.next(50);
+
+                    expect(result).toEqual([18, 40, 100, 44, 1]);
+                });
             });
         });
 

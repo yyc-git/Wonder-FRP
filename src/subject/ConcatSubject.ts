@@ -28,28 +28,76 @@ module dyRt{
 
                     if(self._i >= count){
                         self.completed();
-
-                        self._i = count - 1;
                     }
                 }
             });
         }
 
+        public start(){
+            super.start();
+
+            this._sources.forEach((source:GeneratorSubject) => {
+                source.start();
+            });
+        }
+
         public next(value:any){
+            var source = null;
+
+            if(!this.isStart || this._isAllSourceCompleted()){
+                return;
+            }
+
+            source = this._sources.getChild(this._i);
+
             try{
-                this._sources.getChild(this._i).next(value);
+                source.next(value);
             }
             catch(e){
-                this.error(e);
+                source.error(e);
             }
         }
 
+        private _isAllSourceCompleted(){
+            return this._i >= this._sources.getCount();
+        }
+
+        public error(err:any){
+            if(!this.isStart || this._isAllSourceCompleted()){
+                return;
+            }
+
+            this._sources.getChild(this._i).error(err);
+        }
+
+        public completed(){
+            if(!this.isStart){
+                return;
+            }
+
+            if(this._isAllSourceCompleted()){
+                this.observers.forEach((ob:Observer) => {
+                    ob.completed();
+                });
+                return;
+            }
+
+            this._sources.getChild(this._i).completed();
+        }
+
         public subscribe(arg1?:Function|Observer, onError?:Function, onCompleted?:Function):IDisposable{
+            var innerSubscriptionGroup = InnerSubscriptionGroup.create(),
+                observer = arg1 instanceof Observer
+                    ? <AutoDetachObserver>arg1
+                    : AutoDetachObserver.create(<Function>arg1, onError, onCompleted);
+
             this._sources.forEach((subject:GeneratorSubject) => {
-                subject.subscribe(arg1, onError, onCompleted);
+                innerSubscriptionGroup.addChild(subject.subscribe(observer, onError, onCompleted));
             });
 
-            return super.subscribe(arg1, onError, onCompleted);
+            this.observers.addChild(observer);
+
+            return innerSubscriptionGroup;
         }
 
         public remove(observer:Observer){
@@ -57,7 +105,7 @@ module dyRt{
                 subject.remove(observer);
             });
 
-            super.remove(observer);
+            //super.remove(observer);
         }
 
         public dispose(){
@@ -65,7 +113,7 @@ module dyRt{
                 subject.dispose();
             });
 
-            super.dispose();
+            //super.dispose();
         }
     }
 }

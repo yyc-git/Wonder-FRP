@@ -45,24 +45,87 @@ describe("map", function () {
             completed(202)
         );
     });
-    it("async subject", function(){
-        var result = [];
-        var subject = rt.AsyncSubject.create()
-            .map(function(x) {
-                return x * 2;
-            });
+    describe("generator subject", function(){
+        var result,subject;
 
-        subject.subscribe(function(x){
-            result.push(x);
-        }, null, function(){
-            result.push(1);
+        beforeEach(function(){
+            result = [];
         });
 
-        subject.next(10);
-        subject.next(5);
-        subject.completed();
+        describe("if subject not start, subject.next/error/completed will not work", function(){
+            beforeEach(function(){
+                subject = rt.AsyncSubject.create()
+                    .map(function(x) {
+                        return x * 2;
+                    });
 
-        expect(result).toEqual([20, 10, 1]);
+                subject.subscribe(function(x){
+                    result.push(x);
+                }, null, function(){
+                    result.push(1);
+                });
+            });
+            it("test subject.next/completed", function(){
+                subject.next(10);
+                subject.next(50);
+                subject.completed();
+
+                expect(result).toEqual([]);
+            });
+            it("test subject.error", function(){
+                var error = new Error("err");
+
+                subject.error(error);
+
+                expect(result).toEqual([]);
+            });
+        });
+
+        it("normal", function(){
+            subject = rt.AsyncSubject.create()
+                .map(function(x) {
+                    return x * 2;
+                });
+
+            subject.subscribe(function(x){
+                result.push(x);
+            }, null, function(){
+                result.push(1);
+            });
+
+            subject.start();
+            subject.next(10);
+            subject.next(5);
+            subject.completed();
+            subject.next(10);
+
+            expect(result).toEqual([20, 10, 1]);
+        });
+        it("error", function(){
+            var error = new Error("err");
+            subject = rt.AsyncSubject.create()
+                .map(function(x) {
+                    if(x < 6){
+                        throw error;
+                    }
+                    return x * 2;
+                });
+
+            subject.subscribe(function(x){
+                result.push(x);
+            }, function(err){
+                result.push(err);
+            }, function(){
+                result.push(1);
+            });
+
+            subject.start();
+            subject.next(10);
+            subject.next(5);
+            subject.completed();
+
+            expect(result).toEqual([20, error]);
+        });
     });
     it("mock stream", function(){
         var a = 0,
