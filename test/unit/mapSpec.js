@@ -45,6 +45,25 @@ describe("map", function () {
             completed(202)
         );
     });
+    it("async subject", function(){
+        var result = [];
+        var subject = rt.AsyncSubject.create()
+            .map(function(x) {
+                return x * 2;
+            });
+
+        subject.subscribe(function(x){
+            result.push(x);
+        }, null, function(){
+            result.push(1);
+        });
+
+        subject.next(10);
+        subject.next(5);
+        subject.completed();
+
+        expect(result).toEqual([20, 10, 1]);
+    });
     it("mock stream", function(){
         var a = 0,
             b = 0;

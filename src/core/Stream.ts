@@ -1,16 +1,8 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
-    export class Stream extends Entity{
+    export class Stream extends Disposer{
         public scheduler:Scheduler = ABSTRACT_ATTRIBUTE;
         public subscribeFunc:Function = null;
-
-        private _disposeHandler:dyCb.Collection<Function> = dyCb.Collection.create<Function>();
-        get disposeHandler(){
-            return this._disposeHandler;
-        }
-        set disposeHandler(disposeHandler:dyCb.Collection<Function>){
-            this._disposeHandler = disposeHandler;
-        }
 
         constructor(subscribeFunc){
             super("Stream");
@@ -24,10 +16,6 @@ module dyRt{
 
         public buildStream(observer:IObserver){
             this.subscribeFunc(observer);
-        }
-
-        public addDisposeHandler(func:Function){
-            this._disposeHandler.addChild(func);
         }
 
         protected handleSubject(arg){

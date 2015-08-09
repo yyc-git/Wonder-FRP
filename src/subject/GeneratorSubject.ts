@@ -1,6 +1,6 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
-    export class GeneratorSubject extends BaseStream implements IObserver {
+    export class GeneratorSubject extends Disposer implements IObserver {
         private _isStart:boolean = false;
         get isStart(){
             return this._isStart;
@@ -9,13 +9,11 @@ module dyRt{
             this._isStart = isStart;
         }
 
-        private _observers:dyCb.Collection<IObserver> = dyCb.Collection.create<IObserver>();
-
-        constructor(scheduler:Scheduler){
-            super(null);
-
-            this.scheduler = scheduler;
+        constructor(){
+            super("GeneratorSubject");
         }
+
+        private _observers:dyCb.Collection<IObserver> = dyCb.Collection.create<IObserver>();
 
         public subscribe(arg1?:Function|Observer, onError?:Function, onCompleted?:Function):IDisposable{
             var observer = arg1 instanceof Observer
@@ -71,9 +69,6 @@ module dyRt{
             this._observers.removeAllChildren();
         }
 
-        public subscribeCore(observer:IObserver){
-        }
-
         public concat(subjectArr:Array<GeneratorSubject>);
         public concat(...otherSubject);
 
@@ -90,6 +85,10 @@ module dyRt{
             dyCb.Log.error(!this._areAllParamsGenerorSubject(args), "GeneratorSubject->concat can only concat GeneratorSubject");
 
             return ConcatSubject.create(this, args);
+        }
+
+        public map(selector:Function):MapSubject{
+            return MapSubject.create(this, selector);
         }
 
         private _areAllParamsGenerorSubject(subjectArr:Array<GeneratorSubject>){

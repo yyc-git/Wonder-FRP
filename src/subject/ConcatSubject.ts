@@ -13,7 +13,7 @@ module dyRt{
         private _i:number = 0;
 
         constructor(source:GeneratorSubject, otherSources:Array<GeneratorSubject>){
-            super(source.scheduler);
+            super();
 
             this._sources = dyCb.Collection.create<GeneratorSubject>([source].concat(otherSources));
         }

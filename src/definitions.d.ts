@@ -2,19 +2,20 @@
 
 /// <reference path="JudgeUtils"/>
 
+/// <reference path="core/Entity"/>
+
 /// <reference path="disposable/IDisposable"/>
 /// <reference path="observer/IObserver"/>
+/// <reference path="disposable/Disposer"/>
+/// <reference path="disposable/InnerSubscription"/>
 
 /// <reference path="global/Variable"/>
 /// <reference path="global/Const"/>
 /// <reference path="global/init"/>
 
-/// <reference path="disposable/InnerSubscription"/>
 
-/// <reference path="core/Entity"/>
 /// <reference path="core/Stream"/>
 
-/// <reference path="stream/BaseStream"/>
 
 /// <reference path="core/Scheduler"/>
 /// <reference path="core/Observer"/>
@@ -23,6 +24,7 @@
 /// <reference path="subject/GeneratorSubject"/>
 /// <reference path="subject/AsyncSubject"/>
 /// <reference path="subject/ConcatSubject"/>
+/// <reference path="subject/MapSubject"/>
 
 /// <reference path="observer/AnonymousObserver"/>
 /// <reference path="observer/AutoDetachObserver"/>
@@ -32,7 +34,7 @@
 /// <reference path="observer/TakeUntilObserver"/>
 /// <reference path="observer/ConcatObserver"/>
 
-
+/// <reference path="stream/BaseStream"/>
 /// <reference path="stream/DoStream"/>
 /// <reference path="stream/MapStream"/>
 /// <reference path="stream/FromArrayStream"/>
