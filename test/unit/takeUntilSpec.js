@@ -139,6 +139,7 @@ describe("takeUntil", function () {
             subject.start();
             subject.next(1);
             subject.next(2);
+            subject2.start();
             subject2.next(3);
             subject.next(4);
 
@@ -146,12 +147,12 @@ describe("takeUntil", function () {
         });
 
         describe("error", function(){
-            it("if the takeUntiled subject->next throw error, it will also trigger the main subject->completed", function(){
+            it("if the takeUntiled subject->next throw error, it will not trigger the main subject->completed", function(){
                 var subject2 = rt.AsyncSubject.create();
                 var err = new Error("err");
-                sandbox.stub(subject2, "next", function(data){
+                subject2.onBeforeNext = function(data){
                     throw err;
-                });
+                };
 
                 subject = rt.AsyncSubject.create().takeUntil(subject2);
 
@@ -160,10 +161,11 @@ describe("takeUntil", function () {
                 subject.start();
                 subject.next(1);
                 subject.next(2);
+                subject2.start();
                 subject2.next(3);
                 subject.next(4);
 
-                expect(result).toEqual([1, 2, -1]);
+                expect(result).toEqual([1, 2, err]);
             });
             it("test the main subject error", function(){
                 var subject2 = rt.AsyncSubject.create();

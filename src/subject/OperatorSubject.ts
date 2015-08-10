@@ -1,40 +1,54 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class OperatorSubject extends GeneratorSubject{
-        protected source:GeneratorSubject = null;
+        private _source:GeneratorSubject = null;
+        private _observer:IObserver = null;
 
-        constructor(source:GeneratorSubject){
+        constructor(source:GeneratorSubject, observer:IObserver){
             super();
 
-            this.source = source;
+            this._source = source;
+            this._observer = observer;
         }
 
         public next(value:any){
-            this.source.next(value);
+            if(!this._source.isStart){
+                return;
+            }
+
+            this._observer.next(value);
         }
 
         public error(err:any){
-            this.source.error(err);
+            if(!this._source.isStart){
+                return;
+            }
+
+            this._observer.error(err);
         }
 
         public completed(){
-            this.source.completed();
+            if(!this._source.isStart){
+                return;
+            }
+
+            this._observer.completed();
         }
 
         public start(){
-            this.source.start();
+            this._source.start();
         }
 
         public subscribe(arg1?:Function|Observer, onError?:Function, onCompleted?:Function):IDisposable{
-            return this.source.subscribe(arg1, onError, onCompleted);
+            return this._source.subscribe(arg1, onError, onCompleted);
         }
 
         public remove(observer:Observer){
-            this.source.remove(observer);
+            this._source.remove(observer);
         }
 
         public dispose(){
-            this.source.dispose();
+            this._source.dispose();
         }
     }
 }

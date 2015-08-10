@@ -7,21 +7,8 @@ module dyRt{
             return obj;
         }
 
-        private _selector:Function = null;
-
         constructor(source:GeneratorSubject, selector:Function){
-            super(source);
-
-            this._selector = selector;
-        }
-
-        public next(value:any){
-            try{
-                this.source.next(this._selector(value));
-            }
-            catch(e){
-                this.source.error(e);
-            }
+            super(source, MapObserver.create(source, selector));
         }
     }
 }

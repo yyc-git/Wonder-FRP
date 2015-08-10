@@ -7,22 +7,11 @@ module dyRt{
             return obj;
         }
 
-        private _otherGeneratorSubject:GeneratorSubject = null;
-
         constructor(source:GeneratorSubject, otherGeneratorSubject:GeneratorSubject){
-            super(source);
+            //super(source, TakeUntilObserver.create(source));
+            super(source, source);
 
-            this._otherGeneratorSubject = otherGeneratorSubject;
-        }
-
-        public next(value:any){
-            var self = this;
-
-            this.source.next(value);
-
-            this._otherGeneratorSubject.next = (data:any) => {
-                self.source.completed();
-            };
+            otherGeneratorSubject.observer = TakeUntilObserver.create(source);
         }
     }
 }
