@@ -37,7 +37,9 @@
 /// <reference path="observer/MergeAllObserver"/>
 /// <reference path="observer/TakeUntilObserver"/>
 /// <reference path="observer/ConcatObserver"/>
+/// <reference path="observer/ISubjectObserver"/>
 /// <reference path="observer/SubjectObserver"/>
+/// <reference path="observer/ConcatSubjectObserver"/>
 
 /// <reference path="stream/BaseStream"/>
 /// <reference path="stream/DoStream"/>

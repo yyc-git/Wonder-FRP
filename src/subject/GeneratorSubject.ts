@@ -17,10 +17,8 @@ module dyRt{
             super("GeneratorSubject");
         }
 
-        protected observers:dyCb.Collection<IObserver> = dyCb.Collection.create<IObserver>();
-        //public observer:SubjectObserver|Observer = null;
         public observer:any = new SubjectObserver();
-
+        public parent:any = null;
 
         /*!
         outer hook method
@@ -47,34 +45,19 @@ module dyRt{
         public onAfterCompleted() {
         }
 
-        ///*!
-        //inner hook
-        // */
-        //public afterCompleted(){
-        //}
-
 
         public subscribe(arg1?:Function|Observer, onError?:Function, onCompleted?:Function):IDisposable{
             var observer = arg1 instanceof Observer
                 ? <AutoDetachObserver>arg1
-                    : AutoDetachObserver.create(<Function>arg1, onError, onCompleted),
-                self = this;
+                    : AutoDetachObserver.create(<Function>arg1, onError, onCompleted);
 
-            //this.observers.addChild(observer);
-            //<any>(this.observer).addChild(observer);
             this.observer.addChild(observer);
 
-
-            this.addDisposeHandler(() => {
-                self.dispose();
-            });
-
-            observer.setDisposeHandler(this.disposeHandler);
+            this.setDisposeHandler(observer);
 
             return InnerSubscription.create(this, observer);
         }
 
-        //todo if user should insert user logic, how to do better?add hook method(like onBeforeNext,onIsCompleted)?
         public next(value:any){
             if(!this._isStart){
                 return;
@@ -83,18 +66,13 @@ module dyRt{
             try{
                 this.onBeforeNext(value);
 
-                //this.observers.forEach((ob:Observer) => {
-                //    ob.next(value);
-                //});
                 this.observer.next(value);
 
-                //if(this.observers.getCount() > 0){
                 this.onAfterNext(value);
 
                 if(this.onIsCompleted(value)){
                     this.completed();
                 }
-                //}
             }
             catch(e){
                 this.error(e);
@@ -108,14 +86,9 @@ module dyRt{
 
             this.onBeforeError(error);
 
-            //this.observers.forEach((ob:Observer) => {
-            //    ob.error(error);
-            //});
             this.observer.error(error);
-            //
-            //if(this.observers.getCount() > 0){
-                this.onAfterError(error);
-            //}
+
+            this.onAfterError(error);
         }
 
         public completed(){
@@ -125,16 +98,9 @@ module dyRt{
 
             this.onBeforeCompleted();
 
-            //this.observers.forEach((ob:Observer) => {
-            //    ob.completed();
-            //});
             this.observer.completed();
 
-            //if(this.observers.getCount() > 0){
             this.onAfterCompleted();
-            //}
-
-            //this.afterCompleted();
         }
 
         public start(){
@@ -155,27 +121,11 @@ module dyRt{
 
         public remove(observer:Observer){
             this.observer.removeChild(observer);
-            //this.observers.removeChild((ob:Observer) => {
-            //    return JudgeUtils.isEqual(ob, observer);
-            //});
         }
 
         public dispose(){
-            //this.observers.forEach((ob:Observer) => {
-            //    ob.dispose();
-            //});
-            //
-            //this.observers.removeAllChildren();
-            //
             this.observer.dispose();
         }
-
-        public parent:any = null;
-        //public isCompleted = false;
-
-        //public getCount(){
-        //    return 1;
-        //}
 
         public concat(subjectArr:Array<GeneratorSubject>);
         public concat(...otherSubject);
@@ -225,6 +175,16 @@ module dyRt{
             dyCb.Log.error(!this._areAllParamsGenerorSubject([otherSubject]), only_handle_generatorsubject_info_func("takeUntil"));
 
             return TakeUntilSubject.create(this, otherSubject);
+        }
+
+        protected setDisposeHandler(observer:Observer){
+            var self = this;
+
+            this.addDisposeHandler(() => {
+                self.dispose();
+            });
+
+            observer.setDisposeHandler(this.disposeHandler);
         }
 
         private _areAllParamsGenerorSubject(subjectArr:Array<GeneratorSubject>){

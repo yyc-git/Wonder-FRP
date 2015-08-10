@@ -1,3 +1,4 @@
+/// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class SubjectObserver implements IObserver{
         public observers:dyCb.Collection<IObserver> = dyCb.Collection.create<IObserver>();
@@ -20,7 +21,7 @@ module dyRt{
             });
         }
 
-        public addChild(observer:IObserver){
+        public addChild(observer:Observer){
             this.observers.addChild(observer);
         }
 
