@@ -1,29 +1,28 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class ConcatStream extends BaseStream{
-        public static create(source:Stream, otherSources:Array<Stream>) {
-            var obj = new this(source, otherSources);
+        public static create(sources:Array<Stream>) {
+            var obj = new this(sources);
 
             return obj;
         }
 
         private _sources:dyCb.Collection<Stream> = dyCb.Collection.create<Stream>();
 
-        constructor(source:Stream, otherSources:Array<Stream>){
+        constructor(sources:Array<Stream>){
             super(null);
 
             var self = this;
 
-            this.scheduler = source.scheduler;
+            //todo don't set scheduler here?
+            this.scheduler = sources[0].scheduler;
 
-            this._sources.addChild(source);
-
-            otherSources.forEach((otherSource) => {
-                if(JudgeUtils.isPromise(otherSource)){
-                    self._sources.addChild(fromPromise(otherSource));
+            sources.forEach((source) => {
+                if(JudgeUtils.isPromise(source)){
+                    self._sources.addChild(fromPromise(source));
                 }
                 else{
-                    self._sources.addChild(otherSource);
+                    self._sources.addChild(source);
                 }
             });
         }

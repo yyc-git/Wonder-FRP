@@ -1,5 +1,9 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
+    var only_handle_stream_info_func = function(operatorName){
+        return "Stream->" + operatorName + " can only handle stream";
+    };
+
     export class Stream extends Disposer{
         public scheduler:Scheduler = ABSTRACT_ATTRIBUTE;
         public subscribeFunc:Function = null;
@@ -40,11 +44,10 @@ module dyRt{
         }
 
         public concat(streamArr:Array<Stream>);
-        //public concat(subjectArr:Array<Subject>);
         public concat(...otherStream);
 
         public concat(){
-            var args = null;
+            var args:Array<Stream> = null;
 
             if(JudgeUtils.isArray(arguments[0])){
                 args = arguments[0];
@@ -53,12 +56,31 @@ module dyRt{
                 args = Array.prototype.slice.call(arguments, 0);
             }
 
-            //todo judge args
+            args.unshift(this);
 
-            //return ConcatSubject.create(this, args);
-            //return new ConcatSubject(this, args);
+            dyCb.Log.error(!this._areAllParamsStream(args), only_handle_stream_info_func("concat"));
 
-            return ConcatStream.create(this, args);
+            return ConcatStream.create(args);
+        }
+
+        public merge(streamArr:Array<Stream>);
+        public merge(...otherStream);
+
+        public merge(){
+            var args:Array<Stream> = null;
+
+            if(JudgeUtils.isArray(arguments[0])){
+                args = arguments[0];
+            }
+            else{
+                args = Array.prototype.slice.call(arguments, 0);
+            }
+
+            args.unshift(this);
+
+            dyCb.Log.error(!this._areAllParamsStream(args), only_handle_stream_info_func("merge"));
+
+            return fromArray(args).mergeAll();
         }
 
         protected handleSubject(arg){
@@ -68,6 +90,19 @@ module dyRt{
             }
 
             return false;
+        }
+
+        private _areAllParamsStream(streamArr:Array<Stream>){
+            var i = null,
+                len = streamArr.length;
+
+            for(i = 0; i < len; i++){
+                if(streamArr[i] instanceof GeneratorSubject){
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private _isSubject(subject){

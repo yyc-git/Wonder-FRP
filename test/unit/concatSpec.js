@@ -260,6 +260,14 @@ describe("concat", function () {
         });
     });
 
+
+    it("if concat generator subject and stream, it will throw error", function(){
+        expect(function(){
+            rt.fromArray([1, 2])
+                .concat(rt.fromArray([1, 2]), rt.AsyncSubject.create());
+        }).toThrow();
+    });
+
     it("concat array", function(){
         var stream = rt.fromArray([1, 2])
             .concat(rt.fromArray([3, 4]))
