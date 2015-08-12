@@ -17,6 +17,8 @@ module dyRt{
             this._observer = AnonymousObserver.create(onNext, onError,onCompleted);
 
             this.scheduler = this._source.scheduler;
+
+            this.subjectGroup = this._source.subjectGroup;
         }
 
         public subscribeCore(observer:IObserver){

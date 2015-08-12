@@ -59,7 +59,7 @@ module dyRt{
         }
 
         public next(value:any){
-            if(!this._isStart){
+            if(!this._isStart || this.observer.isEmpty()){
                 return;
             }
 
@@ -80,7 +80,7 @@ module dyRt{
         }
 
         public error(error:any){
-            if(!this._isStart){
+            if(!this._isStart || this.observer.isEmpty()){
                 return;
             }
 
@@ -92,7 +92,7 @@ module dyRt{
         }
 
         public completed(){
-            if(!this._isStart){
+            if(!this._isStart || this.observer.isEmpty()){
                 return;
             }
 
@@ -101,6 +101,19 @@ module dyRt{
             this.observer.completed();
 
             this.onAfterCompleted();
+        }
+
+        public toStream(){
+            var self = this,
+                stream = null;
+
+            stream =  new AnonymousStream((observer:Observer) => {
+                self.subscribe(observer);
+            });
+
+            stream.subjectGroup.addChild(this);
+
+            return stream;
         }
 
         public start(){

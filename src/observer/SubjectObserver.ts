@@ -3,6 +3,10 @@ module dyRt{
     export class SubjectObserver implements IObserver{
         public observers:dyCb.Collection<IObserver> = dyCb.Collection.create<IObserver>();
 
+        public isEmpty(){
+            return this.observers.getCount() === 0;
+        }
+
         public next(value:any){
             this.observers.forEach((ob:Observer) => {
                 ob.next(value);

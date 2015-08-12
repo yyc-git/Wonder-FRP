@@ -4,6 +4,14 @@ module dyRt{
         return AnonymousStream.create(subscribeFunc);
     };
 
+    export var defer = (rewriteFunc) => {
+        var subject = AsyncSubject.create();
+
+        rewriteFunc(subject);
+
+        return subject.toStream();
+    };
+
     export var fromArray = (array:Array<any>, scheduler = Scheduler.create()) =>{
         return FromArrayStream.create(array, scheduler);
     };

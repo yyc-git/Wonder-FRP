@@ -1,12 +1,9 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
-    var only_handle_stream_info_func = function(operatorName){
-        return "Stream->" + operatorName + " can only handle stream";
-    };
-
     export class Stream extends Disposer{
         public scheduler:Scheduler = ABSTRACT_ATTRIBUTE;
         public subscribeFunc:Function = null;
+        public subjectGroup:SubjectGroup = SubjectGroup.create();
 
         constructor(subscribeFunc){
             super("Stream");
@@ -22,6 +19,12 @@ module dyRt{
             this.subscribeFunc(observer);
         }
 
+        public getSubjectGroup(){
+            this.subjectGroup.stream = this;
+
+            return this.subjectGroup;
+        }
+
         public do(onNext?:Function, onError?:Function, onCompleted?:Function) {
             return DoStream.create(this, onNext, onError, onCompleted);
         }
@@ -31,7 +34,6 @@ module dyRt{
         }
 
         public flatMap(selector:Function){
-            //return FlatMapStream.create(this, selector);
             return this.map(selector).mergeAll();
         }
 
@@ -58,8 +60,6 @@ module dyRt{
 
             args.unshift(this);
 
-            dyCb.Log.error(!this._areAllParamsStream(args), only_handle_stream_info_func("concat"));
-
             return ConcatStream.create(args);
         }
 
@@ -67,7 +67,8 @@ module dyRt{
         public merge(...otherStream);
 
         public merge(){
-            var args:Array<Stream> = null;
+            var args:Array<Stream> = null,
+                stream:Stream = null;
 
             if(JudgeUtils.isArray(arguments[0])){
                 args = arguments[0];
@@ -78,9 +79,15 @@ module dyRt{
 
             args.unshift(this);
 
-            dyCb.Log.error(!this._areAllParamsStream(args), only_handle_stream_info_func("merge"));
+            stream = fromArray(args).mergeAll();
 
-            return fromArray(args).mergeAll();
+            args.forEach((source) => {
+                if(source.subjectGroup){
+                    stream.subjectGroup.addChildren(source.subjectGroup);
+                }
+            });
+
+            return stream;
         }
 
         protected handleSubject(arg){
@@ -90,19 +97,6 @@ module dyRt{
             }
 
             return false;
-        }
-
-        private _areAllParamsStream(streamArr:Array<Stream>){
-            var i = null,
-                len = streamArr.length;
-
-            for(i = 0; i < len; i++){
-                if(streamArr[i] instanceof GeneratorSubject){
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         private _isSubject(subject){

@@ -25,6 +25,10 @@ module dyRt{
                     self._sources.addChild(source);
                 }
             });
+
+            this._sources.forEach((source) => {
+                self.subjectGroup.addChildren(source.subjectGroup);
+            });
         }
 
         public subscribeCore(observer:IObserver){

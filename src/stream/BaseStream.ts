@@ -18,11 +18,6 @@ module dyRt{
 
             observer.setDisposeHandler(this.disposeHandler);
 
-            //todo encapsulate it to scheduleItem
-            //todo delete target?
-            //this.scheduler.target = observer;
-
-            //dyCb.Log.error(this._hasMultiObservers(), "should use Subject to handle multi observers");
             this.buildStream(observer);
 
             return observer;
