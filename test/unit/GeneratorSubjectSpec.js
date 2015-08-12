@@ -1,4 +1,4 @@
-describe("AsyncSubject", function () {
+describe("GeneratorSubject", function () {
     var rt = dyRt;
     var subject = null;
     var sandbox = null;
@@ -17,7 +17,7 @@ describe("AsyncSubject", function () {
 
     beforeEach(function () {
         sandbox = sinon.sandbox.create();
-        subject = new rt.AsyncSubject();
+        subject = new rt.GeneratorSubject();
         result = [];
     });
     afterEach(function () {
@@ -117,97 +117,6 @@ describe("AsyncSubject", function () {
 
             expect(result).toEqual([1, 2, 1, 10, 50, -1]);
         });
-        it("merge and concat", function(){
-            var subject = new rt.AsyncSubject();
-            var subject2 = rt.AsyncSubject.create();
-            var subject3 = rt.AsyncSubject.create();
-            var group = subject
-                .toStream()
-                .concat(subject2.toStream())
-                .merge(subject3.toStream())
-                .map(function (x) {
-                    return x * 2;
-                })
-                .getSubjectGroup();
-
-            subscribe(group);
-
-            group.start();
-            group.next(1);
-            group.next(10);
-            group.next(50);
-            subject.completed();
-            group.next(100);
-            subject3.completed();
-            group.next(500);
-            subject2.completed();
-
-            expect(result).toEqual([2, 2, 20, 20, 100, 100, 200, 200, 1000, -1]);
-        });
-        it("multi merge and concat", function(){
-            var subject2 = rt.AsyncSubject.create();
-            var subject3 = rt.AsyncSubject.create();
-            var subject4 = rt.AsyncSubject.create();
-            var subject5 = rt.AsyncSubject.create();
-            var subject6 = rt.AsyncSubject.create();
-            var subject7 = rt.AsyncSubject.create();
-
-            var group = subject.toStream()
-                .concat(subject2.toStream().concat(subject3.toStream()))
-                .merge(subject4.toStream().merge(subject5.toStream()))
-                .concat(subject6.toStream())
-                .merge(subject7.toStream())
-                .map(function (x) {
-                    return x * 2;
-                })
-                .getSubjectGroup();
-
-
-            subscribe(group);
-
-            group.start();
-            group.next(1);
-            subject.completed();
-            group.next(2);
-            subject4.completed();
-            group.next(3);
-            subject2.completed();
-            group.next(4);
-            subject3.completed();
-            group.next(5);
-            subject5.completed();
-            group.next(6);
-            subject6.completed();
-            group.next(7);
-            subject7.completed();
-            group.next(8);
-
-            expect(result).toEqual([
-                2, 2, 2, 2, 4, 4, 4, 4, 6, 6, 6, 8, 8, 8, 10, 10, 12, 12, 14, -1
-            ]);
-        });
-        it("multi operator", function(){
-            var group = subject.toStream()
-                .map(function (value) {
-                    return value * 2;
-                })
-                .do(function (value) {
-                    result.push(value * 2);
-                }, function (err) {
-                })
-                .getSubjectGroup();
-
-            subscribe(group);
-
-            group.start();
-            group.next(1);
-            group.next(2);
-
-
-            expect(result).toEqual([
-                4, 2, 8, 4
-            ]);
-        });
         it("error", function(){
             var err = new Error("err");
             var group = subject
@@ -270,6 +179,100 @@ describe("AsyncSubject", function () {
             group.completed();
 
             expect(result).toEqual([1, 1, 2, 2]);
+        });
+
+        describe("now support merge,concat,map,do operator", function(){
+            it("merge and concat", function(){
+                var subject = new rt.GeneratorSubject();
+                var subject2 = rt.GeneratorSubject.create();
+                var subject3 = rt.GeneratorSubject.create();
+                var group = subject
+                    .toStream()
+                    .concat(subject2.toStream())
+                    .merge(subject3.toStream())
+                    .map(function (x) {
+                        return x * 2;
+                    })
+                    .getSubjectGroup();
+
+                subscribe(group);
+
+                group.start();
+                group.next(1);
+                group.next(10);
+                group.next(50);
+                subject.completed();
+                group.next(100);
+                subject3.completed();
+                group.next(500);
+                subject2.completed();
+
+                expect(result).toEqual([2, 2, 20, 20, 100, 100, 200, 200, 1000, -1]);
+            });
+            it("multi merge and concat", function(){
+                var subject2 = rt.GeneratorSubject.create();
+                var subject3 = rt.GeneratorSubject.create();
+                var subject4 = rt.GeneratorSubject.create();
+                var subject5 = rt.GeneratorSubject.create();
+                var subject6 = rt.GeneratorSubject.create();
+                var subject7 = rt.GeneratorSubject.create();
+
+                var group = subject.toStream()
+                    .concat(subject2.toStream().concat(subject3.toStream()))
+                    .merge(subject4.toStream().merge(subject5.toStream()))
+                    .concat(subject6.toStream())
+                    .merge(subject7.toStream())
+                    .map(function (x) {
+                        return x * 2;
+                    })
+                    .getSubjectGroup();
+
+
+                subscribe(group);
+
+                group.start();
+                group.next(1);
+                subject.completed();
+                group.next(2);
+                subject4.completed();
+                group.next(3);
+                subject2.completed();
+                group.next(4);
+                subject3.completed();
+                group.next(5);
+                subject5.completed();
+                group.next(6);
+                subject6.completed();
+                group.next(7);
+                subject7.completed();
+                group.next(8);
+
+                expect(result).toEqual([
+                    2, 2, 2, 2, 4, 4, 4, 4, 6, 6, 6, 8, 8, 8, 10, 10, 12, 12, 14, -1
+                ]);
+            });
+            it("multi operator", function(){
+                var group = subject.toStream()
+                    .map(function (value) {
+                        return value * 2;
+                    })
+                    .do(function (value) {
+                        result.push(value * 2);
+                    }, function (err) {
+                    })
+                    .getSubjectGroup();
+
+                subscribe(group);
+
+                group.start();
+                group.next(1);
+                group.next(2);
+
+
+                expect(result).toEqual([
+                    4, 2, 8, 4
+                ]);
+            });
         });
     });
 });

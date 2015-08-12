@@ -16,20 +16,20 @@ describe("defer", function () {
 
     beforeEach(function () {
         sandbox = sinon.sandbox.create();
-        subject = new rt.AsyncSubject();
+        subject = new rt.GeneratorSubject();
         result = [];
     });
     afterEach(function () {
         sandbox.restore();
     });
 
-    describe("rewrite AsyncSubject's hook method to insert user's logic into asyncSubject's next/error/completed method", function(){
+    describe("rewrite GeneratorSubject's hook method to insert user's logic into generatorSubject's next/error/completed method", function(){
         it("next", function(){
-            var group = rt.defer(function(asyncSubject){
-                asyncSubject.onBeforeNext = function(value){
+            var group = rt.defer(function(generatorSubject){
+                generatorSubject.onBeforeNext = function(value){
                     result.push(value / 2);
                 };
-                asyncSubject.onAfterNext = function(){
+                generatorSubject.onAfterNext = function(){
                     result.push(-100);
                 };
             })
@@ -49,11 +49,11 @@ describe("defer", function () {
         });
         it("error", function(){
             var err = new Error("err");
-            var group = rt.defer(function(asyncSubject){
-                asyncSubject.onBeforeError = function(err){
+            var group = rt.defer(function(generatorSubject){
+                generatorSubject.onBeforeError = function(err){
                     result.push(100);
                 };
-                asyncSubject.onAfterError = function(){
+                generatorSubject.onAfterError = function(){
                     result.push(-100);
                 };
             })
@@ -70,11 +70,11 @@ describe("defer", function () {
             expect(result).toEqual([1, 2, 100, err, -100]);
         });
         it("completed", function(){
-            var group = rt.defer(function(asyncSubject){
-                asyncSubject.onBeforeCompleted = function(){
+            var group = rt.defer(function(generatorSubject){
+                generatorSubject.onBeforeCompleted = function(){
                     result.push(100);
                 };
-                asyncSubject.onAfterCompleted = function(){
+                generatorSubject.onAfterCompleted = function(){
                     result.push(-100);
                 };
             })
@@ -92,11 +92,11 @@ describe("defer", function () {
     });
 
     it("test multi observer and dispose", function(){
-        var group = rt.defer(function(asyncSubject){
-            asyncSubject.onBeforeCompleted = function(){
+        var group = rt.defer(function(generatorSubject){
+            generatorSubject.onBeforeCompleted = function(){
                 result.push(100);
             };
-            asyncSubject.onAfterCompleted = function(){
+            generatorSubject.onAfterCompleted = function(){
                 result.push(-100);
             };
         })

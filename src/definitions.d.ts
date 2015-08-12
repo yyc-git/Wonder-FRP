@@ -24,12 +24,7 @@
 /// <reference path="subject/Subject"/>
 /// <reference path="subject/GeneratorSubject"/>
 /// <reference path="subject/SubjectGroup"/>
-/// <reference path="subject/OperatorSubject"/>
-/// <reference path="subject/AsyncSubject"/>
-/// <reference path="subject/ConcatSubject"/>
-/// <reference path="subject/MapSubject"/>
-/// <reference path="subject/DoSubject"/>
-/// <reference path="subject/TakeUntilSubject"/>
+/// <reference path="subject/GeneratorSubject"/>
 
 /// <reference path="observer/AnonymousObserver"/>
 /// <reference path="observer/AutoDetachObserver"/>
@@ -40,7 +35,6 @@
 /// <reference path="observer/ConcatObserver"/>
 /// <reference path="observer/ISubjectObserver"/>
 /// <reference path="observer/SubjectObserver"/>
-/// <reference path="observer/ConcatSubjectObserver"/>
 
 /// <reference path="stream/BaseStream"/>
 /// <reference path="stream/DoStream"/>

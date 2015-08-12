@@ -5,7 +5,7 @@ module dyRt{
     };
 
     export var defer = (rewriteFunc) => {
-        var subject = AsyncSubject.create();
+        var subject = GeneratorSubject.create();
 
         rewriteFunc(subject);
 

@@ -17,14 +17,6 @@ describe("merge", function () {
         sandbox.restore();
     });
 
-    it("if merge generator subject and stream, it will throw error", function(){
-        expect(function(){
-            rt.fromArray([1, 2])
-                .merge(rt.fromArray([1, 2]), rt.AsyncSubject.create());
-        }).toThrow();
-    });
-
-
     it("merge array", function(){
         var stream = rt.fromArray([1, 2])
             .merge(rt.fromArray([3, 4]))

@@ -1,10 +1,12 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
-    var only_handle_generatorsubject_info_func = function(operatorName){
-        return "GeneratorSubject->" + operatorName + " can only handle GeneratorSubject";
-    };
-
     export class GeneratorSubject extends Disposer implements IObserver {
+        public static create() {
+            var obj = new this();
+
+            return obj;
+        }
+
         private _isStart:boolean = false;
         get isStart(){
             return this._isStart;
@@ -18,7 +20,6 @@ module dyRt{
         }
 
         public observer:any = new SubjectObserver();
-        public parent:any = null;
 
         /*!
         outer hook method
@@ -53,7 +54,7 @@ module dyRt{
 
             this.observer.addChild(observer);
 
-            this.setDisposeHandler(observer);
+            this._setDisposeHandler(observer);
 
             return InnerSubscription.create(this, observer);
         }
@@ -124,14 +125,6 @@ module dyRt{
             this._isStart = false;
         }
 
-        public isAllStop(){
-            return !this._isStart;
-        }
-
-        public getNext(source:GeneratorSubject){
-            return null;
-        }
-
         public remove(observer:Observer){
             this.observer.removeChild(observer);
         }
@@ -140,57 +133,7 @@ module dyRt{
             this.observer.dispose();
         }
 
-        public concat(subjectArr:Array<GeneratorSubject>);
-        public concat(...otherSubject);
-
-        public concat(){
-            var args = null;
-
-            if(JudgeUtils.isArray(arguments[0])){
-                args = arguments[0];
-            }
-            else{
-                args = Array.prototype.slice.call(arguments, 0);
-            }
-
-            dyCb.Log.error(!this._areAllParamsGenerorSubject(args), only_handle_generatorsubject_info_func("concat"));
-
-            return ConcatSubject.create(this, args);
-        }
-
-        //public merge(subjectArr:Array<GeneratorSubject>);
-        //public merge(...otherSubject);
-
-        //public merge(){
-        //    var args = null;
-        //
-        //    if(JudgeUtils.isArray(arguments[0])){
-        //        args = arguments[0];
-        //    }
-        //    else{
-        //        args = Array.prototype.slice.call(arguments, 0);
-        //    }
-        //
-        //    dyCb.Log.error(!this._areAllParamsGenerorSubject(args), only_handle_generatorsubject_info_func("merge"));
-        //
-        //    return MergeSubject.create(this, args);
-        //}
-
-        public map(selector:Function):MapSubject{
-            return MapSubject.create(this, selector);
-        }
-
-        public do(onNext?:Function, onError?:Function, onCompleted?:Function) {
-            return DoSubject.create(this, onNext, onError, onCompleted);
-        }
-
-        public takeUntil(otherSubject:GeneratorSubject){
-            dyCb.Log.error(!this._areAllParamsGenerorSubject([otherSubject]), only_handle_generatorsubject_info_func("takeUntil"));
-
-            return TakeUntilSubject.create(this, otherSubject);
-        }
-
-        protected setDisposeHandler(observer:Observer){
+        private _setDisposeHandler(observer:Observer){
             var self = this;
 
             this.addDisposeHandler(() => {
@@ -198,19 +141,6 @@ module dyRt{
             });
 
             observer.setDisposeHandler(this.disposeHandler);
-        }
-
-        private _areAllParamsGenerorSubject(subjectArr:Array<GeneratorSubject>){
-            var i = null,
-                len = subjectArr.length;
-
-            for(i = 0; i < len; i++){
-                if((subjectArr[i] instanceof GeneratorSubject) === false){
-                    return false;
-                }
-            }
-
-            return true;
         }
     }
 }
