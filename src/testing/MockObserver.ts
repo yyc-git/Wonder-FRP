@@ -40,5 +40,13 @@ module dyRt{
 
             this._scheduler.remove(this);
         }
+
+        public copy(){
+            var result = MockObserver.create(this._scheduler);
+
+            result.messages = this._messages;
+
+            return result;
+        }
     }
 }

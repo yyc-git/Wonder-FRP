@@ -38,7 +38,6 @@ module dyRt {
         }
 
         private _isReset:boolean = false;
-        //private _initialClock:number = null;
         private _isDisposed:boolean = false;
         private _timerMap:dyCb.Hash<Function> = dyCb.Hash.create<Function>();
         private _streamMap:dyCb.Hash<Function> = dyCb.Hash.create<Function>();
@@ -80,20 +79,25 @@ module dyRt {
             this._isDisposed = true;
         }
 
-        public publishRecursive(observer:IObserver, initial:any, recursiveFunc:Function) {
+        public publishRecursive(observer:MockObserver, initial:any, recursiveFunc:Function) {
             var self = this,
-                messages = [];
+                messages = [],
+                copyObserver = observer.copy();
 
             this._setClock();
 
-            recursiveFunc(initial, (value) => {
+            observer.next = (value) => {
                 self._tick(1);
                 messages.push(TestScheduler.next(self._clock, value));
-            }, () => {
+            };
+
+            observer.completed = () => {
                 self._tick(1);
                 messages.push(TestScheduler.completed(self._clock));
-                self.setStreamMap(observer, <[Record]>messages);
-            });
+                self.setStreamMap(copyObserver, <[Record]>messages);
+            };
+
+            recursiveFunc(initial);
         }
 
         public publishInterval(observer:IObserver, initial:any, interval:number, action:Function):number{
@@ -143,11 +147,6 @@ module dyRt {
             if(this._isReset){
                 this._clock = this._subscribedTime;
             }
-            //if(this._initialClock){
-            //    this._clock =  Math.min(this._clock, this._initialClock);
-            //}
-            //
-            //this._initialClock = this._clock;
         }
 
         public startWithTime(create:Function, subscribedTime:number, disposedTime:number) {
@@ -158,8 +157,6 @@ module dyRt {
             this._disposedTime = disposedTime;
 
             this._clock = subscribedTime;
-
-            var self = this;
 
             this._runAt(subscribedTime, () => {
                 source = create();
@@ -254,21 +251,10 @@ module dyRt {
         private _runStream(time){
             var handler = this._streamMap.getChild(String(time));
 
-            //if(handler && this._hasObserver()){
             if(handler){
                 handler();
             }
         }
-
-        //private _hasObserver(){
-        //    if(this.target instanceof Subject){
-        //        let subject = <Subject>this.target;
-        //
-        //         return subject.getObservers() > 0
-        //    }
-        //
-        //    return !!this.target;
-        //}
 
         private _runAt(time:number, callback:Function) {
             this._timerMap.addChild(String(time), callback);

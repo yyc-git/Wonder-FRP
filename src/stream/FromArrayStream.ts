@@ -20,24 +20,13 @@ module dyRt{
             var array = this._array,
                 len = array.length;
 
-            //next,completed is for TestScheduler to inject
-            //todo remove inject next,completed?
-            function loopRecursive(i, next, completed) {
+            function loopRecursive(i) {
                 if (i < len) {
-                    if(next){
-                        next(array[i]);
-                    }
-                    else{
-                        observer.next(array[i]);
-                    }
-                    arguments.callee(i + 1, next, completed);
+                    observer.next(array[i]);
+
+                    arguments.callee(i + 1);
                 } else {
-                    if(completed){
-                        completed();
-                    }
-                    else{
-                        observer.completed();
-                    }
+                    observer.completed();
                 }
             }
 

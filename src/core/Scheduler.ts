@@ -141,8 +141,7 @@ module dyRt {
             this._requestLoopId = requestLoopId;
         }
 
-        //observer is for TestScheduler to inject
-        //todo remove observer
+        //observer is for TestScheduler to rewrite
 
         public publishRecursive(observer:IObserver, initial:any, action:Function){
             action(initial);
