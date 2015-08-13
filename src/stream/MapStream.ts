@@ -16,10 +16,7 @@ module dyRt{
             this._source = source;
 
             this.scheduler = this._source.scheduler;
-            //this.scheduler.addWrapTarget(MapObserver.create(selector));
             this._selector = selector;
-
-            this.subjectGroup = this._source.subjectGroup;
         }
 
         public subscribeCore(observer:IObserver){

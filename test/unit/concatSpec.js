@@ -81,7 +81,7 @@ describe("concat", function () {
         var promiseSuc1 = scheduler.createResolvedPromise(210, 1);
 
         var results = scheduler.startWithSubscribe(function () {
-            return rt.fromPromise(promiseSuc1, scheduler)
+            return rt.fromPromise(promiseSuc1)
                 .map(function(value){
                     return value*2;
                 })

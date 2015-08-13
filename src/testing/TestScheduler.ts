@@ -82,7 +82,7 @@ module dyRt {
         public publishRecursive(observer:MockObserver, initial:any, recursiveFunc:Function) {
             var self = this,
                 messages = [],
-                copyObserver = observer.copy();
+                copyObserver = observer.copy? observer.copy() : observer;
 
             this._setClock();
 

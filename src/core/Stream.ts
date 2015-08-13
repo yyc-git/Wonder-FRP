@@ -3,7 +3,6 @@ module dyRt{
     export class Stream extends Disposer{
         public scheduler:Scheduler = ABSTRACT_ATTRIBUTE;
         public subscribeFunc:Function = null;
-        public subjectGroup:SubjectGroup = SubjectGroup.create();
 
         constructor(subscribeFunc){
             super("Stream");
@@ -17,12 +16,6 @@ module dyRt{
 
         public buildStream(observer:IObserver){
             this.subscribeFunc(observer);
-        }
-
-        public getSubjectGroup(){
-            this.subjectGroup.stream = this;
-
-            return this.subjectGroup;
         }
 
         public do(onNext?:Function, onError?:Function, onCompleted?:Function) {
@@ -81,13 +74,11 @@ module dyRt{
 
             stream = fromArray(args).mergeAll();
 
-            args.forEach((source) => {
-                if(source.subjectGroup){
-                    stream.subjectGroup.addChildren(source.subjectGroup);
-                }
-            });
-
             return stream;
+        }
+
+        public repeat(count:number = -1){
+            return RepeatStream.create(this, count);
         }
 
         protected handleSubject(arg){

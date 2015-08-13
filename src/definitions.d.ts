@@ -23,7 +23,6 @@
 
 /// <reference path="subject/Subject"/>
 /// <reference path="subject/GeneratorSubject"/>
-/// <reference path="subject/SubjectGroup"/>
 /// <reference path="subject/GeneratorSubject"/>
 
 /// <reference path="observer/AnonymousObserver"/>
@@ -48,6 +47,7 @@
 /// <reference path="stream/MergeAllStream"/>
 /// <reference path="stream/TakeUntilStream"/>
 /// <reference path="stream/ConcatStream"/>
+/// <reference path="stream/RepeatStream"/>
 
 /// <reference path="global/Operator"/>
 

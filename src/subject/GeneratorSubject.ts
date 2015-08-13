@@ -112,8 +112,6 @@ module dyRt{
                 self.subscribe(observer);
             });
 
-            stream.subjectGroup.addChild(this);
-
             return stream;
         }
 
