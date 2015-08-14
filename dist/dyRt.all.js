@@ -168,7 +168,7 @@ var dyCb;
     dyCb.Log = Log;
 })(dyCb || (dyCb = {}));
 
-/// <reference path="definitions.d.ts"/>
+
 var dyCb;
 (function (dyCb) {
     var List = (function () {
@@ -351,7 +351,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="definitions.d.ts"/>
+
 var dyCb;
 (function (dyCb) {
     var Collection = (function (_super) {
@@ -376,7 +376,7 @@ var dyCb;
     dyCb.Collection = Collection;
 })(dyCb || (dyCb = {}));
 
-/// <reference path="definitions.d.ts"/>
+
 var dyCb;
 (function (dyCb) {
     var Hash = (function () {
@@ -512,7 +512,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="Collection"/>
+
 var dyCb;
 (function (dyCb) {
     var Queue = (function (_super) {
@@ -547,7 +547,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="Collection"/>
+
 var dyCb;
 (function (dyCb) {
     var Stack = (function (_super) {
@@ -737,7 +737,7 @@ var dyCb;
     dyCb.AjaxUtils = AjaxUtils;
 })(dyCb || (dyCb = {}));
 
-/// <reference path="../definitions.d.ts"/>
+
 var dyCb;
 (function (dyCb) {
     var ConvertUtils = (function () {
@@ -766,7 +766,7 @@ var dyCb;
     dyCb.ConvertUtils = ConvertUtils;
 })(dyCb || (dyCb = {}));
 
-/// <reference path="../definitions.d.ts"/>
+
 var dyCb;
 (function (dyCb) {
     //declare var window:any;
@@ -808,7 +808,7 @@ var dyCb;
     dyCb.EventUtils = EventUtils;
 })(dyCb || (dyCb = {}));
 
-/// <reference path="../definitions.d.ts"/>
+
 var dyCb;
 (function (dyCb) {
     var ExtendUtils = (function () {
@@ -911,7 +911,7 @@ var dyCb;
     dyCb.ExtendUtils = ExtendUtils;
 })(dyCb || (dyCb = {}));
 
-/// <reference path="../definitions.d.ts"/>
+
 var dyCb;
 (function (dyCb) {
     var DomQuery = (function () {
@@ -961,7 +961,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="./definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var JudgeUtils = (function (_super) {
@@ -982,7 +982,7 @@ var dyRt;
     dyRt.JudgeUtils = JudgeUtils;
 })(dyRt || (dyRt = {}));
 
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var Entity = (function () {
@@ -1008,7 +1008,7 @@ var dyRt;
 
 
 
-/// <reference path="../definitions.d.ts"/>
+
 
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1016,7 +1016,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var Disposer = (function (_super) {
@@ -1043,7 +1043,7 @@ var dyRt;
     dyRt.Disposer = Disposer;
 })(dyRt || (dyRt = {}));
 
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var InnerSubscription = (function () {
@@ -1066,7 +1066,7 @@ var dyRt;
     dyRt.InnerSubscription = InnerSubscription;
 })(dyRt || (dyRt = {}));
 
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var InnerSubscriptionGroup = (function () {
@@ -1102,7 +1102,7 @@ var dyRt;
     }, dyRt.ABSTRACT_ATTRIBUTE = null;
 })(dyRt || (dyRt = {}));
 
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     //not swallow the error
@@ -1120,7 +1120,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var Stream = (function (_super) {
@@ -1197,7 +1197,7 @@ var dyRt;
     dyRt.Stream = Stream;
 })(dyRt || (dyRt = {}));
 
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     dyRt.root.requestNextAnimationFrame = (function () {
@@ -1340,7 +1340,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var Observer = (function (_super) {
@@ -1419,7 +1419,7 @@ var dyRt;
     dyRt.Observer = Observer;
 })(dyRt || (dyRt = {}));
 
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var Subject = (function () {
@@ -1489,7 +1489,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var GeneratorSubject = (function (_super) {
@@ -1608,7 +1608,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var AnonymousObserver = (function (_super) {
@@ -1639,7 +1639,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var AutoDetachObserver = (function (_super) {
@@ -1697,7 +1697,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var MapObserver = (function (_super) {
@@ -1741,7 +1741,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var DoObserver = (function (_super) {
@@ -1801,7 +1801,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var MergeAllObserver = (function (_super) {
@@ -1904,7 +1904,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var TakeUntilObserver = (function (_super) {
@@ -1936,7 +1936,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var ConcatObserver = (function (_super) {
@@ -1972,9 +1972,9 @@ var dyRt;
     dyRt.ConcatObserver = ConcatObserver;
 })(dyRt || (dyRt = {}));
 
-/// <reference path="../definitions.d.ts"/>
 
-/// <reference path="../definitions.d.ts"/>
+
+
 var dyRt;
 (function (dyRt) {
     var SubjectObserver = (function () {
@@ -2024,7 +2024,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var BaseStream = (function (_super) {
@@ -2062,7 +2062,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var DoStream = (function (_super) {
@@ -2093,7 +2093,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var MapStream = (function (_super) {
@@ -2124,7 +2124,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var FromArrayStream = (function (_super) {
@@ -2163,7 +2163,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var FromPromiseStream = (function (_super) {
@@ -2198,7 +2198,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var FromEventPatternStream = (function (_super) {
@@ -2235,7 +2235,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var AnonymousStream = (function (_super) {
@@ -2269,7 +2269,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var IntervalStream = (function (_super) {
@@ -2310,7 +2310,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var IntervalRequestStream = (function (_super) {
@@ -2343,7 +2343,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var MergeAllStream = (function (_super) {
@@ -2375,7 +2375,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var TakeUntilStream = (function (_super) {
@@ -2407,7 +2407,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var ConcatStream = (function (_super) {
@@ -2455,7 +2455,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var RepeatStream = (function (_super) {
@@ -2491,7 +2491,7 @@ var dyRt;
     dyRt.RepeatStream = RepeatStream;
 })(dyRt || (dyRt = {}));
 
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     dyRt.createStream = function (subscribeFunc) {
@@ -2518,7 +2518,7 @@ var dyRt;
     };
 })(dyRt || (dyRt = {}));
 
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var defaultIsEqual = function (a, b) {
@@ -2583,7 +2583,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var MockObserver = (function (_super) {
@@ -2631,7 +2631,7 @@ var dyRt;
     dyRt.MockObserver = MockObserver;
 })(dyRt || (dyRt = {}));
 
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var MockPromise = (function () {
@@ -2666,7 +2666,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions.d.ts"/>
+
 var dyRt;
 (function (dyRt) {
     var SUBSCRIBE_TIME = 200;
@@ -2888,7 +2888,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../definitions"/>
+
 var dyRt;
 (function (dyRt) {
     var TestStream = (function (_super) {

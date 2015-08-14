@@ -1,3 +1,4 @@
+var through = require("through-gulp");
 var gulp = require('gulp');
 var gulpTs = require('gulp-typescript');
 var gulpSourcemaps = require('gulp-sourcemaps');
@@ -6,6 +7,7 @@ var del = require('del');
 var gulpSync = require('gulp-sync')(gulp);
 var merge = require('merge2');
 var path = require('path');
+var fs = require("fs-extra");
 
 var tsFilePaths = [
     'src/definitions.d.ts',
@@ -61,10 +63,49 @@ gulp.task('compileTsDebug', function() {
 });
 
 
+
+
+
+
+var distFilePaths = [
+    'dist/*.ts',
+    'dist/*.js'
+];
+
+gulp.task("removeReference", function(){
+    return gulp.src(distFilePaths)
+        .pipe(through(function (file, encoding, callback) {
+            var map = null;
+
+            if (file.isNull()) {
+                this.emit("error", new gutil.PluginError(PLUGIN_NAME, 'Streaming not supported'));
+                return callback();
+            }
+            if (file.isBuffer()) {
+                file.contents = new Buffer(file.contents.toString().replace(
+                    /\/\/\/\s*<reference[^>]+>/mg, ""
+                ));
+                this.push(file);
+
+                fs.writeFileSync(file.path, file.contents.toString(), "utf8");
+
+                callback();
+            }
+            if (file.isStream()) {
+                this.emit("error", new gutil.PluginError(PLUGIN_NAME, 'Streaming not supported'));
+                return callback();
+            }
+        }, function (callback) {
+            callback();
+        }));
+
+});
+
+
+
 //var gulp = require("gulp");
 //var gulpSync = require("gulp-sync")(gulp);
 //var path = require("path");
-var fs = require("fs-extra");
 
 //gulp.task("combineInnerLib", function(done){
 //
@@ -149,7 +190,8 @@ function removeOriginFile(){
 
 
 //todo removeReference
-gulp.task("build", gulpSync.sync(["clean", "compileTs",  "compileTsDebug", "buildMultiDistFiles"]));
+//gulp.task("build", gulpSync.sync(["clean", "compileTs",  "compileTsDebug", "buildMultiDistFiles"]));
+gulp.task("build", gulpSync.sync(["clean", "compileTs",  "compileTsDebug", "buildMultiDistFiles", "removeReference"]));
 
 
 

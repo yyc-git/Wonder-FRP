@@ -168,7 +168,7 @@ var dyCb;
     dyCb.Log = Log;
 })(dyCb || (dyCb = {}));
 
-/// <reference path="definitions.d.ts"/>
+
 var dyCb;
 (function (dyCb) {
     var List = (function () {
@@ -351,7 +351,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="definitions.d.ts"/>
+
 var dyCb;
 (function (dyCb) {
     var Collection = (function (_super) {
@@ -376,7 +376,7 @@ var dyCb;
     dyCb.Collection = Collection;
 })(dyCb || (dyCb = {}));
 
-/// <reference path="definitions.d.ts"/>
+
 var dyCb;
 (function (dyCb) {
     var Hash = (function () {
@@ -512,7 +512,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="Collection"/>
+
 var dyCb;
 (function (dyCb) {
     var Queue = (function (_super) {
@@ -547,7 +547,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="Collection"/>
+
 var dyCb;
 (function (dyCb) {
     var Stack = (function (_super) {
@@ -737,7 +737,7 @@ var dyCb;
     dyCb.AjaxUtils = AjaxUtils;
 })(dyCb || (dyCb = {}));
 
-/// <reference path="../definitions.d.ts"/>
+
 var dyCb;
 (function (dyCb) {
     var ConvertUtils = (function () {
@@ -766,7 +766,7 @@ var dyCb;
     dyCb.ConvertUtils = ConvertUtils;
 })(dyCb || (dyCb = {}));
 
-/// <reference path="../definitions.d.ts"/>
+
 var dyCb;
 (function (dyCb) {
     //declare var window:any;
@@ -808,7 +808,7 @@ var dyCb;
     dyCb.EventUtils = EventUtils;
 })(dyCb || (dyCb = {}));
 
-/// <reference path="../definitions.d.ts"/>
+
 var dyCb;
 (function (dyCb) {
     var ExtendUtils = (function () {
@@ -911,7 +911,7 @@ var dyCb;
     dyCb.ExtendUtils = ExtendUtils;
 })(dyCb || (dyCb = {}));
 
-/// <reference path="../definitions.d.ts"/>
+
 var dyCb;
 (function (dyCb) {
     var DomQuery = (function () {

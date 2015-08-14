@@ -1,4 +1,4 @@
-/// <reference path="definitions.d.ts" />
+
 declare module dyRt {
     class JudgeUtils extends dyCb.JudgeUtils {
         static isPromise(obj: any): boolean;
@@ -6,7 +6,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class Entity {
         static UID: number;
@@ -22,7 +22,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     interface IObserver extends IDisposable {
         next(value: any): any;
@@ -31,7 +31,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class Disposer extends Entity {
         private _disposeHandler;
@@ -40,7 +40,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class InnerSubscription implements IDisposable {
         static create(subject: Subject | GeneratorSubject, observer: Observer): InnerSubscription;
@@ -51,7 +51,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class InnerSubscriptionGroup implements IDisposable {
         static create(): InnerSubscriptionGroup;
@@ -69,11 +69,11 @@ declare module dyRt {
     var ABSTRACT_METHOD: Function, ABSTRACT_ATTRIBUTE: any;
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class Stream extends Disposer {
         scheduler: Scheduler;
@@ -97,7 +97,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class Scheduler {
         static create(...args: any[]): Scheduler;
@@ -109,7 +109,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class Observer extends Entity implements IObserver {
         private _isDisposed;
@@ -131,7 +131,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class Subject implements IObserver {
         static create(): Subject;
@@ -148,7 +148,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class GeneratorSubject extends Disposer implements IObserver {
         static create(): GeneratorSubject;
@@ -176,7 +176,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class AnonymousObserver extends Observer {
         static create(onNext: Function, onError: Function, onCompleted: Function): AnonymousObserver;
@@ -186,7 +186,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class AutoDetachObserver extends Observer {
         static create(onNext: Function, onError: Function, onCompleted: Function): AutoDetachObserver;
@@ -197,7 +197,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class MapObserver extends Observer {
         static create(currentObserver: IObserver, selector: Function): MapObserver;
@@ -210,7 +210,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class DoObserver extends Observer {
         static create(currentObserver: IObserver, prevObserver: IObserver): DoObserver;
@@ -223,7 +223,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class MergeAllObserver extends Observer {
         static create(currentObserver: IObserver, streamGroup: dyCb.Collection<Stream>): MergeAllObserver;
@@ -239,7 +239,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class TakeUntilObserver extends Observer {
         static create(prevObserver: IObserver): TakeUntilObserver;
@@ -251,7 +251,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class ConcatObserver extends Observer {
         static create(currentObserver: IObserver, startNextStream: Function): ConcatObserver;
@@ -264,7 +264,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     interface ISubjectObserver {
         addChild(observer: Observer): any;
@@ -272,7 +272,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class SubjectObserver implements IObserver {
         observers: dyCb.Collection<IObserver>;
@@ -286,7 +286,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class BaseStream extends Stream {
         subscribeCore(observer: IObserver): void;
@@ -295,7 +295,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class DoStream extends BaseStream {
         static create(source: Stream, onNext?: Function, onError?: Function, onCompleted?: Function): DoStream;
@@ -306,7 +306,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class MapStream extends BaseStream {
         static create(source: Stream, selector: Function): MapStream;
@@ -317,7 +317,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class FromArrayStream extends BaseStream {
         static create(array: Array<any>, scheduler: Scheduler): FromArrayStream;
@@ -327,7 +327,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class FromPromiseStream extends BaseStream {
         static create(promise: any, scheduler: Scheduler): FromPromiseStream;
@@ -337,7 +337,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class FromEventPatternStream extends BaseStream {
         static create(addHandler: Function, removeHandler: Function): FromEventPatternStream;
@@ -348,7 +348,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class AnonymousStream extends Stream {
         static create(subscribeFunc: Function): AnonymousStream;
@@ -357,7 +357,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class IntervalStream extends BaseStream {
         static create(interval: number, scheduler: Scheduler): IntervalStream;
@@ -368,7 +368,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class IntervalRequestStream extends BaseStream {
         static create(scheduler: Scheduler): IntervalRequestStream;
@@ -377,7 +377,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class MergeAllStream extends BaseStream {
         static create(source: Stream): MergeAllStream;
@@ -388,7 +388,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class TakeUntilStream extends BaseStream {
         static create(source: Stream, otherSteam: Stream): TakeUntilStream;
@@ -399,7 +399,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class ConcatStream extends BaseStream {
         static create(sources: Array<Stream>): ConcatStream;
@@ -409,7 +409,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class RepeatStream extends BaseStream {
         static create(source: Stream, count: number): RepeatStream;
@@ -420,7 +420,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     var createStream: (subscribeFunc: any) => AnonymousStream;
     var fromArray: (array: any[], scheduler?: Scheduler) => FromArrayStream;
@@ -430,7 +430,7 @@ declare module dyRt {
     var intervalRequest: (scheduler?: Scheduler) => IntervalRequestStream;
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class Record {
         static create(time: number, value: any, actionType?: ActionType, comparer?: Function): Record;
@@ -446,7 +446,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class MockObserver extends Observer {
         static create(scheduler: TestScheduler): MockObserver;
@@ -462,7 +462,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class MockPromise {
         static create(scheduler: TestScheduler, messages: [Record]): MockPromise;
@@ -473,7 +473,7 @@ declare module dyRt {
     }
 }
 
-/// <reference path="../definitions.d.ts" />
+
 declare module dyRt {
     class TestScheduler extends Scheduler {
         static next(tick: any, value: any): Record;
