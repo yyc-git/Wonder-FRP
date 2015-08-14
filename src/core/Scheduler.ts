@@ -10,7 +10,7 @@ module dyRt {
             self = this;
 
         wrapper = function (time) {
-            time = +new Date();
+            time = performance.now();
             self.callback(time);
         };
 
@@ -95,7 +95,6 @@ module dyRt {
             }
         }
 
-//            return  root.requestAnimationFrame ||  //传递给callback的time不是从1970年1月1日到当前所经过的毫秒数！
         return root.webkitRequestAnimationFrame ||
             root.mozRequestAnimationFrame ||
             root.oRequestAnimationFrame ||
@@ -106,9 +105,9 @@ module dyRt {
                     finish;
 
                 root.setTimeout(function () {
-                    start = +new Date();
+                    start = performance.now();
                     callback(start);
-                    finish = +new Date();
+                    finish = performance.now();
 
                     self.timeout = 1000 / 60 - (finish - start);
 

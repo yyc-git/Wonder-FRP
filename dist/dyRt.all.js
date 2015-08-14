@@ -6,6 +6,376 @@ var dyCb;
     dyCb.$REMOVE = void 0;
 })(dyCb || (dyCb = {}));
 
+var dyCb;
+(function (dyCb) {
+    var Log = (function () {
+        function Log() {
+        }
+        /**
+         * Output Debug message.
+         * @function
+         * @param {String} message
+         */
+        Log.log = function (message) {
+            if (window.console && window.console.trace) {
+                window.console.trace(message);
+            }
+            else if (window.console && window.console.log) {
+                window.console.log(message);
+            }
+            else {
+                alert(message);
+            }
+        };
+        /**
+         * 断言失败时，会提示错误信息，但程序会继续执行下去
+         * 使用断言捕捉不应该发生的非法情况。不要混淆非法情况与错误情况之间的区别，后者是必然存在的并且是一定要作出处理的。
+         *
+         * 1）对非预期错误使用断言
+         断言中的布尔表达式的反面一定要描述一个非预期错误，下面所述的在一定情况下为非预期错误的一些例子：
+         （1）空指针。
+         （2）输入或者输出参数的值不在预期范围内。
+         （3）数组的越界。
+         非预期错误对应的就是预期错误，我们通常使用错误处理代码来处理预期错误，而使用断言处理非预期错误。在代码执行过程中，有些错误永远不应该发生，这样的错误是非预期错误。断言可以被看成是一种可执行的注释，你不能依赖它来让代码正常工作（《Code Complete 2》）。例如：
+         int nRes = f(); // nRes 由 f 函数控制， f 函数保证返回值一定在 -100 ~ 100
+         Assert(-100 <= nRes && nRes <= 100); // 断言，一个可执行的注释
+         由于 f 函数保证了返回值处于 -100 ~ 100，那么如果出现了 nRes 不在这个范围的值时，就表明一个非预期错误的出现。后面会讲到“隔栏”，那时会对断言有更加深刻的理解。
+         2）不要把需要执行的代码放入断言中
+         断言用于软件的开发和维护，而通常不在发行版本中包含断言。
+         需要执行的代码放入断言中是不正确的，因为在发行版本中，这些代码通常不会被执行，例如：
+         Assert(f()); // f 函数通常在发行版本中不会被执行
+         而使用如下方法则比较安全：
+         res = f();
+         Assert(res); // 安全
+         3）对来源于内部系统的可靠的数据使用断言，而不要对外部不可靠的数据使用断言，对于外部不可靠数据，应该使用错误处理代码。
+         再次强调，把断言看成可执行的注释。
+         * @param cond 如果cond返回false，则断言失败，显示message
+         * @param message
+         */
+        Log.assert = function (cond, message) {
+            if (window.console.assert) {
+                window.console.assert(cond, message);
+            }
+            else {
+                if (!cond && message) {
+                    if (window.console && window.console.log) {
+                        window.console.log(message);
+                    }
+                    else {
+                        alert(message);
+                    }
+                }
+            }
+        };
+        Log.error = function (cond, message) {
+            if (cond) {
+                throw new Error(message);
+            }
+        };
+        Log.info = {
+            INVALID_PARAM: "invalid parameter",
+            ABSTRACT_ATTRIBUTE: "abstract attribute need override",
+            ABSTRACT_METHOD: "abstract method need override",
+            helperFunc: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var result = "";
+                Array.prototype.slice.call(arguments, 0).forEach(function (val) {
+                    result += String(val) + " ";
+                });
+                return result.slice(0, -1);
+            },
+            assertion: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                if (arguments.length === 2) {
+                    return this.helperFunc(arguments[0], arguments[1]);
+                }
+                else if (arguments.length === 3) {
+                    return this.helperFunc(arguments[1], arguments[0], arguments[2]);
+                }
+                else {
+                    throw new Error("arguments.length must <= 3");
+                }
+            },
+            FUNC_INVALID: function (value) {
+                return this.assertion("invalid", value);
+            },
+            FUNC_MUST: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("must");
+                return this.assertion.apply(this, arr);
+            },
+            FUNC_MUST_BE: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("must be");
+                return this.assertion.apply(this, arr);
+            },
+            FUNC_MUST_NOT_BE: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("must not be");
+                return this.assertion.apply(this, arr);
+            },
+            FUNC_SHOULD: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("should");
+                return this.assertion.apply(this, arr);
+            },
+            FUNC_SUPPORT: function (value) {
+                return this.assertion("support", value);
+            },
+            FUNC_NOT_SUPPORT: function (value) {
+                return this.assertion("not support", value);
+            },
+            FUNC_MUST_DEFINE: function (value) {
+                return this.assertion("must define", value);
+            },
+            FUNC_MUST_NOT_DEFINE: function (value) {
+                return this.assertion("must not define", value);
+            },
+            FUNC_UNKNOW: function (value) {
+                return this.assertion("unknow", value);
+            },
+            FUNC_EXPECT: function (value) {
+                return this.assertion("expect", value);
+            },
+            FUNC_UNEXPECT: function (value) {
+                return this.assertion("unexpected", value);
+            }
+        };
+        return Log;
+    })();
+    dyCb.Log = Log;
+})(dyCb || (dyCb = {}));
+
+/// <reference path="definitions.d.ts"/>
+var dyCb;
+(function (dyCb) {
+    var List = (function () {
+        function List() {
+            this.children = null;
+        }
+        List.prototype.getCount = function () {
+            return this.children.length;
+        };
+        List.prototype.hasChild = function (arg) {
+            if (dyCb.JudgeUtils.isFunction(arguments[0])) {
+                var func = arguments[0];
+                return this._contain(this.children, function (c, i) {
+                    return func(c, i);
+                });
+            }
+            var child = arguments[0];
+            return this._contain(this.children, function (c, i) {
+                if (c === child
+                    || (c.uid && child.uid && c.uid === child.uid)) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            });
+        };
+        List.prototype.getChildren = function () {
+            return this.children;
+        };
+        List.prototype.getChild = function (index) {
+            return this.children[index];
+        };
+        List.prototype.addChild = function (child) {
+            this.children.push(child);
+            return this;
+        };
+        List.prototype.addChildren = function (arg) {
+            if (dyCb.JudgeUtils.isArray(arg)) {
+                var children = arg;
+                this.children = this.children.concat(children);
+            }
+            else if (arg instanceof dyCb.Collection) {
+                var children = arg;
+                this.children = this.children.concat(children.getChildren());
+            }
+            else {
+                var child = arg;
+                this.addChild(child);
+            }
+            return this;
+        };
+        List.prototype.removeAllChildren = function () {
+            this.children = [];
+            return this;
+        };
+        List.prototype.forEach = function (func, context) {
+            this._forEach(this.children, func, context);
+            return this;
+        };
+        List.prototype.filter = function (func) {
+            var scope = this.children, result = [];
+            this._forEach(this.children, function (value, index) {
+                if (!func.call(scope, value, index)) {
+                    return;
+                }
+                result.push(value);
+            });
+            return dyCb.Collection.create(result);
+        };
+        //public removeChildAt (index) {
+        //    Log.error(index < 0, "序号必须大于等于0");
+        //
+        //    this.children.splice(index, 1);
+        //}
+        //
+        //public copy () {
+        //    return Collection.create<T>(ExtendUtils.extendDeep(this.children));
+        //}
+        List.prototype.reverse = function () {
+            this.children.reverse();
+            return this;
+        };
+        List.prototype.removeChild = function (arg) {
+            if (dyCb.JudgeUtils.isFunction(arg)) {
+                var func = arg;
+                this._removeChild(this.children, func);
+            }
+            else if (arg.uid) {
+                this._removeChild(this.children, function (e) {
+                    if (!e.uid) {
+                        return false;
+                    }
+                    return e.uid === arg.uid;
+                });
+            }
+            else {
+                this._removeChild(this.children, function (e) {
+                    return e === arg;
+                });
+            }
+            return this;
+        };
+        List.prototype.sort = function (func) {
+            this.children.sort(func);
+            return this;
+        };
+        List.prototype.map = function (func) {
+            return this._map(this.children, func);
+        };
+        List.prototype.toArray = function () {
+            return dyCb.ExtendUtils.extendDeep(this.children);
+        };
+        List.prototype._indexOf = function (arr, arg) {
+            var result = -1;
+            if (dyCb.JudgeUtils.isFunction(arg)) {
+                var func = arg;
+                this._forEach(arr, function (value, index) {
+                    if (!!func.call(null, value, index)) {
+                        result = index;
+                        return dyCb.$BREAK; //如果包含，则置返回值为true,跳出循环
+                    }
+                });
+            }
+            else {
+                var val = arg;
+                this._forEach(arr, function (value, index) {
+                    if (val === value
+                        || (value.contain && value.contain(val))
+                        || (value.indexOf && value.indexOf(val) > -1)) {
+                        result = index;
+                        return dyCb.$BREAK; //如果包含，则置返回值为true,跳出循环
+                    }
+                });
+            }
+            return result;
+        };
+        List.prototype._contain = function (arr, arg) {
+            return this._indexOf(arr, arg) > -1;
+        };
+        List.prototype._forEach = function (arr, func, context) {
+            var scope = context || window, i = 0, len = arr.length;
+            for (i = 0; i < len; i++) {
+                if (func.call(scope, arr[i], i) === dyCb.$BREAK) {
+                    break;
+                }
+            }
+        };
+        List.prototype._map = function (arr, func) {
+            var resultArr = [];
+            this._forEach(arr, function (e, index) {
+                var result = func(e, index);
+                if (result !== dyCb.$REMOVE) {
+                    resultArr.push(result);
+                }
+                //e && e[handlerName] && e[handlerName].apply(context || e, valueArr);
+            });
+            return dyCb.Collection.create(resultArr);
+        };
+        List.prototype._removeChild = function (arr, func) {
+            var self = this, index = null;
+            index = this._indexOf(arr, function (e, index) {
+                return !!func.call(self, e);
+            });
+            //if (index !== null && index !== -1) {
+            if (index !== -1) {
+                arr.splice(index, 1);
+            }
+            //return false;
+            return arr;
+        };
+        return List;
+    })();
+    dyCb.List = List;
+})(dyCb || (dyCb = {}));
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="definitions.d.ts"/>
+var dyCb;
+(function (dyCb) {
+    var Collection = (function (_super) {
+        __extends(Collection, _super);
+        function Collection(children) {
+            if (children === void 0) { children = []; }
+            _super.call(this);
+            this.children = children;
+        }
+        Collection.create = function (children) {
+            if (children === void 0) { children = []; }
+            var obj = new this(children);
+            return obj;
+        };
+        Collection.prototype.copy = function (isDeep) {
+            if (isDeep === void 0) { isDeep = false; }
+            return isDeep ? Collection.create(dyCb.ExtendUtils.extendDeep(this.children))
+                : Collection.create(dyCb.ExtendUtils.extend([], this.children));
+        };
+        return Collection;
+    })(dyCb.List);
+    dyCb.Collection = Collection;
+})(dyCb || (dyCb = {}));
+
 /// <reference path="definitions.d.ts"/>
 var dyCb;
 (function (dyCb) {
@@ -43,6 +413,9 @@ var dyCb;
         };
         Hash.prototype.getChild = function (key) {
             return this._children[key];
+        };
+        Hash.prototype.setValue = function (key, value) {
+            this._children[key] = value;
         };
         Hash.prototype.addChild = function (key, value) {
             this._children[key] = value;
@@ -131,6 +504,76 @@ var dyCb;
         return Hash;
     })();
     dyCb.Hash = Hash;
+})(dyCb || (dyCb = {}));
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="Collection"/>
+var dyCb;
+(function (dyCb) {
+    var Queue = (function (_super) {
+        __extends(Queue, _super);
+        function Queue(children) {
+            if (children === void 0) { children = []; }
+            _super.call(this);
+            this.children = children;
+        }
+        Queue.create = function (children) {
+            if (children === void 0) { children = []; }
+            var obj = new this(children);
+            return obj;
+        };
+        Queue.prototype.push = function (element) {
+            this.children.unshift(element);
+        };
+        Queue.prototype.pop = function () {
+            return this.children.pop();
+        };
+        Queue.prototype.clear = function () {
+            this.removeAllChildren();
+        };
+        return Queue;
+    })(dyCb.List);
+    dyCb.Queue = Queue;
+})(dyCb || (dyCb = {}));
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="Collection"/>
+var dyCb;
+(function (dyCb) {
+    var Stack = (function (_super) {
+        __extends(Stack, _super);
+        function Stack(children) {
+            if (children === void 0) { children = []; }
+            _super.call(this);
+            this.children = children;
+        }
+        Stack.create = function (children) {
+            if (children === void 0) { children = []; }
+            var obj = new this(children);
+            return obj;
+        };
+        Stack.prototype.push = function (element) {
+            this.children.push(element);
+        };
+        Stack.prototype.pop = function () {
+            return this.children.pop();
+        };
+        Stack.prototype.clear = function () {
+            this.removeAllChildren();
+        };
+        return Stack;
+    })(dyCb.List);
+    dyCb.Stack = Stack;
 })(dyCb || (dyCb = {}));
 
 var dyCb;
@@ -468,352 +911,6 @@ var dyCb;
     dyCb.ExtendUtils = ExtendUtils;
 })(dyCb || (dyCb = {}));
 
-var dyCb;
-(function (dyCb) {
-    var Log = (function () {
-        function Log() {
-        }
-        /**
-         * Output Debug message.
-         * @function
-         * @param {String} message
-         */
-        Log.log = function (message) {
-            if (console && console.log) {
-                console.log(message);
-            }
-            else {
-                alert(message);
-            }
-        };
-        /**
-         * 断言失败时，会提示错误信息，但程序会继续执行下去
-         * 使用断言捕捉不应该发生的非法情况。不要混淆非法情况与错误情况之间的区别，后者是必然存在的并且是一定要作出处理的。
-         *
-         * 1）对非预期错误使用断言
-         断言中的布尔表达式的反面一定要描述一个非预期错误，下面所述的在一定情况下为非预期错误的一些例子：
-         （1）空指针。
-         （2）输入或者输出参数的值不在预期范围内。
-         （3）数组的越界。
-         非预期错误对应的就是预期错误，我们通常使用错误处理代码来处理预期错误，而使用断言处理非预期错误。在代码执行过程中，有些错误永远不应该发生，这样的错误是非预期错误。断言可以被看成是一种可执行的注释，你不能依赖它来让代码正常工作（《Code Complete 2》）。例如：
-         int nRes = f(); // nRes 由 f 函数控制， f 函数保证返回值一定在 -100 ~ 100
-         Assert(-100 <= nRes && nRes <= 100); // 断言，一个可执行的注释
-         由于 f 函数保证了返回值处于 -100 ~ 100，那么如果出现了 nRes 不在这个范围的值时，就表明一个非预期错误的出现。后面会讲到“隔栏”，那时会对断言有更加深刻的理解。
-         2）不要把需要执行的代码放入断言中
-         断言用于软件的开发和维护，而通常不在发行版本中包含断言。
-         需要执行的代码放入断言中是不正确的，因为在发行版本中，这些代码通常不会被执行，例如：
-         Assert(f()); // f 函数通常在发行版本中不会被执行
-         而使用如下方法则比较安全：
-         res = f();
-         Assert(res); // 安全
-         3）对来源于内部系统的可靠的数据使用断言，而不要对外部不可靠的数据使用断言，对于外部不可靠数据，应该使用错误处理代码。
-         再次强调，把断言看成可执行的注释。
-         * @param cond 如果cond返回false，则断言失败，显示message
-         * @param message
-         */
-        Log.assert = function (cond, message) {
-            if (console.assert) {
-                console.assert(cond, message);
-            }
-            else {
-                if (!cond && message) {
-                    if (console && console.log) {
-                        console.log(message);
-                    }
-                    else {
-                        alert(message);
-                    }
-                }
-            }
-        };
-        Log.error = function (cond, message) {
-            if (cond) {
-                throw new Error(message);
-            }
-        };
-        Log.info = {
-            INVALID_PARAM: "invalid parameter",
-            ABSTRACT_ATTRIBUTE: "abstract attribute need override",
-            ABSTRACT_METHOD: "abstract method need override",
-            helperFunc: function () {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i - 0] = arguments[_i];
-                }
-                var result = "";
-                Array.prototype.slice.call(arguments, 0).forEach(function (val) {
-                    result += String(val) + " ";
-                });
-                return result.slice(0, -1);
-            },
-            assertion: function () {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i - 0] = arguments[_i];
-                }
-                if (arguments.length === 2) {
-                    return this.helperFunc(arguments[0], arguments[1]);
-                }
-                else if (arguments.length === 3) {
-                    return this.helperFunc(arguments[1], arguments[0], arguments[2]);
-                }
-                else {
-                    throw new Error("arguments.length must <= 3");
-                }
-            },
-            FUNC_INVALID: function (value) {
-                return this.assertion("invalid", value);
-            },
-            FUNC_MUST: function () {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i - 0] = arguments[_i];
-                }
-                var arr = Array.prototype.slice.call(arguments, 0);
-                arr.unshift("must");
-                return this.assertion.apply(this, arr);
-            },
-            FUNC_MUST_BE: function () {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i - 0] = arguments[_i];
-                }
-                var arr = Array.prototype.slice.call(arguments, 0);
-                arr.unshift("must be");
-                return this.assertion.apply(this, arr);
-            },
-            FUNC_MUST_NOT_BE: function () {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i - 0] = arguments[_i];
-                }
-                var arr = Array.prototype.slice.call(arguments, 0);
-                arr.unshift("must not be");
-                return this.assertion.apply(this, arr);
-            },
-            FUNC_SHOULD: function () {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i - 0] = arguments[_i];
-                }
-                var arr = Array.prototype.slice.call(arguments, 0);
-                arr.unshift("should");
-                return this.assertion.apply(this, arr);
-            },
-            FUNC_SUPPORT: function (value) {
-                return this.assertion("support", value);
-            },
-            FUNC_NOT_SUPPORT: function (value) {
-                return this.assertion("not support", value);
-            },
-            FUNC_MUST_DEFINE: function (value) {
-                return this.assertion("must define", value);
-            },
-            FUNC_MUST_NOT_DEFINE: function (value) {
-                return this.assertion("must not define", value);
-            },
-            FUNC_UNKNOW: function (value) {
-                return this.assertion("unknow", value);
-            },
-            FUNC_EXPECT: function (value) {
-                return this.assertion("expect", value);
-            },
-            FUNC_UNEXPECT: function (value) {
-                return this.assertion("unexpected", value);
-            }
-        };
-        return Log;
-    })();
-    dyCb.Log = Log;
-})(dyCb || (dyCb = {}));
-
-/// <reference path="definitions.d.ts"/>
-var dyCb;
-(function (dyCb) {
-    var Collection = (function () {
-        function Collection(children) {
-            if (children === void 0) { children = []; }
-            this._children = null;
-            this._filter = function (arr, func, context) {
-                var scope = context || window, result = [];
-                this._forEach(arr, function (value, index) {
-                    if (!func.call(scope, value, index)) {
-                        return;
-                    }
-                    result.push(value);
-                });
-                return Collection.create(result);
-            };
-            this._children = children;
-        }
-        Collection.create = function (children) {
-            if (children === void 0) { children = []; }
-            var obj = new this(children);
-            return obj;
-        };
-        Collection.prototype.getCount = function () {
-            return this._children.length;
-        };
-        Collection.prototype.hasChild = function (arg) {
-            if (dyCb.JudgeUtils.isFunction(arguments[0])) {
-                var func = arguments[0];
-                return this._contain(this._children, function (c, i) {
-                    return func(c, i);
-                });
-            }
-            var child = arguments[0];
-            return this._contain(this._children, function (c, i) {
-                if (c === child
-                    || (c.uid && child.uid && c.uid === child.uid)) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            });
-        };
-        Collection.prototype.getChildren = function () {
-            return this._children;
-        };
-        Collection.prototype.getChild = function (index) {
-            return this._children[index];
-        };
-        Collection.prototype.addChild = function (child) {
-            this._children.push(child);
-            return this;
-        };
-        Collection.prototype.addChildren = function (arg) {
-            if (dyCb.JudgeUtils.isArray(arg)) {
-                var children = arg;
-                this._children = this._children.concat(children);
-            }
-            else if (arg instanceof Collection) {
-                var children = arg;
-                this._children = this._children.concat(children.toArray());
-            }
-            else {
-                var child = arg;
-                this.addChild(child);
-            }
-            return this;
-        };
-        Collection.prototype.removeAllChildren = function () {
-            this._children = [];
-            return this;
-        };
-        Collection.prototype.forEach = function (func, context) {
-            this._forEach(this._children, func, context);
-            return this;
-        };
-        Collection.prototype.filter = function (func) {
-            return this._filter(this._children, func, this._children);
-        };
-        //public removeChildAt (index) {
-        //    Log.error(index < 0, "序号必须大于等于0");
-        //
-        //    this._children.splice(index, 1);
-        //}
-        //
-        //public copy () {
-        //    return ExtendUtils.extendDeep(this._children);
-        //}
-        //
-        //public reverse () {
-        //    this._children.reverse();
-        //}
-        Collection.prototype.removeChild = function (arg) {
-            if (dyCb.JudgeUtils.isFunction(arg)) {
-                var func = arg;
-                this._removeChild(this._children, func);
-            }
-            else if (arg.uid) {
-                this._removeChild(this._children, function (e) {
-                    if (!e.uid) {
-                        return false;
-                    }
-                    return e.uid === arg.uid;
-                });
-            }
-            else {
-                this._removeChild(this._children, function (e) {
-                    return e === arg;
-                });
-            }
-            return this;
-        };
-        Collection.prototype.sort = function (func) {
-            this._children.sort(func);
-            return this;
-        };
-        Collection.prototype.map = function (func) {
-            return this._map(this._children, func);
-        };
-        Collection.prototype.toArray = function () {
-            return this._children;
-        };
-        Collection.prototype._indexOf = function (arr, arg) {
-            var result = -1;
-            if (dyCb.JudgeUtils.isFunction(arg)) {
-                var func = arg;
-                this._forEach(arr, function (value, index) {
-                    if (!!func.call(null, value, index)) {
-                        result = index;
-                        return dyCb.$BREAK; //如果包含，则置返回值为true,跳出循环
-                    }
-                });
-            }
-            else {
-                var val = arg;
-                this._forEach(arr, function (value, index) {
-                    if (val === value
-                        || (value.contain && value.contain(val))
-                        || (value.indexOf && value.indexOf(val) > -1)) {
-                        result = index;
-                        return dyCb.$BREAK; //如果包含，则置返回值为true,跳出循环
-                    }
-                });
-            }
-            return result;
-        };
-        Collection.prototype._contain = function (arr, arg) {
-            return this._indexOf(arr, arg) > -1;
-        };
-        Collection.prototype._forEach = function (arr, func, context) {
-            var scope = context || window, i = 0, len = arr.length;
-            for (i = 0; i < len; i++) {
-                if (func.call(scope, arr[i], i) === dyCb.$BREAK) {
-                    break;
-                }
-            }
-        };
-        Collection.prototype._map = function (arr, func) {
-            var resultArr = [];
-            this._forEach(arr, function (e, index) {
-                var result = func(e, index);
-                if (result !== dyCb.$REMOVE) {
-                    resultArr.push(result);
-                }
-                //e && e[handlerName] && e[handlerName].apply(context || e, valueArr);
-            });
-            return Collection.create(resultArr);
-        };
-        Collection.prototype._removeChild = function (arr, func) {
-            var self = this, index = null;
-            index = this._indexOf(arr, function (e, index) {
-                return !!func.call(self, e);
-            });
-            //if (index !== null && index !== -1) {
-            if (index !== -1) {
-                arr.splice(index, 1);
-            }
-            //return false;
-            return arr;
-        };
-        return Collection;
-    })();
-    dyCb.Collection = Collection;
-})(dyCb || (dyCb = {}));
-
 /// <reference path="../definitions.d.ts"/>
 var dyCb;
 (function (dyCb) {
@@ -838,6 +935,24 @@ var dyCb;
         return DomQuery;
     })();
     dyCb.DomQuery = DomQuery;
+})(dyCb || (dyCb = {}));
+
+var dyCb;
+(function (dyCb) {
+    if ('performance' in window === false) {
+        window.performance = {};
+    }
+    // IE 8
+    Date.now = (Date.now || function () {
+        return new Date().getTime();
+    });
+    if ('now' in window.performance === false) {
+        var offset = window.performance.timing && window.performance.timing.navigationStart ? performance.timing.navigationStart
+            : Date.now();
+        window.performance.now = function () {
+            return Date.now() - offset;
+        };
+    }
 })(dyCb || (dyCb = {}));
 
 var __extends = this.__extends || function (d, b) {
@@ -867,32 +982,65 @@ var dyRt;
     dyRt.JudgeUtils = JudgeUtils;
 })(dyRt || (dyRt = {}));
 
+/// <reference path="../definitions.d.ts"/>
+var dyRt;
+(function (dyRt) {
+    var Entity = (function () {
+        function Entity(uidPre) {
+            this._uid = null;
+            this._uid = uidPre + String(Entity.UID++);
+        }
+        Object.defineProperty(Entity.prototype, "uid", {
+            get: function () {
+                return this._uid;
+            },
+            set: function (uid) {
+                this._uid = uid;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Entity.UID = 1;
+        return Entity;
+    })();
+    dyRt.Entity = Entity;
+})(dyRt || (dyRt = {}));
+
 
 
 /// <reference path="../definitions.d.ts"/>
 
-var dyRt;
-(function (dyRt) {
-    dyRt.root = window;
-})(dyRt || (dyRt = {}));
-
-var dyRt;
-(function (dyRt) {
-    dyRt.ABSTRACT_METHOD = function () {
-        return new Error("abstract method need override");
-    }, dyRt.ABSTRACT_ATTRIBUTE = null;
-})(dyRt || (dyRt = {}));
-
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
 /// <reference path="../definitions.d.ts"/>
 var dyRt;
 (function (dyRt) {
-    //not swallow the error
-    if (RSVP) {
-        RSVP.onerror = function (e) {
-            throw e;
+    var Disposer = (function (_super) {
+        __extends(Disposer, _super);
+        function Disposer() {
+            _super.apply(this, arguments);
+            this._disposeHandler = dyCb.Collection.create();
+        }
+        Object.defineProperty(Disposer.prototype, "disposeHandler", {
+            get: function () {
+                return this._disposeHandler;
+            },
+            set: function (disposeHandler) {
+                this._disposeHandler = disposeHandler;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Disposer.prototype.addDisposeHandler = function (func) {
+            this._disposeHandler.addChild(func);
         };
-        RSVP.on('error', RSVP.onerror);
-    }
+        return Disposer;
+    })(dyRt.Entity);
+    dyRt.Disposer = Disposer;
 })(dyRt || (dyRt = {}));
 
 /// <reference path="../definitions.d.ts"/>
@@ -921,25 +1069,49 @@ var dyRt;
 /// <reference path="../definitions.d.ts"/>
 var dyRt;
 (function (dyRt) {
-    var Entity = (function () {
-        function Entity(uidPre) {
-            this._uid = null;
-            this._uid = uidPre + String(Entity.UID++);
+    var InnerSubscriptionGroup = (function () {
+        function InnerSubscriptionGroup() {
+            this._container = dyCb.Collection.create();
         }
-        Object.defineProperty(Entity.prototype, "uid", {
-            get: function () {
-                return this._uid;
-            },
-            set: function (uid) {
-                this._uid = uid;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Entity.UID = 1;
-        return Entity;
+        InnerSubscriptionGroup.create = function () {
+            var obj = new this();
+            return obj;
+        };
+        InnerSubscriptionGroup.prototype.addChild = function (child) {
+            this._container.addChild(child);
+        };
+        InnerSubscriptionGroup.prototype.dispose = function () {
+            this._container.forEach(function (child) {
+                child.dispose();
+            });
+        };
+        return InnerSubscriptionGroup;
     })();
-    dyRt.Entity = Entity;
+    dyRt.InnerSubscriptionGroup = InnerSubscriptionGroup;
+})(dyRt || (dyRt = {}));
+
+var dyRt;
+(function (dyRt) {
+    dyRt.root = window;
+})(dyRt || (dyRt = {}));
+
+var dyRt;
+(function (dyRt) {
+    dyRt.ABSTRACT_METHOD = function () {
+        return new Error("abstract method need override");
+    }, dyRt.ABSTRACT_ATTRIBUTE = null;
+})(dyRt || (dyRt = {}));
+
+/// <reference path="../definitions.d.ts"/>
+var dyRt;
+(function (dyRt) {
+    //not swallow the error
+    if (window.RSVP) {
+        window.RSVP.onerror = function (e) {
+            throw e;
+        };
+        window.RSVP.on('error', window.RSVP.onerror);
+    }
 })(dyRt || (dyRt = {}));
 
 var __extends = this.__extends || function (d, b) {
@@ -957,34 +1129,13 @@ var dyRt;
             _super.call(this, "Stream");
             this.scheduler = dyRt.ABSTRACT_ATTRIBUTE;
             this.subscribeFunc = null;
-            this._disposeHandler = dyCb.Collection.create();
             this.subscribeFunc = subscribeFunc || function () { };
         }
-        Object.defineProperty(Stream.prototype, "disposeHandler", {
-            get: function () {
-                return this._disposeHandler;
-            },
-            set: function (disposeHandler) {
-                this._disposeHandler = disposeHandler;
-            },
-            enumerable: true,
-            configurable: true
-        });
         Stream.prototype.subscribe = function (arg1, onError, onCompleted) {
             throw dyRt.ABSTRACT_METHOD();
         };
         Stream.prototype.buildStream = function (observer) {
             this.subscribeFunc(observer);
-        };
-        Stream.prototype.addDisposeHandler = function (func) {
-            this._disposeHandler.addChild(func);
-        };
-        Stream.prototype.handleSubject = function (arg) {
-            if (this._isSubject(arg)) {
-                this._setSubject(arg);
-                return true;
-            }
-            return false;
         };
         Stream.prototype.do = function (onNext, onError, onCompleted) {
             return dyRt.DoStream.create(this, onNext, onError, onCompleted);
@@ -993,7 +1144,6 @@ var dyRt;
             return dyRt.MapStream.create(this, selector);
         };
         Stream.prototype.flatMap = function (selector) {
-            //return FlatMapStream.create(this, selector);
             return this.map(selector).mergeAll();
         };
         Stream.prototype.mergeAll = function () {
@@ -1010,10 +1160,31 @@ var dyRt;
             else {
                 args = Array.prototype.slice.call(arguments, 0);
             }
-            //todo judge args
-            //return ConcatSubject.create(this, args);
-            //return new ConcatSubject(this, args);
-            return dyRt.ConcatStream.create(this, args);
+            args.unshift(this);
+            return dyRt.ConcatStream.create(args);
+        };
+        Stream.prototype.merge = function () {
+            var args = null, stream = null;
+            if (dyRt.JudgeUtils.isArray(arguments[0])) {
+                args = arguments[0];
+            }
+            else {
+                args = Array.prototype.slice.call(arguments, 0);
+            }
+            args.unshift(this);
+            stream = dyRt.fromArray(args).mergeAll();
+            return stream;
+        };
+        Stream.prototype.repeat = function (count) {
+            if (count === void 0) { count = -1; }
+            return dyRt.RepeatStream.create(this, count);
+        };
+        Stream.prototype.handleSubject = function (arg) {
+            if (this._isSubject(arg)) {
+                this._setSubject(arg);
+                return true;
+            }
+            return false;
         };
         Stream.prototype._isSubject = function (subject) {
             return subject instanceof dyRt.Subject;
@@ -1022,50 +1193,8 @@ var dyRt;
             subject.source = this;
         };
         return Stream;
-    })(dyRt.Entity);
+    })(dyRt.Disposer);
     dyRt.Stream = Stream;
-})(dyRt || (dyRt = {}));
-
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-/// <reference path="../definitions.d.ts"/>
-var dyRt;
-(function (dyRt) {
-    var BaseStream = (function (_super) {
-        __extends(BaseStream, _super);
-        function BaseStream() {
-            _super.apply(this, arguments);
-        }
-        BaseStream.prototype.subscribeCore = function (observer) {
-            throw dyRt.ABSTRACT_METHOD();
-        };
-        BaseStream.prototype.subscribe = function (arg1, onError, onCompleted) {
-            var observer = null;
-            if (this.handleSubject(arg1)) {
-                return;
-            }
-            observer = arg1 instanceof dyRt.Observer
-                ? arg1
-                : dyRt.AutoDetachObserver.create(arg1, onError, onCompleted);
-            observer.setDisposeHandler(this.disposeHandler);
-            //todo encapsulate it to scheduleItem
-            //todo delete target?
-            //this.scheduler.target = observer;
-            //dyCb.Log.error(this._hasMultiObservers(), "should use Subject to handle multi observers");
-            this.buildStream(observer);
-            return observer;
-        };
-        BaseStream.prototype.buildStream = function (observer) {
-            _super.prototype.buildStream.call(this, observer);
-            this.subscribeCore(observer);
-        };
-        return BaseStream;
-    })(dyRt.Stream);
-    dyRt.BaseStream = BaseStream;
 })(dyRt || (dyRt = {}));
 
 /// <reference path="../definitions.d.ts"/>
@@ -1074,7 +1203,7 @@ var dyRt;
     dyRt.root.requestNextAnimationFrame = (function () {
         var originalRequestAnimationFrame = undefined, wrapper = undefined, callback = undefined, geckoVersion = null, userAgent = navigator.userAgent, index = 0, self = this;
         wrapper = function (time) {
-            time = +new Date();
+            time = performance.now();
             self.callback(time);
         };
         /*!
@@ -1140,7 +1269,6 @@ var dyRt;
                 }
             }
         }
-        //            return  root.requestAnimationFrame ||  //传递给callback的time不是从1970年1月1日到当前所经过的毫秒数！
         return dyRt.root.webkitRequestAnimationFrame ||
             dyRt.root.mozRequestAnimationFrame ||
             dyRt.root.oRequestAnimationFrame ||
@@ -1148,9 +1276,9 @@ var dyRt;
             function (callback, element) {
                 var start, finish;
                 dyRt.root.setTimeout(function () {
-                    start = +new Date();
+                    start = performance.now();
                     callback(start);
-                    finish = +new Date();
+                    finish = performance.now();
                     self.timeout = 1000 / 60 - (finish - start);
                 }, self.timeout);
             };
@@ -1166,7 +1294,12 @@ var dyRt;
         function Scheduler() {
             this._requestLoopId = null;
         }
+        //todo remove "...args"
         Scheduler.create = function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
             var obj = new this();
             return obj;
         };
@@ -1180,8 +1313,7 @@ var dyRt;
             enumerable: true,
             configurable: true
         });
-        //observer is for TestScheduler to inject
-        //todo remove observer
+        //observer is for TestScheduler to rewrite
         Scheduler.prototype.publishRecursive = function (observer, initial, action) {
             action(initial);
         };
@@ -1287,12 +1419,6 @@ var dyRt;
     dyRt.Observer = Observer;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
 /// <reference path="../definitions.d.ts"/>
 var dyRt;
 (function (dyRt) {
@@ -1355,114 +1481,125 @@ var dyRt;
         return Subject;
     })();
     dyRt.Subject = Subject;
-    //todo extract Base class?
-    var AsyncSubject = (function (_super) {
-        __extends(AsyncSubject, _super);
-        function AsyncSubject(scheduler) {
-            _super.call(this, null);
-            //private _source:Stream = null;
-            //get source(){
-            //    return this._source;
-            //}
-            //set source(source:Stream){
-            //    this._source = source;
-            //}
-            this._observers = dyCb.Collection.create();
-            this.scheduler = scheduler;
+})(dyRt || (dyRt = {}));
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="../definitions.d.ts"/>
+var dyRt;
+(function (dyRt) {
+    var GeneratorSubject = (function (_super) {
+        __extends(GeneratorSubject, _super);
+        function GeneratorSubject() {
+            _super.call(this, "GeneratorSubject");
+            this._isStart = false;
+            this.observer = new dyRt.SubjectObserver();
         }
-        AsyncSubject.create = function (scheduler) {
-            var obj = new this(scheduler);
+        GeneratorSubject.create = function () {
+            var obj = new this();
             return obj;
         };
-        AsyncSubject.prototype.subscribe = function (arg1, onError, onCompleted) {
+        Object.defineProperty(GeneratorSubject.prototype, "isStart", {
+            get: function () {
+                return this._isStart;
+            },
+            set: function (isStart) {
+                this._isStart = isStart;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        /*!
+        outer hook method
+         */
+        GeneratorSubject.prototype.onBeforeNext = function (value) {
+        };
+        GeneratorSubject.prototype.onAfterNext = function (value) {
+        };
+        GeneratorSubject.prototype.onIsCompleted = function (value) {
+            return false;
+        };
+        GeneratorSubject.prototype.onBeforeError = function (error) {
+        };
+        GeneratorSubject.prototype.onAfterError = function (error) {
+        };
+        GeneratorSubject.prototype.onBeforeCompleted = function () {
+        };
+        GeneratorSubject.prototype.onAfterCompleted = function () {
+        };
+        GeneratorSubject.prototype.subscribe = function (arg1, onError, onCompleted) {
             var observer = arg1 instanceof dyRt.Observer
                 ? arg1
                 : dyRt.AutoDetachObserver.create(arg1, onError, onCompleted);
-            //this._source && observer.setDisposeHandler(this._source.disposeHandler);
-            this._observers.addChild(observer);
+            this.observer.addChild(observer);
+            this._setDisposeHandler(observer);
             return dyRt.InnerSubscription.create(this, observer);
-            //var observer = null;
-            //
-            //if(this.handleSubject(arg1)){
-            //    return;
-            //}
-            //
-            //observer = arg1 instanceof Observer
-            //    ? arg1
-            //    : AutoDetachObserver.create(<Function>arg1, onError, onCompleted);
-            //
-            //observer.setDisposeHandler(this.disposeHandler);
-            //
-            ////todo encapsulate it to scheduleItem
-            ////todo delete target?
-            ////this.scheduler.target = observer;
-            //
-            ////dyCb.Log.error(this._hasMultiObservers(), "should use Subject to handle multi observers");
-            //this.buildStream(observer);
-            //
-            //return observer;
         };
-        AsyncSubject.prototype.next = function (value) {
-            this._observers.forEach(function (ob) {
-                ob.next(value);
-            });
-        };
-        AsyncSubject.prototype.error = function (error) {
-            this._observers.forEach(function (ob) {
-                ob.error(error);
-            });
-        };
-        AsyncSubject.prototype.completed = function () {
-            this._observers.forEach(function (ob) {
-                ob.completed();
-            });
-        };
-        AsyncSubject.prototype.start = function () {
-            //this._source && this._source.buildStream(this);
-            this.buildStream(this);
-        };
-        AsyncSubject.prototype.remove = function (observer) {
-            this._observers.removeChild(function (ob) {
-                return dyRt.JudgeUtils.isEqual(ob, observer);
-            });
-        };
-        AsyncSubject.prototype.dispose = function () {
-            this._observers.forEach(function (ob) {
-                ob.dispose();
-            });
-            this._observers.removeAllChildren();
-        };
-        AsyncSubject.prototype.subscribeCore = function (observer) {
-            //var self = this,
-            //    id = null;
-            //
-            //id = this.scheduler.publishInterval(observer, 0, this._interval, (count) => {
-            //    //self.scheduler.next(count);
-            //    observer.next(count);
-            //
-            //    return count + 1;
-            //});
-            //
-            //this.addDisposeHandler(() => {
-            //    root.clearInterval(id);
-            //});
-        };
-        AsyncSubject.prototype.concat = function () {
-            var args = null;
-            if (dyRt.JudgeUtils.isArray(arguments[0])) {
-                args = arguments[0];
+        GeneratorSubject.prototype.next = function (value) {
+            if (!this._isStart || this.observer.isEmpty()) {
+                return;
             }
-            else {
-                args = Array.prototype.slice.call(arguments, 0);
+            try {
+                this.onBeforeNext(value);
+                this.observer.next(value);
+                this.onAfterNext(value);
+                if (this.onIsCompleted(value)) {
+                    this.completed();
+                }
             }
-            //todo check be AsyncSubject
-            //return ConcatSubject.create(this, args);
-            return new dyRt.ConcatSubject(this, args);
-            //return ConcatStream.create(this, args);
+            catch (e) {
+                this.error(e);
+            }
         };
-        return AsyncSubject;
-    })(dyRt.BaseStream);
-    dyRt.AsyncSubject = AsyncSubject;
+        GeneratorSubject.prototype.error = function (error) {
+            if (!this._isStart || this.observer.isEmpty()) {
+                return;
+            }
+            this.onBeforeError(error);
+            this.observer.error(error);
+            this.onAfterError(error);
+        };
+        GeneratorSubject.prototype.completed = function () {
+            if (!this._isStart || this.observer.isEmpty()) {
+                return;
+            }
+            this.onBeforeCompleted();
+            this.observer.completed();
+            this.onAfterCompleted();
+        };
+        GeneratorSubject.prototype.toStream = function () {
+            var self = this, stream = null;
+            stream = new dyRt.AnonymousStream(function (observer) {
+                self.subscribe(observer);
+            });
+            return stream;
+        };
+        GeneratorSubject.prototype.start = function () {
+            this._isStart = true;
+        };
+        GeneratorSubject.prototype.stop = function () {
+            this._isStart = false;
+        };
+        GeneratorSubject.prototype.remove = function (observer) {
+            this.observer.removeChild(observer);
+        };
+        GeneratorSubject.prototype.dispose = function () {
+            this.observer.dispose();
+        };
+        GeneratorSubject.prototype._setDisposeHandler = function (observer) {
+            var self = this;
+            this.addDisposeHandler(function () {
+                self.dispose();
+            });
+            observer.setDisposeHandler(this.disposeHandler);
+        };
+        return GeneratorSubject;
+    })(dyRt.Disposer);
+    dyRt.GeneratorSubject = GeneratorSubject;
 })(dyRt || (dyRt = {}));
 
 var __extends = this.__extends || function (d, b) {
@@ -1806,35 +1943,117 @@ var dyRt;
         __extends(ConcatObserver, _super);
         function ConcatObserver(currentObserver, startNextStream) {
             _super.call(this, null, null, null);
-            //private _currentObserver:IObserver = null;
-            this._currentObserver = null;
+            //private currentObserver:IObserver = null;
+            this.currentObserver = null;
             this._startNextStream = null;
-            this._currentObserver = currentObserver;
-            this._currentObserver.target = this;
+            this.currentObserver = currentObserver;
             this._startNextStream = startNextStream;
         }
         ConcatObserver.create = function (currentObserver, startNextStream) {
             return new this(currentObserver, startNextStream);
         };
         ConcatObserver.prototype.onNext = function (value) {
-            //todo no catch?
             try {
-                this._currentObserver.next(value);
+                this.currentObserver.next(value);
             }
             catch (e) {
-                this._currentObserver.error(e);
+                this.currentObserver.error(e);
             }
         };
         ConcatObserver.prototype.onError = function (error) {
-            this._currentObserver.error(error);
+            this.currentObserver.error(error);
         };
         ConcatObserver.prototype.onCompleted = function () {
-            //this._currentObserver.completed();
+            //this.currentObserver.completed();
             this._startNextStream();
         };
         return ConcatObserver;
     })(dyRt.Observer);
     dyRt.ConcatObserver = ConcatObserver;
+})(dyRt || (dyRt = {}));
+
+/// <reference path="../definitions.d.ts"/>
+
+/// <reference path="../definitions.d.ts"/>
+var dyRt;
+(function (dyRt) {
+    var SubjectObserver = (function () {
+        function SubjectObserver() {
+            this.observers = dyCb.Collection.create();
+        }
+        SubjectObserver.prototype.isEmpty = function () {
+            return this.observers.getCount() === 0;
+        };
+        SubjectObserver.prototype.next = function (value) {
+            this.observers.forEach(function (ob) {
+                ob.next(value);
+            });
+        };
+        SubjectObserver.prototype.error = function (error) {
+            this.observers.forEach(function (ob) {
+                ob.error(error);
+            });
+        };
+        SubjectObserver.prototype.completed = function () {
+            this.observers.forEach(function (ob) {
+                ob.completed();
+            });
+        };
+        SubjectObserver.prototype.addChild = function (observer) {
+            this.observers.addChild(observer);
+        };
+        SubjectObserver.prototype.removeChild = function (observer) {
+            this.observers.removeChild(function (ob) {
+                return dyRt.JudgeUtils.isEqual(ob, observer);
+            });
+        };
+        SubjectObserver.prototype.dispose = function () {
+            this.observers.forEach(function (ob) {
+                ob.dispose();
+            });
+            this.observers.removeAllChildren();
+        };
+        return SubjectObserver;
+    })();
+    dyRt.SubjectObserver = SubjectObserver;
+})(dyRt || (dyRt = {}));
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="../definitions.d.ts"/>
+var dyRt;
+(function (dyRt) {
+    var BaseStream = (function (_super) {
+        __extends(BaseStream, _super);
+        function BaseStream() {
+            _super.apply(this, arguments);
+        }
+        BaseStream.prototype.subscribeCore = function (observer) {
+            throw dyRt.ABSTRACT_METHOD();
+        };
+        BaseStream.prototype.subscribe = function (arg1, onError, onCompleted) {
+            var observer = null;
+            if (this.handleSubject(arg1)) {
+                return;
+            }
+            observer = arg1 instanceof dyRt.Observer
+                ? arg1
+                : dyRt.AutoDetachObserver.create(arg1, onError, onCompleted);
+            observer.setDisposeHandler(this.disposeHandler);
+            this.buildStream(observer);
+            return observer;
+        };
+        BaseStream.prototype.buildStream = function (observer) {
+            _super.prototype.buildStream.call(this, observer);
+            this.subscribeCore(observer);
+        };
+        return BaseStream;
+    })(dyRt.Stream);
+    dyRt.BaseStream = BaseStream;
 })(dyRt || (dyRt = {}));
 
 var __extends = this.__extends || function (d, b) {
@@ -1860,7 +2079,7 @@ var dyRt;
             var obj = new this(source, onNext, onError, onCompleted);
             return obj;
         };
-        DoStream.prototype.buildStream = function (observer) {
+        DoStream.prototype.subscribeCore = function (observer) {
             this._source.buildStream(dyRt.DoObserver.create(observer, this._observer));
         };
         return DoStream;
@@ -1885,14 +2104,13 @@ var dyRt;
             this._selector = null;
             this._source = source;
             this.scheduler = this._source.scheduler;
-            //this.scheduler.addWrapTarget(MapObserver.create(selector));
             this._selector = selector;
         }
         MapStream.create = function (source, selector) {
             var obj = new this(source, selector);
             return obj;
         };
-        MapStream.prototype.buildStream = function (observer) {
+        MapStream.prototype.subscribeCore = function (observer) {
             this._source.buildStream(dyRt.MapObserver.create(observer, this._selector));
         };
         return MapStream;
@@ -1923,25 +2141,13 @@ var dyRt;
         };
         FromArrayStream.prototype.subscribeCore = function (observer) {
             var array = this._array, len = array.length;
-            //next,completed is for TestScheduler to inject
-            //todo remove inject next,completed?
-            function loopRecursive(i, next, completed) {
+            function loopRecursive(i) {
                 if (i < len) {
-                    if (next) {
-                        next(array[i]);
-                    }
-                    else {
-                        observer.next(array[i]);
-                    }
-                    arguments.callee(i + 1, next, completed);
+                    observer.next(array[i]);
+                    arguments.callee(i + 1);
                 }
                 else {
-                    if (completed) {
-                        completed();
-                    }
-                    else {
-                        observer.completed();
-                    }
+                    observer.completed();
                 }
             }
             this.scheduler.publishRecursive(observer, 0, loopRecursive);
@@ -1984,99 +2190,6 @@ var dyRt;
         return FromPromiseStream;
     })(dyRt.BaseStream);
     dyRt.FromPromiseStream = FromPromiseStream;
-})(dyRt || (dyRt = {}));
-
-///// <reference path="../definitions.d.ts"/>
-//module dyRt{
-//    export interface IAction{
-//        isFinish:boolean;
-//
-//        update(time:number):void;
-//    }
-//
-//    export class FromActionStream extends BaseStream{
-//        //public static create(actionArr:dyCb.Collection<IAction>, scheduler:Scheduler) {
-//        public static create(action:IAction, scheduler:Scheduler) {
-//            var obj = new this(action, scheduler);
-//
-//            return obj;
-//        }
-//
-//        private _action:IAction = null;
-//
-//        constructor(action:IAction, scheduler:Scheduler){
-//            super(null);
-//
-//            this._action= action;
-//            this.scheduler = scheduler;
-//        }
-//
-//        //public subscribeCore(observer:IObserver){
-//        public subscribeCore(obser:any){
-//            //var observer = obser._currentObserver ? obser._currentObserver : obser;
-//            var observer = obser;
-//            var next = observer.next;
-//            var self = this;
-//            observer.next = (data) => {
-//                try{
-//                    self._action.update(data);
-//                    next.call(observer, data);
-//
-//                    if(self._action.isFinish){
-//                        observer.completed();
-//                    }
-//                }
-//                catch(e){
-//                    observer.error(e);
-//                }
-//            };
-//        }
-//    }
-//}
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-/// <reference path="../definitions.d.ts"/>
-var dyRt;
-(function (dyRt) {
-    var FromActionStream = (function (_super) {
-        __extends(FromActionStream, _super);
-        function FromActionStream(action, scheduler) {
-            _super.call(this, null);
-            this._action = null;
-            this._action = action;
-            this.scheduler = scheduler;
-        }
-        //public static create(actionArr:dyCb.Collection<IAction>, scheduler:Scheduler) {
-        FromActionStream.create = function (action, scheduler) {
-            var obj = new this(action, scheduler);
-            return obj;
-        };
-        FromActionStream.prototype.subscribeCore = function (observer) {
-            //public subscribeCore(obser:any){
-            //var observer = obser._currentObserver ? obser._currentObserver : obser;
-            //var observer = obser;
-            var next = observer.next;
-            var self = this;
-            observer.next = function (data) {
-                try {
-                    self._action.update(data);
-                    next.call(observer, data);
-                    if (self._action.isFinish) {
-                        observer.completed();
-                    }
-                }
-                catch (e) {
-                    observer.error(e);
-                }
-            };
-        };
-        return FromActionStream;
-    })(dyRt.BaseStream);
-    dyRt.FromActionStream = FromActionStream;
 })(dyRt || (dyRt = {}));
 
 var __extends = this.__extends || function (d, b) {
@@ -2142,8 +2255,6 @@ var dyRt;
             }
             observer = dyRt.AutoDetachObserver.create(onNext, onError, onCompleted);
             observer.setDisposeHandler(this.disposeHandler);
-            //todo encapsulate it to scheduleItem
-            //this.scheduler.target = observer;
             this.buildStream(observer);
             return observer;
         };
@@ -2249,7 +2360,7 @@ var dyRt;
             var obj = new this(source);
             return obj;
         };
-        MergeAllStream.prototype.buildStream = function (observer) {
+        MergeAllStream.prototype.subscribeCore = function (observer) {
             var streamGroup = dyCb.Collection.create();
             this._source.buildStream(dyRt.MergeAllObserver.create(observer, streamGroup));
         };
@@ -2281,7 +2392,7 @@ var dyRt;
             var obj = new this(source, otherSteam);
             return obj;
         };
-        TakeUntilStream.prototype.buildStream = function (observer) {
+        TakeUntilStream.prototype.subscribeCore = function (observer) {
             this._source.buildStream(observer);
             this._otherStream.buildStream(dyRt.TakeUntilObserver.create(observer));
         };
@@ -2301,23 +2412,27 @@ var dyRt;
 (function (dyRt) {
     var ConcatStream = (function (_super) {
         __extends(ConcatStream, _super);
-        function ConcatStream(source, otherSources) {
+        function ConcatStream(sources) {
             _super.call(this, null);
-            //private _source:Stream = null;
-            this._sources = null;
-            //this._source = source;
-            this.scheduler = source.scheduler;
-            this._sources = dyCb.Collection.create([source].concat(otherSources));
-            //this._sources = dyCb.Collection.create<Stream>(sources);
+            this._sources = dyCb.Collection.create();
+            var self = this;
+            //todo don't set scheduler here?
+            this.scheduler = sources[0].scheduler;
+            sources.forEach(function (source) {
+                if (dyRt.JudgeUtils.isPromise(source)) {
+                    self._sources.addChild(dyRt.fromPromise(source));
+                }
+                else {
+                    self._sources.addChild(source);
+                }
+            });
         }
-        ConcatStream.create = function (source, otherSources) {
-            var obj = new this(source, otherSources);
+        ConcatStream.create = function (sources) {
+            var obj = new this(sources);
             return obj;
         };
-        ConcatStream.prototype.buildStream = function (observer) {
-            //this._source.buildStream(MapObserver.create(observer, this._selector));
+        ConcatStream.prototype.subscribeCore = function (observer) {
             var self = this, count = this._sources.getCount();
-            //self._sources.getChild(0).buildStream(observer);
             function loopRecursive(i) {
                 if (i === count) {
                     observer.completed();
@@ -2326,139 +2441,54 @@ var dyRt;
                 self._sources.getChild(i).buildStream(dyRt.ConcatObserver.create(observer, function () {
                     loopRecursive(i + 1);
                 }));
-                //self._sources.getChild(i).subscribe(
-                //    (x) => {
-                //        observer.next(x);
-                //    }, (e) => {
-                //        observer.error(e);
-                //    }, () => {
-                //        loopRecursive(i+1);
-                //    }
-                //);
-                //if (i < len) {
-                //    if(next){
-                //        next(array[i]);
-                //    }
-                //    else{
-                //        observer.next(array[i]);
-                //    }
-                //    arguments.callee(i + 1, next, completed);
-                //} else {
-                //    if(completed){
-                //        completed();
-                //    }
-                //    else{
-                //        observer.completed();
-                //    }
-                //}
             }
             this.scheduler.publishRecursive(observer, 0, loopRecursive);
-        };
-        ConcatStream.prototype.subscribeCore = function (observer) {
-            //var self = this,
-            //    count = this._sources.getCount();
-            //
-            //    self._sources.getChild(0).subscribeCore(observer)
-            //.subscribe(
-            //(x) => {
-            //    observer.next(x);
-            //}, (e) => {
-            //    observer.error(e);
-            //}, () => {
-            //    loopRecursive(i+1);
-            //}
-            //);
-            //
-            //function loopRecursive(i) {
-            //    if(i === count){
-            //        observer.completed();
-            //
-            //        return;
-            //    }
-            //
-            //    self._sources.getChild(i).subscribe(
-            //        (x) => {
-            //            observer.next(x);
-            //        }, (e) => {
-            //            observer.error(e);
-            //        }, () => {
-            //            loopRecursive(i+1);
-            //        }
-            //    );
-            //    //if (i < len) {
-            //    //    if(next){
-            //    //        next(array[i]);
-            //    //    }
-            //    //    else{
-            //    //        observer.next(array[i]);
-            //    //    }
-            //    //    arguments.callee(i + 1, next, completed);
-            //    //} else {
-            //    //    if(completed){
-            //    //        completed();
-            //    //    }
-            //    //    else{
-            //    //        observer.completed();
-            //    //    }
-            //    //}
-            //}
-            //
-            //this.scheduler.publishRecursive(observer, 0, loopRecursive);
-            //this.addDisposeHandler(() => {
-            //    root.cancelNextRequestAnimationFrame(self.scheduler.requestLoopId);
-            //});
         };
         return ConcatStream;
     })(dyRt.BaseStream);
     dyRt.ConcatStream = ConcatStream;
-    var ConcatSubject = (function (_super) {
-        __extends(ConcatSubject, _super);
-        function ConcatSubject(source, otherSources) {
-            _super.call(this, source.scheduler);
-            //todo create method
-            //public static create(source:AsyncSubject, otherSources:Array<AsyncSubject>) {
-            //    var obj = new this(source, otherSources);
-            //
-            //    return obj;
-            //}
-            //private _source:AsyncSubject = null;
-            this._sources = null;
-            this._i = 0;
-            //this._source = source;
-            //this.scheduler = source.scheduler;
-            this._sources = dyCb.Collection.create([source].concat(otherSources));
-            //this._sources = dyCb.Collection.create<AsyncSubject>(sources);
+})(dyRt || (dyRt = {}));
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="../definitions.d.ts"/>
+var dyRt;
+(function (dyRt) {
+    var RepeatStream = (function (_super) {
+        __extends(RepeatStream, _super);
+        function RepeatStream(source, count) {
+            _super.call(this, null);
+            this._source = null;
+            this._count = null;
+            this._source = source;
+            this._count = count;
+            this.scheduler = this._source.scheduler;
+            //this.subjectGroup = this._source.subjectGroup;
         }
-        ConcatSubject.prototype.next = function (value) {
-            //todo try catch?
-            //try{
-            //this._currentObserver.next(value);
-            this._sources.getChild(this._i).next(value);
-            //}
-            //catch(e){
-            //    this._currentObserver.error(e);
-            //}
+        RepeatStream.create = function (source, count) {
+            var obj = new this(source, count);
+            return obj;
         };
-        ConcatSubject.prototype.error = function (err) {
-            try {
-                this._sources.getChild(this._i).error(err);
+        RepeatStream.prototype.subscribeCore = function (observer) {
+            var self = this;
+            function loopRecursive(count) {
+                if (count === 0) {
+                    observer.completed();
+                    return;
+                }
+                self._source.buildStream(dyRt.ConcatObserver.create(observer, function () {
+                    loopRecursive(count - 1);
+                }));
             }
-            catch (e) {
-            }
-            finally {
-                _super.prototype.error.call(this, err);
-            }
+            this.scheduler.publishRecursive(observer, this._count, loopRecursive);
         };
-        ConcatSubject.prototype.completed = function () {
-            //todo try catch?
-            this._i++;
-            if (this._i === this._sources.getCount()) {
-                _super.prototype.completed.call(this);
-            }
-        };
-        return ConcatSubject;
-    })(dyRt.AsyncSubject);
-    dyRt.ConcatSubject = ConcatSubject;
+        return RepeatStream;
+    })(dyRt.BaseStream);
+    dyRt.RepeatStream = RepeatStream;
 })(dyRt || (dyRt = {}));
 
 /// <reference path="../definitions.d.ts"/>
@@ -2474,29 +2504,6 @@ var dyRt;
     dyRt.fromPromise = function (promise, scheduler) {
         if (scheduler === void 0) { scheduler = dyRt.Scheduler.create(); }
         return dyRt.FromPromiseStream.create(promise, scheduler);
-    };
-    //export var fromAction = (action:IAction, scheduler = Scheduler.create()) =>{
-    //    return FromActionStream.create(action, scheduler);
-    //};
-    dyRt.fromAction = function (action, scheduler) {
-        if (scheduler === void 0) { scheduler = dyRt.Scheduler.create(); }
-        //return FromActionStream.create(action, scheduler);
-        var subject = dyRt.AsyncSubject.create(scheduler);
-        var next = subject.next;
-        //var self = this;
-        subject.next = function (data) {
-            try {
-                action.update(data);
-                next.call(subject, data);
-                if (action.isFinish) {
-                    subject.completed();
-                }
-            }
-            catch (e) {
-                subject.error(e);
-            }
-        };
-        return subject;
     };
     dyRt.fromEventPattern = function (addHandler, removeHandler) {
         return dyRt.FromEventPatternStream.create(addHandler, removeHandler);
@@ -2614,6 +2621,11 @@ var dyRt;
             _super.prototype.dispose.call(this);
             this._scheduler.remove(this);
         };
+        MockObserver.prototype.copy = function () {
+            var result = MockObserver.create(this._scheduler);
+            result.messages = this._messages;
+            return result;
+        };
         return MockObserver;
     })(dyRt.Observer);
     dyRt.MockObserver = MockObserver;
@@ -2661,15 +2673,16 @@ var dyRt;
     var DISPOSE_TIME = 1000;
     var TestScheduler = (function (_super) {
         __extends(TestScheduler, _super);
-        function TestScheduler() {
-            _super.apply(this, arguments);
+        function TestScheduler(isReset) {
+            _super.call(this);
             this._clock = null;
-            this._initialClock = null;
+            this._isReset = false;
             this._isDisposed = false;
             this._timerMap = dyCb.Hash.create();
             this._streamMap = dyCb.Hash.create();
             this._subscribedTime = null;
             this._disposedTime = null;
+            this._isReset = isReset;
         }
         TestScheduler.next = function (tick, value) {
             return dyRt.Record.create(tick, value, dyRt.ActionType.NEXT);
@@ -2680,8 +2693,9 @@ var dyRt;
         TestScheduler.completed = function (tick) {
             return dyRt.Record.create(tick, null, dyRt.ActionType.COMPLETED);
         };
-        TestScheduler.create = function () {
-            var obj = new this();
+        TestScheduler.create = function (isReset) {
+            if (isReset === void 0) { isReset = false; }
+            var obj = new this(isReset);
             return obj;
         };
         Object.defineProperty(TestScheduler.prototype, "clock", {
@@ -2725,16 +2739,18 @@ var dyRt;
             this._isDisposed = true;
         };
         TestScheduler.prototype.publishRecursive = function (observer, initial, recursiveFunc) {
-            var self = this, messages = [];
+            var self = this, messages = [], copyObserver = observer.copy ? observer.copy() : observer;
             this._setClock();
-            recursiveFunc(initial, function (value) {
+            observer.next = function (value) {
                 self._tick(1);
                 messages.push(TestScheduler.next(self._clock, value));
-            }, function () {
+            };
+            observer.completed = function () {
                 self._tick(1);
                 messages.push(TestScheduler.completed(self._clock));
-                self.setStreamMap(observer, messages);
-            });
+                self.setStreamMap(copyObserver, messages);
+            };
+            recursiveFunc(initial);
         };
         TestScheduler.prototype.publishInterval = function (observer, initial, interval, action) {
             //produce 10 val for test
@@ -2764,17 +2780,15 @@ var dyRt;
             return NaN;
         };
         TestScheduler.prototype._setClock = function () {
-            if (this._initialClock) {
-                this._clock = Math.min(this._clock, this._initialClock);
+            if (this._isReset) {
+                this._clock = this._subscribedTime;
             }
-            this._initialClock = this._clock;
         };
         TestScheduler.prototype.startWithTime = function (create, subscribedTime, disposedTime) {
             var observer = this.createObserver(), source, subscription;
             this._subscribedTime = subscribedTime;
             this._disposedTime = disposedTime;
             this._clock = subscribedTime;
-            var self = this;
             this._runAt(subscribedTime, function () {
                 source = create();
                 subscription = source.subscribe(observer);
@@ -2843,20 +2857,10 @@ var dyRt;
         };
         TestScheduler.prototype._runStream = function (time) {
             var handler = this._streamMap.getChild(String(time));
-            //if(handler && this._hasObserver()){
             if (handler) {
                 handler();
             }
         };
-        //private _hasObserver(){
-        //    if(this.target instanceof Subject){
-        //        let subject = <Subject>this.target;
-        //
-        //         return subject.getObservers() > 0
-        //    }
-        //
-        //    return !!this.target;
-        //}
         TestScheduler.prototype._runAt = function (time, callback) {
             this._timerMap.addChild(String(time), callback);
         };

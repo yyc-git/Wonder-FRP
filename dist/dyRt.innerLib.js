@@ -6,6 +6,376 @@ var dyCb;
     dyCb.$REMOVE = void 0;
 })(dyCb || (dyCb = {}));
 
+var dyCb;
+(function (dyCb) {
+    var Log = (function () {
+        function Log() {
+        }
+        /**
+         * Output Debug message.
+         * @function
+         * @param {String} message
+         */
+        Log.log = function (message) {
+            if (window.console && window.console.trace) {
+                window.console.trace(message);
+            }
+            else if (window.console && window.console.log) {
+                window.console.log(message);
+            }
+            else {
+                alert(message);
+            }
+        };
+        /**
+         * 断言失败时，会提示错误信息，但程序会继续执行下去
+         * 使用断言捕捉不应该发生的非法情况。不要混淆非法情况与错误情况之间的区别，后者是必然存在的并且是一定要作出处理的。
+         *
+         * 1）对非预期错误使用断言
+         断言中的布尔表达式的反面一定要描述一个非预期错误，下面所述的在一定情况下为非预期错误的一些例子：
+         （1）空指针。
+         （2）输入或者输出参数的值不在预期范围内。
+         （3）数组的越界。
+         非预期错误对应的就是预期错误，我们通常使用错误处理代码来处理预期错误，而使用断言处理非预期错误。在代码执行过程中，有些错误永远不应该发生，这样的错误是非预期错误。断言可以被看成是一种可执行的注释，你不能依赖它来让代码正常工作（《Code Complete 2》）。例如：
+         int nRes = f(); // nRes 由 f 函数控制， f 函数保证返回值一定在 -100 ~ 100
+         Assert(-100 <= nRes && nRes <= 100); // 断言，一个可执行的注释
+         由于 f 函数保证了返回值处于 -100 ~ 100，那么如果出现了 nRes 不在这个范围的值时，就表明一个非预期错误的出现。后面会讲到“隔栏”，那时会对断言有更加深刻的理解。
+         2）不要把需要执行的代码放入断言中
+         断言用于软件的开发和维护，而通常不在发行版本中包含断言。
+         需要执行的代码放入断言中是不正确的，因为在发行版本中，这些代码通常不会被执行，例如：
+         Assert(f()); // f 函数通常在发行版本中不会被执行
+         而使用如下方法则比较安全：
+         res = f();
+         Assert(res); // 安全
+         3）对来源于内部系统的可靠的数据使用断言，而不要对外部不可靠的数据使用断言，对于外部不可靠数据，应该使用错误处理代码。
+         再次强调，把断言看成可执行的注释。
+         * @param cond 如果cond返回false，则断言失败，显示message
+         * @param message
+         */
+        Log.assert = function (cond, message) {
+            if (window.console.assert) {
+                window.console.assert(cond, message);
+            }
+            else {
+                if (!cond && message) {
+                    if (window.console && window.console.log) {
+                        window.console.log(message);
+                    }
+                    else {
+                        alert(message);
+                    }
+                }
+            }
+        };
+        Log.error = function (cond, message) {
+            if (cond) {
+                throw new Error(message);
+            }
+        };
+        Log.info = {
+            INVALID_PARAM: "invalid parameter",
+            ABSTRACT_ATTRIBUTE: "abstract attribute need override",
+            ABSTRACT_METHOD: "abstract method need override",
+            helperFunc: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var result = "";
+                Array.prototype.slice.call(arguments, 0).forEach(function (val) {
+                    result += String(val) + " ";
+                });
+                return result.slice(0, -1);
+            },
+            assertion: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                if (arguments.length === 2) {
+                    return this.helperFunc(arguments[0], arguments[1]);
+                }
+                else if (arguments.length === 3) {
+                    return this.helperFunc(arguments[1], arguments[0], arguments[2]);
+                }
+                else {
+                    throw new Error("arguments.length must <= 3");
+                }
+            },
+            FUNC_INVALID: function (value) {
+                return this.assertion("invalid", value);
+            },
+            FUNC_MUST: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("must");
+                return this.assertion.apply(this, arr);
+            },
+            FUNC_MUST_BE: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("must be");
+                return this.assertion.apply(this, arr);
+            },
+            FUNC_MUST_NOT_BE: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("must not be");
+                return this.assertion.apply(this, arr);
+            },
+            FUNC_SHOULD: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("should");
+                return this.assertion.apply(this, arr);
+            },
+            FUNC_SUPPORT: function (value) {
+                return this.assertion("support", value);
+            },
+            FUNC_NOT_SUPPORT: function (value) {
+                return this.assertion("not support", value);
+            },
+            FUNC_MUST_DEFINE: function (value) {
+                return this.assertion("must define", value);
+            },
+            FUNC_MUST_NOT_DEFINE: function (value) {
+                return this.assertion("must not define", value);
+            },
+            FUNC_UNKNOW: function (value) {
+                return this.assertion("unknow", value);
+            },
+            FUNC_EXPECT: function (value) {
+                return this.assertion("expect", value);
+            },
+            FUNC_UNEXPECT: function (value) {
+                return this.assertion("unexpected", value);
+            }
+        };
+        return Log;
+    })();
+    dyCb.Log = Log;
+})(dyCb || (dyCb = {}));
+
+/// <reference path="definitions.d.ts"/>
+var dyCb;
+(function (dyCb) {
+    var List = (function () {
+        function List() {
+            this.children = null;
+        }
+        List.prototype.getCount = function () {
+            return this.children.length;
+        };
+        List.prototype.hasChild = function (arg) {
+            if (dyCb.JudgeUtils.isFunction(arguments[0])) {
+                var func = arguments[0];
+                return this._contain(this.children, function (c, i) {
+                    return func(c, i);
+                });
+            }
+            var child = arguments[0];
+            return this._contain(this.children, function (c, i) {
+                if (c === child
+                    || (c.uid && child.uid && c.uid === child.uid)) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            });
+        };
+        List.prototype.getChildren = function () {
+            return this.children;
+        };
+        List.prototype.getChild = function (index) {
+            return this.children[index];
+        };
+        List.prototype.addChild = function (child) {
+            this.children.push(child);
+            return this;
+        };
+        List.prototype.addChildren = function (arg) {
+            if (dyCb.JudgeUtils.isArray(arg)) {
+                var children = arg;
+                this.children = this.children.concat(children);
+            }
+            else if (arg instanceof dyCb.Collection) {
+                var children = arg;
+                this.children = this.children.concat(children.getChildren());
+            }
+            else {
+                var child = arg;
+                this.addChild(child);
+            }
+            return this;
+        };
+        List.prototype.removeAllChildren = function () {
+            this.children = [];
+            return this;
+        };
+        List.prototype.forEach = function (func, context) {
+            this._forEach(this.children, func, context);
+            return this;
+        };
+        List.prototype.filter = function (func) {
+            var scope = this.children, result = [];
+            this._forEach(this.children, function (value, index) {
+                if (!func.call(scope, value, index)) {
+                    return;
+                }
+                result.push(value);
+            });
+            return dyCb.Collection.create(result);
+        };
+        //public removeChildAt (index) {
+        //    Log.error(index < 0, "序号必须大于等于0");
+        //
+        //    this.children.splice(index, 1);
+        //}
+        //
+        //public copy () {
+        //    return Collection.create<T>(ExtendUtils.extendDeep(this.children));
+        //}
+        List.prototype.reverse = function () {
+            this.children.reverse();
+            return this;
+        };
+        List.prototype.removeChild = function (arg) {
+            if (dyCb.JudgeUtils.isFunction(arg)) {
+                var func = arg;
+                this._removeChild(this.children, func);
+            }
+            else if (arg.uid) {
+                this._removeChild(this.children, function (e) {
+                    if (!e.uid) {
+                        return false;
+                    }
+                    return e.uid === arg.uid;
+                });
+            }
+            else {
+                this._removeChild(this.children, function (e) {
+                    return e === arg;
+                });
+            }
+            return this;
+        };
+        List.prototype.sort = function (func) {
+            this.children.sort(func);
+            return this;
+        };
+        List.prototype.map = function (func) {
+            return this._map(this.children, func);
+        };
+        List.prototype.toArray = function () {
+            return dyCb.ExtendUtils.extendDeep(this.children);
+        };
+        List.prototype._indexOf = function (arr, arg) {
+            var result = -1;
+            if (dyCb.JudgeUtils.isFunction(arg)) {
+                var func = arg;
+                this._forEach(arr, function (value, index) {
+                    if (!!func.call(null, value, index)) {
+                        result = index;
+                        return dyCb.$BREAK; //如果包含，则置返回值为true,跳出循环
+                    }
+                });
+            }
+            else {
+                var val = arg;
+                this._forEach(arr, function (value, index) {
+                    if (val === value
+                        || (value.contain && value.contain(val))
+                        || (value.indexOf && value.indexOf(val) > -1)) {
+                        result = index;
+                        return dyCb.$BREAK; //如果包含，则置返回值为true,跳出循环
+                    }
+                });
+            }
+            return result;
+        };
+        List.prototype._contain = function (arr, arg) {
+            return this._indexOf(arr, arg) > -1;
+        };
+        List.prototype._forEach = function (arr, func, context) {
+            var scope = context || window, i = 0, len = arr.length;
+            for (i = 0; i < len; i++) {
+                if (func.call(scope, arr[i], i) === dyCb.$BREAK) {
+                    break;
+                }
+            }
+        };
+        List.prototype._map = function (arr, func) {
+            var resultArr = [];
+            this._forEach(arr, function (e, index) {
+                var result = func(e, index);
+                if (result !== dyCb.$REMOVE) {
+                    resultArr.push(result);
+                }
+                //e && e[handlerName] && e[handlerName].apply(context || e, valueArr);
+            });
+            return dyCb.Collection.create(resultArr);
+        };
+        List.prototype._removeChild = function (arr, func) {
+            var self = this, index = null;
+            index = this._indexOf(arr, function (e, index) {
+                return !!func.call(self, e);
+            });
+            //if (index !== null && index !== -1) {
+            if (index !== -1) {
+                arr.splice(index, 1);
+            }
+            //return false;
+            return arr;
+        };
+        return List;
+    })();
+    dyCb.List = List;
+})(dyCb || (dyCb = {}));
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="definitions.d.ts"/>
+var dyCb;
+(function (dyCb) {
+    var Collection = (function (_super) {
+        __extends(Collection, _super);
+        function Collection(children) {
+            if (children === void 0) { children = []; }
+            _super.call(this);
+            this.children = children;
+        }
+        Collection.create = function (children) {
+            if (children === void 0) { children = []; }
+            var obj = new this(children);
+            return obj;
+        };
+        Collection.prototype.copy = function (isDeep) {
+            if (isDeep === void 0) { isDeep = false; }
+            return isDeep ? Collection.create(dyCb.ExtendUtils.extendDeep(this.children))
+                : Collection.create(dyCb.ExtendUtils.extend([], this.children));
+        };
+        return Collection;
+    })(dyCb.List);
+    dyCb.Collection = Collection;
+})(dyCb || (dyCb = {}));
+
 /// <reference path="definitions.d.ts"/>
 var dyCb;
 (function (dyCb) {
@@ -43,6 +413,9 @@ var dyCb;
         };
         Hash.prototype.getChild = function (key) {
             return this._children[key];
+        };
+        Hash.prototype.setValue = function (key, value) {
+            this._children[key] = value;
         };
         Hash.prototype.addChild = function (key, value) {
             this._children[key] = value;
@@ -131,6 +504,76 @@ var dyCb;
         return Hash;
     })();
     dyCb.Hash = Hash;
+})(dyCb || (dyCb = {}));
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="Collection"/>
+var dyCb;
+(function (dyCb) {
+    var Queue = (function (_super) {
+        __extends(Queue, _super);
+        function Queue(children) {
+            if (children === void 0) { children = []; }
+            _super.call(this);
+            this.children = children;
+        }
+        Queue.create = function (children) {
+            if (children === void 0) { children = []; }
+            var obj = new this(children);
+            return obj;
+        };
+        Queue.prototype.push = function (element) {
+            this.children.unshift(element);
+        };
+        Queue.prototype.pop = function () {
+            return this.children.pop();
+        };
+        Queue.prototype.clear = function () {
+            this.removeAllChildren();
+        };
+        return Queue;
+    })(dyCb.List);
+    dyCb.Queue = Queue;
+})(dyCb || (dyCb = {}));
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+/// <reference path="Collection"/>
+var dyCb;
+(function (dyCb) {
+    var Stack = (function (_super) {
+        __extends(Stack, _super);
+        function Stack(children) {
+            if (children === void 0) { children = []; }
+            _super.call(this);
+            this.children = children;
+        }
+        Stack.create = function (children) {
+            if (children === void 0) { children = []; }
+            var obj = new this(children);
+            return obj;
+        };
+        Stack.prototype.push = function (element) {
+            this.children.push(element);
+        };
+        Stack.prototype.pop = function () {
+            return this.children.pop();
+        };
+        Stack.prototype.clear = function () {
+            this.removeAllChildren();
+        };
+        return Stack;
+    })(dyCb.List);
+    dyCb.Stack = Stack;
 })(dyCb || (dyCb = {}));
 
 var dyCb;
@@ -468,352 +911,6 @@ var dyCb;
     dyCb.ExtendUtils = ExtendUtils;
 })(dyCb || (dyCb = {}));
 
-var dyCb;
-(function (dyCb) {
-    var Log = (function () {
-        function Log() {
-        }
-        /**
-         * Output Debug message.
-         * @function
-         * @param {String} message
-         */
-        Log.log = function (message) {
-            if (console && console.log) {
-                console.log(message);
-            }
-            else {
-                alert(message);
-            }
-        };
-        /**
-         * 断言失败时，会提示错误信息，但程序会继续执行下去
-         * 使用断言捕捉不应该发生的非法情况。不要混淆非法情况与错误情况之间的区别，后者是必然存在的并且是一定要作出处理的。
-         *
-         * 1）对非预期错误使用断言
-         断言中的布尔表达式的反面一定要描述一个非预期错误，下面所述的在一定情况下为非预期错误的一些例子：
-         （1）空指针。
-         （2）输入或者输出参数的值不在预期范围内。
-         （3）数组的越界。
-         非预期错误对应的就是预期错误，我们通常使用错误处理代码来处理预期错误，而使用断言处理非预期错误。在代码执行过程中，有些错误永远不应该发生，这样的错误是非预期错误。断言可以被看成是一种可执行的注释，你不能依赖它来让代码正常工作（《Code Complete 2》）。例如：
-         int nRes = f(); // nRes 由 f 函数控制， f 函数保证返回值一定在 -100 ~ 100
-         Assert(-100 <= nRes && nRes <= 100); // 断言，一个可执行的注释
-         由于 f 函数保证了返回值处于 -100 ~ 100，那么如果出现了 nRes 不在这个范围的值时，就表明一个非预期错误的出现。后面会讲到“隔栏”，那时会对断言有更加深刻的理解。
-         2）不要把需要执行的代码放入断言中
-         断言用于软件的开发和维护，而通常不在发行版本中包含断言。
-         需要执行的代码放入断言中是不正确的，因为在发行版本中，这些代码通常不会被执行，例如：
-         Assert(f()); // f 函数通常在发行版本中不会被执行
-         而使用如下方法则比较安全：
-         res = f();
-         Assert(res); // 安全
-         3）对来源于内部系统的可靠的数据使用断言，而不要对外部不可靠的数据使用断言，对于外部不可靠数据，应该使用错误处理代码。
-         再次强调，把断言看成可执行的注释。
-         * @param cond 如果cond返回false，则断言失败，显示message
-         * @param message
-         */
-        Log.assert = function (cond, message) {
-            if (console.assert) {
-                console.assert(cond, message);
-            }
-            else {
-                if (!cond && message) {
-                    if (console && console.log) {
-                        console.log(message);
-                    }
-                    else {
-                        alert(message);
-                    }
-                }
-            }
-        };
-        Log.error = function (cond, message) {
-            if (cond) {
-                throw new Error(message);
-            }
-        };
-        Log.info = {
-            INVALID_PARAM: "invalid parameter",
-            ABSTRACT_ATTRIBUTE: "abstract attribute need override",
-            ABSTRACT_METHOD: "abstract method need override",
-            helperFunc: function () {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i - 0] = arguments[_i];
-                }
-                var result = "";
-                Array.prototype.slice.call(arguments, 0).forEach(function (val) {
-                    result += String(val) + " ";
-                });
-                return result.slice(0, -1);
-            },
-            assertion: function () {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i - 0] = arguments[_i];
-                }
-                if (arguments.length === 2) {
-                    return this.helperFunc(arguments[0], arguments[1]);
-                }
-                else if (arguments.length === 3) {
-                    return this.helperFunc(arguments[1], arguments[0], arguments[2]);
-                }
-                else {
-                    throw new Error("arguments.length must <= 3");
-                }
-            },
-            FUNC_INVALID: function (value) {
-                return this.assertion("invalid", value);
-            },
-            FUNC_MUST: function () {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i - 0] = arguments[_i];
-                }
-                var arr = Array.prototype.slice.call(arguments, 0);
-                arr.unshift("must");
-                return this.assertion.apply(this, arr);
-            },
-            FUNC_MUST_BE: function () {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i - 0] = arguments[_i];
-                }
-                var arr = Array.prototype.slice.call(arguments, 0);
-                arr.unshift("must be");
-                return this.assertion.apply(this, arr);
-            },
-            FUNC_MUST_NOT_BE: function () {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i - 0] = arguments[_i];
-                }
-                var arr = Array.prototype.slice.call(arguments, 0);
-                arr.unshift("must not be");
-                return this.assertion.apply(this, arr);
-            },
-            FUNC_SHOULD: function () {
-                var args = [];
-                for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i - 0] = arguments[_i];
-                }
-                var arr = Array.prototype.slice.call(arguments, 0);
-                arr.unshift("should");
-                return this.assertion.apply(this, arr);
-            },
-            FUNC_SUPPORT: function (value) {
-                return this.assertion("support", value);
-            },
-            FUNC_NOT_SUPPORT: function (value) {
-                return this.assertion("not support", value);
-            },
-            FUNC_MUST_DEFINE: function (value) {
-                return this.assertion("must define", value);
-            },
-            FUNC_MUST_NOT_DEFINE: function (value) {
-                return this.assertion("must not define", value);
-            },
-            FUNC_UNKNOW: function (value) {
-                return this.assertion("unknow", value);
-            },
-            FUNC_EXPECT: function (value) {
-                return this.assertion("expect", value);
-            },
-            FUNC_UNEXPECT: function (value) {
-                return this.assertion("unexpected", value);
-            }
-        };
-        return Log;
-    })();
-    dyCb.Log = Log;
-})(dyCb || (dyCb = {}));
-
-/// <reference path="definitions.d.ts"/>
-var dyCb;
-(function (dyCb) {
-    var Collection = (function () {
-        function Collection(children) {
-            if (children === void 0) { children = []; }
-            this._children = null;
-            this._filter = function (arr, func, context) {
-                var scope = context || window, result = [];
-                this._forEach(arr, function (value, index) {
-                    if (!func.call(scope, value, index)) {
-                        return;
-                    }
-                    result.push(value);
-                });
-                return Collection.create(result);
-            };
-            this._children = children;
-        }
-        Collection.create = function (children) {
-            if (children === void 0) { children = []; }
-            var obj = new this(children);
-            return obj;
-        };
-        Collection.prototype.getCount = function () {
-            return this._children.length;
-        };
-        Collection.prototype.hasChild = function (arg) {
-            if (dyCb.JudgeUtils.isFunction(arguments[0])) {
-                var func = arguments[0];
-                return this._contain(this._children, function (c, i) {
-                    return func(c, i);
-                });
-            }
-            var child = arguments[0];
-            return this._contain(this._children, function (c, i) {
-                if (c === child
-                    || (c.uid && child.uid && c.uid === child.uid)) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            });
-        };
-        Collection.prototype.getChildren = function () {
-            return this._children;
-        };
-        Collection.prototype.getChild = function (index) {
-            return this._children[index];
-        };
-        Collection.prototype.addChild = function (child) {
-            this._children.push(child);
-            return this;
-        };
-        Collection.prototype.addChildren = function (arg) {
-            if (dyCb.JudgeUtils.isArray(arg)) {
-                var children = arg;
-                this._children = this._children.concat(children);
-            }
-            else if (arg instanceof Collection) {
-                var children = arg;
-                this._children = this._children.concat(children.toArray());
-            }
-            else {
-                var child = arg;
-                this.addChild(child);
-            }
-            return this;
-        };
-        Collection.prototype.removeAllChildren = function () {
-            this._children = [];
-            return this;
-        };
-        Collection.prototype.forEach = function (func, context) {
-            this._forEach(this._children, func, context);
-            return this;
-        };
-        Collection.prototype.filter = function (func) {
-            return this._filter(this._children, func, this._children);
-        };
-        //public removeChildAt (index) {
-        //    Log.error(index < 0, "序号必须大于等于0");
-        //
-        //    this._children.splice(index, 1);
-        //}
-        //
-        //public copy () {
-        //    return ExtendUtils.extendDeep(this._children);
-        //}
-        //
-        //public reverse () {
-        //    this._children.reverse();
-        //}
-        Collection.prototype.removeChild = function (arg) {
-            if (dyCb.JudgeUtils.isFunction(arg)) {
-                var func = arg;
-                this._removeChild(this._children, func);
-            }
-            else if (arg.uid) {
-                this._removeChild(this._children, function (e) {
-                    if (!e.uid) {
-                        return false;
-                    }
-                    return e.uid === arg.uid;
-                });
-            }
-            else {
-                this._removeChild(this._children, function (e) {
-                    return e === arg;
-                });
-            }
-            return this;
-        };
-        Collection.prototype.sort = function (func) {
-            this._children.sort(func);
-            return this;
-        };
-        Collection.prototype.map = function (func) {
-            return this._map(this._children, func);
-        };
-        Collection.prototype.toArray = function () {
-            return this._children;
-        };
-        Collection.prototype._indexOf = function (arr, arg) {
-            var result = -1;
-            if (dyCb.JudgeUtils.isFunction(arg)) {
-                var func = arg;
-                this._forEach(arr, function (value, index) {
-                    if (!!func.call(null, value, index)) {
-                        result = index;
-                        return dyCb.$BREAK; //如果包含，则置返回值为true,跳出循环
-                    }
-                });
-            }
-            else {
-                var val = arg;
-                this._forEach(arr, function (value, index) {
-                    if (val === value
-                        || (value.contain && value.contain(val))
-                        || (value.indexOf && value.indexOf(val) > -1)) {
-                        result = index;
-                        return dyCb.$BREAK; //如果包含，则置返回值为true,跳出循环
-                    }
-                });
-            }
-            return result;
-        };
-        Collection.prototype._contain = function (arr, arg) {
-            return this._indexOf(arr, arg) > -1;
-        };
-        Collection.prototype._forEach = function (arr, func, context) {
-            var scope = context || window, i = 0, len = arr.length;
-            for (i = 0; i < len; i++) {
-                if (func.call(scope, arr[i], i) === dyCb.$BREAK) {
-                    break;
-                }
-            }
-        };
-        Collection.prototype._map = function (arr, func) {
-            var resultArr = [];
-            this._forEach(arr, function (e, index) {
-                var result = func(e, index);
-                if (result !== dyCb.$REMOVE) {
-                    resultArr.push(result);
-                }
-                //e && e[handlerName] && e[handlerName].apply(context || e, valueArr);
-            });
-            return Collection.create(resultArr);
-        };
-        Collection.prototype._removeChild = function (arr, func) {
-            var self = this, index = null;
-            index = this._indexOf(arr, function (e, index) {
-                return !!func.call(self, e);
-            });
-            //if (index !== null && index !== -1) {
-            if (index !== -1) {
-                arr.splice(index, 1);
-            }
-            //return false;
-            return arr;
-        };
-        return Collection;
-    })();
-    dyCb.Collection = Collection;
-})(dyCb || (dyCb = {}));
-
 /// <reference path="../definitions.d.ts"/>
 var dyCb;
 (function (dyCb) {
@@ -838,5 +935,23 @@ var dyCb;
         return DomQuery;
     })();
     dyCb.DomQuery = DomQuery;
+})(dyCb || (dyCb = {}));
+
+var dyCb;
+(function (dyCb) {
+    if ('performance' in window === false) {
+        window.performance = {};
+    }
+    // IE 8
+    Date.now = (Date.now || function () {
+        return new Date().getTime();
+    });
+    if ('now' in window.performance === false) {
+        var offset = window.performance.timing && window.performance.timing.navigationStart ? performance.timing.navigationStart
+            : Date.now();
+        window.performance.now = function () {
+            return Date.now() - offset;
+        };
+    }
 })(dyCb || (dyCb = {}));
 
