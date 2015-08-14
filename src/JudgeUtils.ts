@@ -1,4 +1,4 @@
-/// <reference path="definitions.d.ts"/>
+/// <reference path="./definitions.d.ts"/>
 module dyRt {
     export class JudgeUtils extends dyCb.JudgeUtils {
         public static isPromise(obj){
