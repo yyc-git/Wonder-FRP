@@ -1573,7 +1573,7 @@ var dyRt;
         };
         GeneratorSubject.prototype.toStream = function () {
             var self = this, stream = null;
-            stream = new dyRt.AnonymousStream(function (observer) {
+            stream = dyRt.AnonymousStream.create(function (observer) {
                 self.subscribe(observer);
             });
             return stream;
@@ -2242,7 +2242,6 @@ var dyRt;
         __extends(AnonymousStream, _super);
         function AnonymousStream(subscribeFunc) {
             _super.call(this, subscribeFunc);
-            this.scheduler = dyRt.Scheduler.create();
         }
         AnonymousStream.create = function (subscribeFunc) {
             var obj = new this(subscribeFunc);
@@ -2515,6 +2514,11 @@ var dyRt;
     dyRt.intervalRequest = function (scheduler) {
         if (scheduler === void 0) { scheduler = dyRt.Scheduler.create(); }
         return dyRt.IntervalRequestStream.create(scheduler);
+    };
+    dyRt.empty = function () {
+        return dyRt.createStream(function (observer) {
+            observer.completed();
+        });
     };
 })(dyRt || (dyRt = {}));
 

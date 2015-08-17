@@ -23,5 +23,11 @@ module dyRt{
     export var intervalRequest = (scheduler = Scheduler.create()) => {
         return IntervalRequestStream.create(scheduler);
     };
+
+    export var empty = () => {
+        return createStream((observer:IObserver) =>{
+            observer.completed();
+        });
+    };
 }
 

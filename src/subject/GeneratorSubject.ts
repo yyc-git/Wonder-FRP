@@ -108,7 +108,7 @@ module dyRt{
             var self = this,
                 stream = null;
 
-            stream =  new AnonymousStream((observer:Observer) => {
+            stream = AnonymousStream.create((observer:Observer) => {
                 self.subscribe(observer);
             });
 

@@ -428,6 +428,7 @@ declare module dyRt {
     var fromEventPattern: (addHandler: Function, removeHandler: Function) => FromEventPatternStream;
     var interval: (interval: any, scheduler?: Scheduler) => IntervalStream;
     var intervalRequest: (scheduler?: Scheduler) => IntervalRequestStream;
+    var empty: () => AnonymousStream;
 }
 
 
