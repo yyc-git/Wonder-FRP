@@ -91,6 +91,7 @@ declare module dyRt {
         merge(streamArr: Array<Stream>): any;
         merge(...otherStream: any[]): any;
         repeat(count?: number): RepeatStream;
+        ignoreElements(): IgnoreElementsStream;
         protected handleSubject(arg: any): boolean;
         private _isSubject(subject);
         private _setSubject(subject);
@@ -288,6 +289,18 @@ declare module dyRt {
 
 
 declare module dyRt {
+    class IgnoreElementsObserver extends Observer {
+        static create(currentObserver: IObserver): IgnoreElementsObserver;
+        private _currentObserver;
+        constructor(currentObserver: IObserver);
+        protected onNext(value: any): void;
+        protected onError(error: any): void;
+        protected onCompleted(): void;
+    }
+}
+
+
+declare module dyRt {
     class BaseStream extends Stream {
         subscribeCore(observer: IObserver): void;
         subscribe(arg1: Function | Observer | Subject, onError?: any, onCompleted?: any): IDisposable;
@@ -416,6 +429,16 @@ declare module dyRt {
         private _source;
         private _count;
         constructor(source: Stream, count: number);
+        subscribeCore(observer: IObserver): void;
+    }
+}
+
+
+declare module dyRt {
+    class IgnoreElementsStream extends BaseStream {
+        static create(source: Stream): IgnoreElementsStream;
+        private _source;
+        constructor(source: Stream);
         subscribeCore(observer: IObserver): void;
     }
 }

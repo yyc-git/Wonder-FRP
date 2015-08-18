@@ -38,6 +38,7 @@ module dyRt{
             return TakeUntilStream.create(this, otherStream);
         }
 
+
         public concat(streamArr:Array<Stream>);
         public concat(...otherStream);
 
@@ -79,6 +80,10 @@ module dyRt{
 
         public repeat(count:number = -1){
             return RepeatStream.create(this, count);
+        }
+
+        public ignoreElements(){
+            return IgnoreElementsStream.create(this);
         }
 
         protected handleSubject(arg){

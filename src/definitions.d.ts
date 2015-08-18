@@ -34,6 +34,7 @@
 /// <reference path="observer/ConcatObserver"/>
 /// <reference path="observer/ISubjectObserver"/>
 /// <reference path="observer/SubjectObserver"/>
+/// <reference path="observer/IgnoreElementsObserver"/>
 
 /// <reference path="stream/BaseStream"/>
 /// <reference path="stream/DoStream"/>
@@ -48,6 +49,7 @@
 /// <reference path="stream/TakeUntilStream"/>
 /// <reference path="stream/ConcatStream"/>
 /// <reference path="stream/RepeatStream"/>
+/// <reference path="stream/IgnoreElementsStream"/>
 
 /// <reference path="global/Operator"/>
 

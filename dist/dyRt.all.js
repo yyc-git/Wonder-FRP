@@ -1179,6 +1179,9 @@ var dyRt;
             if (count === void 0) { count = -1; }
             return dyRt.RepeatStream.create(this, count);
         };
+        Stream.prototype.ignoreElements = function () {
+            return dyRt.IgnoreElementsStream.create(this);
+        };
         Stream.prototype.handleSubject = function (arg) {
             if (this._isSubject(arg)) {
                 this._setSubject(arg);
@@ -2027,6 +2030,38 @@ var __extends = this.__extends || function (d, b) {
 
 var dyRt;
 (function (dyRt) {
+    var IgnoreElementsObserver = (function (_super) {
+        __extends(IgnoreElementsObserver, _super);
+        function IgnoreElementsObserver(currentObserver) {
+            _super.call(this, null, null, null);
+            this._currentObserver = null;
+            this._currentObserver = currentObserver;
+        }
+        IgnoreElementsObserver.create = function (currentObserver) {
+            return new this(currentObserver);
+        };
+        IgnoreElementsObserver.prototype.onNext = function (value) {
+        };
+        IgnoreElementsObserver.prototype.onError = function (error) {
+            this._currentObserver.error(error);
+        };
+        IgnoreElementsObserver.prototype.onCompleted = function () {
+            this._currentObserver.completed();
+        };
+        return IgnoreElementsObserver;
+    })(dyRt.Observer);
+    dyRt.IgnoreElementsObserver = IgnoreElementsObserver;
+})(dyRt || (dyRt = {}));
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+
+var dyRt;
+(function (dyRt) {
     var BaseStream = (function (_super) {
         __extends(BaseStream, _super);
         function BaseStream() {
@@ -2488,6 +2523,35 @@ var dyRt;
         return RepeatStream;
     })(dyRt.BaseStream);
     dyRt.RepeatStream = RepeatStream;
+})(dyRt || (dyRt = {}));
+
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+
+var dyRt;
+(function (dyRt) {
+    var IgnoreElementsStream = (function (_super) {
+        __extends(IgnoreElementsStream, _super);
+        function IgnoreElementsStream(source) {
+            _super.call(this, null);
+            this._source = null;
+            this._source = source;
+            this.scheduler = this._source.scheduler;
+        }
+        IgnoreElementsStream.create = function (source) {
+            var obj = new this(source);
+            return obj;
+        };
+        IgnoreElementsStream.prototype.subscribeCore = function (observer) {
+            this._source.buildStream(dyRt.IgnoreElementsObserver.create(observer));
+        };
+        return IgnoreElementsStream;
+    })(dyRt.BaseStream);
+    dyRt.IgnoreElementsStream = IgnoreElementsStream;
 })(dyRt || (dyRt = {}));
 
 
