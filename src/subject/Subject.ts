@@ -15,54 +15,48 @@ module dyRt{
             this._source = source;
         }
 
-        private _observers:dyCb.Collection<IObserver> = dyCb.Collection.create<IObserver>();
+        private _observer:any = new SubjectObserver();
 
         public subscribe(arg1?:Function|Observer, onError?:Function, onCompleted?:Function):IDisposable{
-            var observer = arg1 instanceof Observer
+            var observer:Observer = arg1 instanceof Observer
                 ? <AutoDetachObserver>arg1
                 : AutoDetachObserver.create(<Function>arg1, onError, onCompleted);
 
-            this._source && observer.setDisposeHandler(this._source.disposeHandler);
+            //this._source && observer.setDisposeHandler(this._source.disposeHandler);
 
-            this._observers.addChild(observer);
+            this._observer.addChild(observer);
 
             return InnerSubscription.create(this, observer);
         }
 
         public next(value:any){
-            this._observers.forEach((ob:Observer) => {
-                ob.next(value);
-            });
+            this._observer.next(value);
         }
 
         public error(error:any){
-            this._observers.forEach((ob:Observer) => {
-                ob.error(error);
-            });
+            this._observer.error(error);
         }
 
         public completed(){
-            this._observers.forEach((ob:Observer) => {
-                ob.completed();
-            });
+            this._observer.completed();
         }
 
         public start(){
-            this._source && this._source.buildStream(this);
+            if(!this._source){
+                return;
+            }
+
+            this._source.buildStream(this);
+
+            this._observer.setDisposeHandler();
         }
 
         public remove(observer:Observer){
-            this._observers.removeChild((ob:Observer) => {
-                return JudgeUtils.isEqual(ob, observer);
-            });
+            this._observer.removeChild(observer);
         }
 
         public dispose(){
-            this._observers.forEach((ob:Observer) => {
-                ob.dispose();
-            });
-
-            this._observers.removeAllChildren();
+            this._observer.dispose();
         }
     }
 }

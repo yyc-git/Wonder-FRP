@@ -54,8 +54,6 @@ module dyRt{
 
             this.observer.addChild(observer);
 
-            this._setDisposeHandler(observer);
-
             return InnerSubscription.create(this, observer);
         }
 
@@ -117,6 +115,9 @@ module dyRt{
 
         public start(){
             this._isStart = true;
+
+            this._setDisposeHandler();
+
         }
 
         public stop(){
@@ -131,14 +132,14 @@ module dyRt{
             this.observer.dispose();
         }
 
-        private _setDisposeHandler(observer:Observer){
+        private _setDisposeHandler(){
             var self = this;
 
-            this.addDisposeHandler(() => {
+            Disposer.addDisposeHandler(() => {
                 self.dispose();
             });
 
-            observer.setDisposeHandler(this.disposeHandler);
+            this.observer.setDisposeHandler();
         }
     }
 }

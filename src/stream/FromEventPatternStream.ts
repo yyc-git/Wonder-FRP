@@ -26,7 +26,7 @@ module dyRt{
 
             this._addHandler(innerHandler);
 
-            this.addDisposeHandler(() => {
+            Disposer.addDisposeHandler(() => {
                 self._removeHandler(innerHandler);
             });
         }

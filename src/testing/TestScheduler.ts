@@ -127,14 +127,16 @@ module dyRt {
             //produce 10 val for test
             var COUNT = 10,
                 messages = [],
-                interval = 100;
+                interval = 100,
+                num = 0;
 
             this._setClock();
 
             while (COUNT > 0 && !this._isDisposed) {
                 this._tick(interval);
-                messages.push(TestScheduler.next(this._clock, interval));
+                messages.push(TestScheduler.next(this._clock, num));
 
+                num++;
                 COUNT--;
             }
 

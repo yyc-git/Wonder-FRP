@@ -18,6 +18,7 @@ describe("dispose", function () {
     describe("test dispose when using subject", function () {
         describe("test TestScheduler->createStream", function () {
             it("test subject.dispose", function () {
+                var c = 0;
                 var stream = scheduler.createStream(
                     next(100, 1),
                     next(152, 2),
@@ -66,106 +67,106 @@ describe("dispose", function () {
             });
         });
 
-        describe("test dyRt->createStream", function () {
-            it("when error", function () {
-                var a = 0,
-                    b = 0,
-                    c = 0;
-                var errorMsg = "err";
-                var stream = rt.createStream(function (observer) {
-                    observer.next(1);
-                    observer.error(errorMsg);
-                    observer.completed();
-                });
-                stream.addDisposeHandler(function () {
-                    c = 100;
-                });
-                var subject = rt.Subject.create();
+        describe("test stream's operator which add disposeHandler", function () {
+            it("interval", function () {
+                sandbox.stub(rt.root, "clearInterval");
+                var stream = rt.interval(100, scheduler)
+                    .do(function(value){
+                    });
 
-                stream.subscribe(subject);
-                subject.subscribe(function (x) {
-                }, function (e) {
-                    b = e;
-                }, function () {
-                    a = 10;
-                });
-                subject.start();
+                var subject = null;
+                var result = scheduler.createObserver();
+                var subscription = null;
 
-                expect(a).toEqual(0);
-                expect(b).toEqual(errorMsg);
-                expect(c).toEqual(100);
+                scheduler.publicAbsolute(100, function () {
+                    subject = rt.Subject.create();
+                });
+                scheduler.publicAbsolute(150, function () {
+                    stream.subscribe(subject);
+                });
+                scheduler.publicAbsolute(200, function () {
+                    subscription = subject.subscribe(result);
+                });
+                scheduler.publicAbsolute(400, function () {
+                    subscription.dispose();
+                });
+                scheduler.publicAbsolute(250, function () {
+                    subject.start();
+                });
+                scheduler.start();
+
+                expect(result.messages).toStreamEqual(
+                    next(350, 0)
+                );
+                expect(rt.root.clearInterval).toCalledOnce();
+                //var stream = rt.createStream(function (observer) {
+                //    rt.Disposer.addDisposeHandler(function(){
+                //        c = 100;
+                //    });
+                //    observer.next(1);
+                //    observer.error(errorMsg);
+                //    observer.completed();
+                //});
+                //stream.addDisposeHandler(function () {
+                //});
+                //var subject = rt.Subject.create();
+                //
+                //stream.subscribe(subject);
+                //subject.subscribe(function (x) {
+                //}, function (e) {
+                //    b = e;
+                //}, function () {
+                //    a = 10;
+                //});
+                //subject.start();
+                //
+                //expect(a).toEqual(0);
+                //expect(b).toEqual(errorMsg);
+                //expect(c).toEqual(100);
             });
-            it("when completed", function () {
-                var a = 0,
-                    c = 0;
-                var stream = rt.createStream(function (observer) {
-                    observer.next(1);
-                    observer.completed();
-                });
-                stream.addDisposeHandler(function () {
-                    c = 100;
-                });
-                var subject = rt.Subject.create();
+            it("intervalRequest", function () {
+                sandbox.stub(rt.root, "cancelNextRequestAnimationFrame");
+                var stream = rt.intervalRequest(scheduler)
+                    .do(function(value){
+                    });
 
-                stream.subscribe(subject);
-                subject.subscribe(function (x) {
-                }, function (e) {
-                }, function () {
-                    a = 10;
-                });
-                subject.start();
+                var subject = null;
+                var result = scheduler.createObserver();
+                var subscription = null;
 
-                expect(a).toEqual(10);
-                expect(c).toEqual(100);
+                scheduler.publicAbsolute(100, function () {
+                    subject = rt.Subject.create();
+                });
+                scheduler.publicAbsolute(150, function () {
+                    stream.subscribe(subject);
+                });
+                scheduler.publicAbsolute(200, function () {
+                    subscription = subject.subscribe(result);
+                });
+                scheduler.publicAbsolute(450, function () {
+                    subscription.dispose();
+                });
+                scheduler.publicAbsolute(250, function () {
+                    subject.start();
+                });
+                scheduler.start();
+
+                expect(result.messages).toStreamEqual(
+                    next(350, 0)
+                );
+                expect(rt.root.cancelNextRequestAnimationFrame).toCalledOnce();
             });
             it("test subject dispose", function () {
-                var a = 0,
-                    b = 0,
-                    c = 0;
-                var stream = rt.createStream(function (observer) {
-                    observer.next(1);
-                    observer.completed();
-                });
-                stream.addDisposeHandler(function () {
-                    c = 100;
-                });
-                var subject = rt.Subject.create();
+                sandbox.stub(rt.root, "cancelNextRequestAnimationFrame");
+                var stream = rt.intervalRequest(scheduler)
+                    .do(function(value){
+                    });
 
-                stream.subscribe(subject);
-                subject.subscribe(function (x) {
-                    a += x;
-                }, function (e) {
-                }, function () {
-                });
-                subject.subscribe(function (x) {
-                    b += x;
-                }, function (e) {
-                }, function () {
-                });
-                subject.start();
-                subject.dispose();
-
-                expect(a).toEqual(1);
-                expect(b).toEqual(1);
-
-            });
-            it("test subscription dispose", function () {
-                var stream = scheduler.createStream(
-                    next(100, 1),
-                    next(152, 2),
-                    next(200, 3),
-                    next(201, 4),
-                    next(205, 5),
-                    next(206, 6),
-                    next(250, 7),
-                    next(300, 8),
-                    completed(301)
-                );
                 var subject = null;
                 var result1 = scheduler.createObserver();
                 var result2 = scheduler.createObserver();
-                var subscription1 = null,
-                    subscription2 = null;
+                var subscription1 = null;
+                var subscription2 = null;
 
                 scheduler.publicAbsolute(100, function () {
                     subject = rt.Subject.create();
@@ -176,29 +177,24 @@ describe("dispose", function () {
                 scheduler.publicAbsolute(200, function () {
                     subscription1 = subject.subscribe(result1);
                 });
-                scheduler.publicAbsolute(202, function () {
+                scheduler.publicAbsolute(400, function () {
                     subscription2 = subject.subscribe(result2);
                 });
-                scheduler.publicAbsolute(205, function () {
-                    subscription1.dispose();
+                scheduler.publicAbsolute(500, function () {
+                    subject.dispose();
                 });
-                scheduler.publicAbsolute(251, function () {
-                    subscription2.dispose();
-                });
-                scheduler.publicAbsolute(201, function () {
+                scheduler.publicAbsolute(250, function () {
                     subject.start();
                 });
                 scheduler.start();
 
                 expect(result1.messages).toStreamEqual(
-                    //next(200, 3),
-                    next(201, 4)
+                    next(350, 0), next(450, 1)
                 );
                 expect(result2.messages).toStreamEqual(
-                    next(205, 5),
-                    next(206, 6),
-                    next(250, 7)
+                    next(450, 1)
                 );
+                expect(rt.root.cancelNextRequestAnimationFrame).toCalledOnce();
             });
         });
     });
@@ -212,9 +208,9 @@ describe("dispose", function () {
                 var stream = rt.createStream(function (observer) {
                     observer.error();
                 });
-                stream.addDisposeHandler(function () {
-                    b = 1;
-                });
+                //stream.addDisposeHandler(function () {
+                //    b = 1;
+                //});
 
                 var subscription = stream.subscribe(
                     function (x) {
@@ -227,7 +223,7 @@ describe("dispose", function () {
                 );
 
                 expect(a).toEqual(10);
-                expect(b).toEqual(1);
+                //expect(b).toEqual(1);
                 expect(subscription.isDisposed).toBeTruthy();
             });
             it("when publish completed", function () {
@@ -235,9 +231,9 @@ describe("dispose", function () {
                 var stream = rt.createStream(function (observer) {
                     observer.completed();
                 });
-                stream.addDisposeHandler(function () {
-                    b = 1;
-                });
+                //stream.addDisposeHandler(function () {
+                //    b = 1;
+                //});
 
                 var subscription = stream.subscribe(
                     function (x) {
@@ -249,8 +245,73 @@ describe("dispose", function () {
                     }
                 );
 
-                expect(b).toEqual(1);
+                //expect(b).toEqual(1);
                 expect(subscription.isDisposed).toBeTruthy();
+            });
+        });
+
+        describe("test multi operator", function(){
+            it("concat", function(){
+                sandbox.stub(rt.root, "cancelNextRequestAnimationFrame");
+                var suscription = rt.fromArray([1, 2])
+                    .concat(rt.intervalRequest())
+                    .subscribe(function(){});
+
+                suscription.dispose();
+
+                expect(rt.root.cancelNextRequestAnimationFrame).toCalledOnce();
+            });
+            it("merge", function(){
+
+            });
+        });
+        
+        describe("test multi stream", function(){
+            beforeEach(function(){
+                sandbox.stub(rt.root, "cancelNextRequestAnimationFrame");
+                sandbox.stub(rt.root, "clearInterval");
+            });
+
+            it("test1", function(){
+                var removeHandlerStub = sandbox.stub();
+                var subscription1 = rt.interval(1000)
+                    .merge(rt.intervalRequest())
+                    .subscribe(function(){});
+                var subscription2 = rt.interval(500)
+                    .merge(rt.empty())
+                    .subscribe(function(){});
+
+                subscription1.dispose();
+
+                var subscription3 = rt.fromArray([1])
+                    .map(function(data){
+                        return data * 2;
+                    })
+                    .merge(rt.fromEventPattern(function(){
+
+                    }, removeHandlerStub))
+                    .subscribe(function(){});
+
+                subscription2.dispose();
+                subscription3.dispose();
+
+                expect(rt.root.cancelNextRequestAnimationFrame).toCalledOnce();
+                expect(rt.root.clearInterval).toCalledTwice();
+                expect(removeHandlerStub).toCalledOnce()
+            });
+            it("test2", function(){
+                var stream1 = rt.interval(1000);
+                var stream2 = rt.interval(500);
+
+                var subscription1 = stream1.subscribe(function(){});
+
+                var subscription2 = stream1.merge(stream2)
+                    .subscribe(function(){});
+
+                subscription1.dispose();
+                subscription2.dispose();
+
+                expect(rt.root.clearInterval).toCalledThrice();
             });
         });
     });

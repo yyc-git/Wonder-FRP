@@ -1023,21 +1023,18 @@ var dyRt;
         __extends(Disposer, _super);
         function Disposer() {
             _super.apply(this, arguments);
-            this._disposeHandler = dyCb.Collection.create();
         }
-        Object.defineProperty(Disposer.prototype, "disposeHandler", {
-            get: function () {
-                return this._disposeHandler;
-            },
-            set: function (disposeHandler) {
-                this._disposeHandler = disposeHandler;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Disposer.prototype.addDisposeHandler = function (func) {
+        Disposer.addDisposeHandler = function (func) {
             this._disposeHandler.addChild(func);
         };
+        Disposer.getDisposeHandler = function () {
+            return this._disposeHandler.copy();
+        };
+        Disposer.removeAllDisposeHandler = function () {
+            this._disposeHandler.removeAllChildren();
+        };
+        //private static _disposeHandler:dyCb.Stack<Function> = dyCb.Stack.create<Function>();
+        Disposer._disposeHandler = dyCb.Collection.create();
         return Disposer;
     })(dyRt.Entity);
     dyRt.Disposer = Disposer;
@@ -1428,7 +1425,7 @@ var dyRt;
     var Subject = (function () {
         function Subject() {
             this._source = null;
-            this._observers = dyCb.Collection.create();
+            this._observer = new dyRt.SubjectObserver();
         }
         Subject.create = function () {
             var obj = new this();
@@ -1448,38 +1445,31 @@ var dyRt;
             var observer = arg1 instanceof dyRt.Observer
                 ? arg1
                 : dyRt.AutoDetachObserver.create(arg1, onError, onCompleted);
-            this._source && observer.setDisposeHandler(this._source.disposeHandler);
-            this._observers.addChild(observer);
+            //this._source && observer.setDisposeHandler(this._source.disposeHandler);
+            this._observer.addChild(observer);
             return dyRt.InnerSubscription.create(this, observer);
         };
         Subject.prototype.next = function (value) {
-            this._observers.forEach(function (ob) {
-                ob.next(value);
-            });
+            this._observer.next(value);
         };
         Subject.prototype.error = function (error) {
-            this._observers.forEach(function (ob) {
-                ob.error(error);
-            });
+            this._observer.error(error);
         };
         Subject.prototype.completed = function () {
-            this._observers.forEach(function (ob) {
-                ob.completed();
-            });
+            this._observer.completed();
         };
         Subject.prototype.start = function () {
-            this._source && this._source.buildStream(this);
+            if (!this._source) {
+                return;
+            }
+            this._source.buildStream(this);
+            this._observer.setDisposeHandler();
         };
         Subject.prototype.remove = function (observer) {
-            this._observers.removeChild(function (ob) {
-                return dyRt.JudgeUtils.isEqual(ob, observer);
-            });
+            this._observer.removeChild(observer);
         };
         Subject.prototype.dispose = function () {
-            this._observers.forEach(function (ob) {
-                ob.dispose();
-            });
-            this._observers.removeAllChildren();
+            this._observer.dispose();
         };
         return Subject;
     })();
@@ -1539,7 +1529,6 @@ var dyRt;
                 ? arg1
                 : dyRt.AutoDetachObserver.create(arg1, onError, onCompleted);
             this.observer.addChild(observer);
-            this._setDisposeHandler(observer);
             return dyRt.InnerSubscription.create(this, observer);
         };
         GeneratorSubject.prototype.next = function (value) {
@@ -1583,6 +1572,7 @@ var dyRt;
         };
         GeneratorSubject.prototype.start = function () {
             this._isStart = true;
+            this._setDisposeHandler();
         };
         GeneratorSubject.prototype.stop = function () {
             this._isStart = false;
@@ -1593,12 +1583,12 @@ var dyRt;
         GeneratorSubject.prototype.dispose = function () {
             this.observer.dispose();
         };
-        GeneratorSubject.prototype._setDisposeHandler = function (observer) {
+        GeneratorSubject.prototype._setDisposeHandler = function () {
             var self = this;
-            this.addDisposeHandler(function () {
+            dyRt.Disposer.addDisposeHandler(function () {
                 self.dispose();
             });
-            observer.setDisposeHandler(this.disposeHandler);
+            this.observer.setDisposeHandler();
         };
         return GeneratorSubject;
     })(dyRt.Disposer);
@@ -2016,6 +2006,12 @@ var dyRt;
             });
             this.observers.removeAllChildren();
         };
+        SubjectObserver.prototype.setDisposeHandler = function () {
+            this.observers.forEach(function (observer) {
+                observer.setDisposeHandler(dyRt.Disposer.getDisposeHandler());
+            });
+            dyRt.Disposer.removeAllDisposeHandler();
+        };
         return SubjectObserver;
     })();
     dyRt.SubjectObserver = SubjectObserver;
@@ -2078,8 +2074,10 @@ var dyRt;
             observer = arg1 instanceof dyRt.Observer
                 ? arg1
                 : dyRt.AutoDetachObserver.create(arg1, onError, onCompleted);
-            observer.setDisposeHandler(this.disposeHandler);
+            //observer.setDisposeHandler(this.disposeHandler);
             this.buildStream(observer);
+            observer.setDisposeHandler(dyRt.Disposer.getDisposeHandler());
+            dyRt.Disposer.removeAllDisposeHandler();
             return observer;
         };
         BaseStream.prototype.buildStream = function (observer) {
@@ -2255,7 +2253,7 @@ var dyRt;
                 observer.next(event);
             }
             this._addHandler(innerHandler);
-            this.addDisposeHandler(function () {
+            dyRt.Disposer.addDisposeHandler(function () {
                 self._removeHandler(innerHandler);
             });
         };
@@ -2288,8 +2286,10 @@ var dyRt;
                 return;
             }
             observer = dyRt.AutoDetachObserver.create(onNext, onError, onCompleted);
-            observer.setDisposeHandler(this.disposeHandler);
+            //observer.setDisposeHandler(this.disposeHandler);
             this.buildStream(observer);
+            observer.setDisposeHandler(dyRt.Disposer.getDisposeHandler());
+            dyRt.Disposer.removeAllDisposeHandler();
             return observer;
         };
         return AnonymousStream;
@@ -2329,7 +2329,7 @@ var dyRt;
                 observer.next(count);
                 return count + 1;
             });
-            this.addDisposeHandler(function () {
+            dyRt.Disposer.addDisposeHandler(function () {
                 dyRt.root.clearInterval(id);
             });
         };
@@ -2362,7 +2362,7 @@ var dyRt;
             this.scheduler.publishIntervalRequest(observer, function (time) {
                 observer.next(time);
             });
-            this.addDisposeHandler(function () {
+            dyRt.Disposer.addDisposeHandler(function () {
                 dyRt.root.cancelNextRequestAnimationFrame(self.scheduler.requestLoopId);
             });
         };
@@ -2849,11 +2849,12 @@ var dyRt;
         };
         TestScheduler.prototype.publishIntervalRequest = function (observer, action) {
             //produce 10 val for test
-            var COUNT = 10, messages = [], interval = 100;
+            var COUNT = 10, messages = [], interval = 100, num = 0;
             this._setClock();
             while (COUNT > 0 && !this._isDisposed) {
                 this._tick(interval);
-                messages.push(TestScheduler.next(this._clock, interval));
+                messages.push(TestScheduler.next(this._clock, num));
+                num++;
                 COUNT--;
             }
             this.setStreamMap(observer, messages);

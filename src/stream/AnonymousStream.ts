@@ -12,7 +12,7 @@ module dyRt{
         }
 
         public subscribe(onNext, onError, onCompleted):IDisposable {
-            var observer = null;
+            var observer:AutoDetachObserver = null;
 
             if(this.handleSubject(arguments[0])){
                 return;
@@ -20,9 +20,12 @@ module dyRt{
 
             observer = AutoDetachObserver.create(onNext, onError, onCompleted);
 
-            observer.setDisposeHandler(this.disposeHandler);
+            //observer.setDisposeHandler(this.disposeHandler);
 
             this.buildStream(observer);
+
+            observer.setDisposeHandler(Disposer.getDisposeHandler());
+            Disposer.removeAllDisposeHandler();
 
             return observer;
         }

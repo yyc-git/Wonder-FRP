@@ -6,7 +6,7 @@ module dyRt{
         }
 
         public subscribe(arg1:Function|Observer|Subject, onError?, onCompleted?):IDisposable {
-            var observer = null;
+            var observer:Observer = null;
 
             if(this.handleSubject(arg1)){
                 return;
@@ -16,9 +16,12 @@ module dyRt{
                 ? arg1
                 : AutoDetachObserver.create(<Function>arg1, onError, onCompleted);
 
-            observer.setDisposeHandler(this.disposeHandler);
+            //observer.setDisposeHandler(this.disposeHandler);
 
             this.buildStream(observer);
+
+            observer.setDisposeHandler(Disposer.getDisposeHandler());
+            Disposer.removeAllDisposeHandler();
 
             return observer;
         }

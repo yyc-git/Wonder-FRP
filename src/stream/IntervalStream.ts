@@ -33,7 +33,7 @@ module dyRt{
                 return count + 1;
             });
 
-            this.addDisposeHandler(() => {
+            Disposer.addDisposeHandler(() => {
                 root.clearInterval(id);
             });
         }

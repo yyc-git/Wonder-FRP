@@ -34,9 +34,10 @@ declare module dyRt {
 
 declare module dyRt {
     class Disposer extends Entity {
-        private _disposeHandler;
-        disposeHandler: dyCb.Collection<Function>;
-        addDisposeHandler(func: Function): void;
+        static addDisposeHandler(func: Function): void;
+        static getDisposeHandler(): dyCb.Collection<Function>;
+        static removeAllDisposeHandler(): void;
+        private static _disposeHandler;
     }
 }
 
@@ -138,7 +139,7 @@ declare module dyRt {
         static create(): Subject;
         private _source;
         source: Stream;
-        private _observers;
+        private _observer;
         subscribe(arg1?: Function | Observer, onError?: Function, onCompleted?: Function): IDisposable;
         next(value: any): void;
         error(error: any): void;
@@ -173,7 +174,7 @@ declare module dyRt {
         stop(): void;
         remove(observer: Observer): void;
         dispose(): void;
-        private _setDisposeHandler(observer);
+        private _setDisposeHandler();
     }
 }
 
@@ -284,6 +285,7 @@ declare module dyRt {
         addChild(observer: Observer): void;
         removeChild(observer: Observer): void;
         dispose(): void;
+        setDisposeHandler(): void;
     }
 }
 

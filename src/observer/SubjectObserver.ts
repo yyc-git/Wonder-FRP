@@ -42,6 +42,14 @@ module dyRt{
 
             this.observers.removeAllChildren();
         }
+
+        public setDisposeHandler(){
+            this.observers.forEach((observer:Observer) => {
+                observer.setDisposeHandler(Disposer.getDisposeHandler());
+            });
+
+            Disposer.removeAllDisposeHandler();
+        }
     }
 
 }

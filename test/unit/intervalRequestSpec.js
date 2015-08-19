@@ -48,11 +48,11 @@ describe("intervalRequest", function () {
             expect(next.firstCall).toCalledWith(time);
             expect(next.secondCall).toCalledWith(time);
         });
+
         it("use cancelNextRequestAnimationFrame to dispose", function(){
             sandbox.stub(rt.root, "cancelNextRequestAnimationFrame");
-            var next = sandbox.stub();
+            var suscription = rt.intervalRequest().subscribe(function(){});
 
-            var suscription = rt.intervalRequest().subscribe(next);
             suscription.dispose();
 
             expect(rt.root.cancelNextRequestAnimationFrame).toCalledWith(0);
@@ -68,7 +68,7 @@ describe("intervalRequest", function () {
             });
 
             expect(results.messages).toStreamContain(
-                next(300, time), next(400, time), next(500, time)
+                next(300, 0), next(400, 1), next(500, 2)
             );
         });
         it("set dispose time", function () {
@@ -79,7 +79,7 @@ describe("intervalRequest", function () {
             }, 400);
 
             expect(results.messages).toStreamEqual(
-                next(300, time)
+                next(300, 0)
             );
         });
     });
