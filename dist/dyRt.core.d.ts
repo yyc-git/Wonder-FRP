@@ -452,6 +452,7 @@ declare module dyRt {
     var interval: (interval: any, scheduler?: Scheduler) => IntervalStream;
     var intervalRequest: (scheduler?: Scheduler) => IntervalRequestStream;
     var empty: () => AnonymousStream;
+    var callFunc: (func: Function, context?: any) => AnonymousStream;
 }
 
 

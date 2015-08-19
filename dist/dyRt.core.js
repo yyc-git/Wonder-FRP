@@ -1627,6 +1627,18 @@ var dyRt;
             observer.completed();
         });
     };
+    dyRt.callFunc = function (func, context) {
+        if (context === void 0) { context = dyRt.root; }
+        return dyRt.createStream(function (observer) {
+            try {
+                observer.next(func.call(context, null));
+            }
+            catch (e) {
+                observer.error(e);
+            }
+            observer.completed();
+        });
+    };
 })(dyRt || (dyRt = {}));
 
 

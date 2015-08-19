@@ -29,5 +29,18 @@ module dyRt{
             observer.completed();
         });
     };
+
+    export var callFunc = (func:Function, context = root) => {
+        return createStream((observer:IObserver) => {
+            try{
+                observer.next(func.call(context, null));
+            }
+            catch(e){
+                observer.error(e);
+            }
+
+            observer.completed();
+        })
+    }
 }
 
