@@ -17,13 +17,14 @@ module dyRt{
         }
 
         public subscribeCore(observer:IObserver){
-            //todo remove test logic from product logic(as Scheduler->publicxxx, FromPromise->then...)
             this._promise.then((data) => {
                 observer.next(data);
                 observer.completed();
             }, (err) => {
                 observer.error(err);
             }, observer);
+
+            return SingleDisposable.create();
         }
     }
 }

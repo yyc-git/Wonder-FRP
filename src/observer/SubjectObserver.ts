@@ -3,6 +3,8 @@ module dyRt{
     export class SubjectObserver implements IObserver{
         public observers:dyCb.Collection<IObserver> = dyCb.Collection.create<IObserver>();
 
+        private _disposable:IDisposable = null;
+
         public isEmpty(){
             return this.observers.getCount() === 0;
         }
@@ -27,6 +29,8 @@ module dyRt{
 
         public addChild(observer:Observer){
             this.observers.addChild(observer);
+
+            observer.setDisposable(this._disposable);
         }
 
         public removeChild(observer:Observer){
@@ -43,12 +47,12 @@ module dyRt{
             this.observers.removeAllChildren();
         }
 
-        public setDisposeHandler(){
+        public setDisposable(disposable:IDisposable){
             this.observers.forEach((observer:Observer) => {
-                observer.setDisposeHandler(Disposer.getDisposeHandler());
+                observer.setDisposable(disposable);
             });
 
-            Disposer.removeAllDisposeHandler();
+            this._disposable = disposable;
         }
     }
 

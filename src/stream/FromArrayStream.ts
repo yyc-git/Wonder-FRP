@@ -31,6 +31,8 @@ module dyRt{
             }
 
             this.scheduler.publishRecursive(observer, 0, loopRecursive);
+
+            return SingleDisposable.create();
         }
     }
 }

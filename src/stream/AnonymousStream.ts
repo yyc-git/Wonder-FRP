@@ -22,10 +22,11 @@ module dyRt{
 
             //observer.setDisposeHandler(this.disposeHandler);
 
-            this.buildStream(observer);
 
-            observer.setDisposeHandler(Disposer.getDisposeHandler());
-            Disposer.removeAllDisposeHandler();
+            //
+            //observer.setDisposeHandler(Disposer.getDisposeHandler());
+            //Disposer.removeAllDisposeHandler();
+            observer.setDisposable(this.buildStream(observer));
 
             return observer;
         }

@@ -29,7 +29,8 @@ module dyRt{
 
         public subscribeCore(observer:IObserver){
             var self = this,
-                count = this._sources.getCount();
+                count = this._sources.getCount(),
+                d = GroupDisposable.create();
 
             function loopRecursive(i) {
                 if(i === count){
@@ -38,14 +39,16 @@ module dyRt{
                     return;
                 }
 
-                self._sources.getChild(i).buildStream(ConcatObserver.create(
+                d.add(self._sources.getChild(i).buildStream(ConcatObserver.create(
                         observer, ()=>{
                             loopRecursive(i + 1);
                         })
-                );
+                ));
             }
 
             this.scheduler.publishRecursive(observer, 0, loopRecursive);
+
+            return GroupDisposable.create(d);
         }
     }
 }

@@ -14,8 +14,10 @@ module dyRt{
             throw ABSTRACT_METHOD();
         }
 
-        public buildStream(observer:IObserver){
+        public buildStream(observer:IObserver):IDisposable{
             this.subscribeFunc(observer);
+
+            return SingleDisposable.create();
         }
 
         public do(onNext?:Function, onError?:Function, onCompleted?:Function) {

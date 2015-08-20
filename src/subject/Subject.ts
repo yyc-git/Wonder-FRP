@@ -46,9 +46,7 @@ module dyRt{
                 return;
             }
 
-            this._source.buildStream(this);
-
-            this._observer.setDisposeHandler();
+            this._observer.setDisposable(this._source.buildStream(this));
         }
 
         public remove(observer:Observer){

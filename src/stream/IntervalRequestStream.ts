@@ -20,7 +20,10 @@ module dyRt{
                 observer.next(time);
             });
 
-            Disposer.addDisposeHandler(() => {
+            //Disposer.addDisposeHandler(() => {
+            //});
+            //
+            return SingleDisposable.create(() => {
                 root.cancelNextRequestAnimationFrame(self.scheduler.requestLoopId);
             });
         }

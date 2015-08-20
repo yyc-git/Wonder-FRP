@@ -21,6 +21,8 @@ module dyRt {
             //var scheduler = <TestScheduler>(this.scheduler);
 
             this.scheduler.setStreamMap(observer, this._messages);
+
+            return SingleDisposable.create();
         }
     }
 }

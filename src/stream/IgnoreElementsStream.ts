@@ -18,7 +18,7 @@ module dyRt{
         }
 
         public subscribeCore(observer:IObserver){
-            this._source.buildStream(IgnoreElementsObserver.create(observer));
+            return this._source.buildStream(IgnoreElementsObserver.create(observer));
         }
     }
 }

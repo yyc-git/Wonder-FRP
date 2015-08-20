@@ -47,6 +47,7 @@ module dyRt{
         }
 
 
+        //todo
         public subscribe(arg1?:Function|Observer, onError?:Function, onCompleted?:Function):IDisposable{
             var observer = arg1 instanceof Observer
                 ? <AutoDetachObserver>arg1
@@ -114,10 +115,13 @@ module dyRt{
         }
 
         public start(){
+            var self = this;
+
             this._isStart = true;
 
-            this._setDisposeHandler();
-
+            this.observer.setDisposable(SingleDisposable.create(() => {
+                self.dispose();
+            }));
         }
 
         public stop(){
@@ -130,16 +134,6 @@ module dyRt{
 
         public dispose(){
             this.observer.dispose();
-        }
-
-        private _setDisposeHandler(){
-            var self = this;
-
-            Disposer.addDisposeHandler(() => {
-                self.dispose();
-            });
-
-            this.observer.setDisposeHandler();
         }
     }
 }

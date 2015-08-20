@@ -20,9 +20,12 @@ module dyRt{
         }
 
         public subscribeCore(observer:IObserver){
-            var streamGroup = dyCb.Collection.create<Stream>();
+            var streamGroup = dyCb.Collection.create<Stream>(),
+                groupDisposable = GroupDisposable.create();
 
-            this._source.buildStream(MergeAllObserver.create(observer, streamGroup));
+             this._source.buildStream(MergeAllObserver.create(observer, streamGroup, groupDisposable));
+
+            return groupDisposable;
         }
     }
 }

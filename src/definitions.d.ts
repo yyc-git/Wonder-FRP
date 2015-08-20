@@ -5,6 +5,8 @@
 /// <reference path="core/Entity"/>
 
 /// <reference path="disposable/IDisposable"/>
+/// <reference path="disposable/SingleDisposable"/>
+/// <reference path="disposable/GroupDisposable"/>
 /// <reference path="observer/IObserver"/>
 /// <reference path="disposable/Disposer"/>
 /// <reference path="disposable/InnerSubscription"/>

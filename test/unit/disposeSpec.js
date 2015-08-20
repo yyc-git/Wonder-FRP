@@ -99,30 +99,6 @@ describe("dispose", function () {
                     next(350, 0)
                 );
                 expect(rt.root.clearInterval).toCalledOnce();
-                //var stream = rt.createStream(function (observer) {
-                //    rt.Disposer.addDisposeHandler(function(){
-                //        c = 100;
-                //    });
-                //    observer.next(1);
-                //    observer.error(errorMsg);
-                //    observer.completed();
-                //});
-                //stream.addDisposeHandler(function () {
-                //});
-                //var subject = rt.Subject.create();
-                //
-                //stream.subscribe(subject);
-                //subject.subscribe(function (x) {
-                //}, function (e) {
-                //    b = e;
-                //}, function () {
-                //    a = 10;
-                //});
-                //subject.start();
-                //
-                //expect(a).toEqual(0);
-                //expect(b).toEqual(errorMsg);
-                //expect(c).toEqual(100);
             });
             it("intervalRequest", function () {
                 sandbox.stub(rt.root, "cancelNextRequestAnimationFrame");
@@ -194,7 +170,7 @@ describe("dispose", function () {
                 expect(result2.messages).toStreamEqual(
                     next(450, 1)
                 );
-                expect(rt.root.cancelNextRequestAnimationFrame).toCalledOnce();
+                expect(rt.root.cancelNextRequestAnimationFrame).toCalledTwice();
             });
         });
     });
@@ -208,9 +184,6 @@ describe("dispose", function () {
                 var stream = rt.createStream(function (observer) {
                     observer.error();
                 });
-                //stream.addDisposeHandler(function () {
-                //    b = 1;
-                //});
 
                 var subscription = stream.subscribe(
                     function (x) {
@@ -223,7 +196,6 @@ describe("dispose", function () {
                 );
 
                 expect(a).toEqual(10);
-                //expect(b).toEqual(1);
                 expect(subscription.isDisposed).toBeTruthy();
             });
             it("when publish completed", function () {
@@ -231,9 +203,6 @@ describe("dispose", function () {
                 var stream = rt.createStream(function (observer) {
                     observer.completed();
                 });
-                //stream.addDisposeHandler(function () {
-                //    b = 1;
-                //});
 
                 var subscription = stream.subscribe(
                     function (x) {
@@ -245,23 +214,90 @@ describe("dispose", function () {
                     }
                 );
 
-                //expect(b).toEqual(1);
                 expect(subscription.isDisposed).toBeTruthy();
             });
         });
 
         describe("test multi operator", function(){
-            it("concat", function(){
+            beforeEach(function(){
                 sandbox.stub(rt.root, "cancelNextRequestAnimationFrame");
-                var suscription = rt.fromArray([1, 2])
-                    .concat(rt.intervalRequest())
-                    .subscribe(function(){});
+                sandbox.stub(rt.root, "clearInterval");
+                scheduler = TestScheduler.create(true);
+            });
 
-                suscription.dispose();
+            it("concat", function(){
+                var promise = scheduler.createResolvedPromise(250, 1);
+                var stream = rt.fromPromise(promise, scheduler)
+                    .concat(rt.intervalRequest(scheduler));
+
+                var results = scheduler.startWithTime(function () {
+                    return stream;
+                }, 150, 500);
 
                 expect(rt.root.cancelNextRequestAnimationFrame).toCalledOnce();
+
+                expect(results.messages).toStreamEqual(
+                    next(250, 1), next(350, 1), next(450, 2)
+                );
             });
+
             it("merge", function(){
+                var stream = rt.interval(80, scheduler)
+                    .merge(rt.intervalRequest(scheduler));
+
+                var results = scheduler.startWithTime(function () {
+                    return stream;
+                }, 150, 500);
+
+                expect(rt.root.cancelNextRequestAnimationFrame).toCalledOnce();
+                expect(rt.root.clearInterval        ).toCalledOnce();
+
+                expect(results.messages).toStreamEqual(
+                    next(230, 0), next(250, 0), next(310, 1), next(350,1), next(390, 2), next(450, 2), next(470, 3)
+                );
+            });
+            it("mergeAll", function(){
+                var sources = rt.fromArray([1, 2])
+                    .map(function(value){
+                        if(value === 2){
+                            return rt.interval(100, scheduler);
+                        }
+                        else{
+                            return rt.interval(60, scheduler);
+                        }
+                    });
+                results = scheduler.startWithTime(function () {
+                    return sources.mergeAll();
+                }, 150, 300);
+
+                expect(rt.root.clearInterval        ).toCalledTwice();
+                expect(results.messages).toStreamContain(
+                    next(210, 0), next(250, 0), next(270, 1)
+                );
+            });
+            it("takeUntil", function(){
+                var promise = scheduler.createResolvedPromise(300, 1);
+                var stream1 = scheduler.createStream(
+                    next(200, 1),
+                    next(300, 2),
+                    next(400, 3),
+                    completed(401)
+                );
+                //var stream = rt.interval(100, scheduler)
+                var stream = stream1
+                    .takeUntil(rt.interval(120, scheduler));
+
+                var results = scheduler.startWithTime(function () {
+                    return stream;
+                }, 150, 500);
+
+                expect(rt.root.clearInterval        ).toCalledOnce();
+
+                expect(results.messages).toStreamEqual(
+                    next(200, 1), completed(270)
+                );
+            });
+            it("repeat", function(){
 
             });
         });
@@ -305,13 +341,16 @@ describe("dispose", function () {
 
                 var subscription1 = stream1.subscribe(function(){});
 
-                var subscription2 = stream1.merge(stream2)
+                var subscription2 = stream1.takeUntil(stream2)
                     .subscribe(function(){});
 
                 subscription1.dispose();
                 subscription2.dispose();
 
                 expect(rt.root.clearInterval).toCalledThrice();
+                expect(rt.root.clearInterval.args).toEqual(
+                    [[8], [9], [10]]
+                )
             });
         });
     });

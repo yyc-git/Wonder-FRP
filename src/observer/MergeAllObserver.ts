@@ -1,8 +1,8 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class MergeAllObserver extends Observer{
-        public static create(currentObserver:IObserver, streamGroup:dyCb.Collection<Stream>) {
-            return new this(currentObserver, streamGroup);
+        public static create(currentObserver:IObserver, streamGroup:dyCb.Collection<Stream>, groupDisposable:GroupDisposable) {
+            return new this(currentObserver, streamGroup, groupDisposable);
         }
 
         private _currentObserver:IObserver = null;
@@ -12,7 +12,6 @@ module dyRt{
         set currentObserver(currentObserver:IObserver){
             this._currentObserver = currentObserver;
         }
-        private _streamGroup:dyCb.Collection<Stream> = null;
 
         private _done:boolean = false;
         get done(){
@@ -22,11 +21,15 @@ module dyRt{
             this._done = done;
         }
 
-        constructor(currentObserver:IObserver, streamGroup:dyCb.Collection<Stream>){
+        private _streamGroup:dyCb.Collection<Stream> = null;
+        private _groupDisposable:GroupDisposable = null;
+
+        constructor(currentObserver:IObserver, streamGroup:dyCb.Collection<Stream>, groupDisposable:GroupDisposable){
             super(null, null, null);
 
             this._currentObserver = currentObserver;
             this._streamGroup = streamGroup;
+            this._groupDisposable = groupDisposable;
         }
 
         protected onNext(innerSource:any){
@@ -38,7 +41,7 @@ module dyRt{
 
             this._streamGroup.addChild(innerSource);
 
-            innerSource.buildStream(InnerObserver.create(this, this._streamGroup, innerSource));
+            this._groupDisposable.add(innerSource.buildStream(InnerObserver.create(this, this._streamGroup, innerSource)));
         }
 
         protected onError(error){

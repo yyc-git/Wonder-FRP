@@ -24,6 +24,28 @@ declare module dyRt {
 
 
 declare module dyRt {
+    class SingleDisposable implements IDisposable {
+        static create(disposeHandler?: Function): SingleDisposable;
+        private _disposeHandler;
+        constructor(disposeHandler: Function);
+        setDisposeHandler(handler: Function): void;
+        dispose(): void;
+    }
+}
+
+
+declare module dyRt {
+    class GroupDisposable implements IDisposable {
+        static create(disposable?: IDisposable): GroupDisposable;
+        private _group;
+        constructor(disposable?: IDisposable);
+        add(disposable: IDisposable): GroupDisposable;
+        dispose(): void;
+    }
+}
+
+
+declare module dyRt {
     interface IObserver extends IDisposable {
         next(value: any): any;
         error(error: any): any;
@@ -81,7 +103,7 @@ declare module dyRt {
         subscribeFunc: Function;
         constructor(subscribeFunc: any);
         subscribe(arg1: Function | Observer | Subject, onError?: Function, onCompleted?: Function): IDisposable;
-        buildStream(observer: IObserver): void;
+        buildStream(observer: IObserver): IDisposable;
         do(onNext?: Function, onError?: Function, onCompleted?: Function): DoStream;
         map(selector: Function): MapStream;
         flatMap(selector: Function): MergeAllStream;
@@ -120,13 +142,14 @@ declare module dyRt {
         protected onUserError: Function;
         protected onUserCompleted: Function;
         private _isStop;
-        private _disposeHandler;
+        private _disposable;
         constructor(onNext: Function, onError: Function, onCompleted: Function);
         next(value: any): void;
         error(error: any): void;
         completed(): void;
         dispose(): void;
         setDisposeHandler(disposeHandler: dyCb.Collection<Function>): void;
+        setDisposable(disposable: IDisposable): void;
         protected onNext(value: any): void;
         protected onError(error: any): void;
         protected onCompleted(): void;
@@ -174,7 +197,6 @@ declare module dyRt {
         stop(): void;
         remove(observer: Observer): void;
         dispose(): void;
-        private _setDisposeHandler();
     }
 }
 
@@ -228,13 +250,14 @@ declare module dyRt {
 
 declare module dyRt {
     class MergeAllObserver extends Observer {
-        static create(currentObserver: IObserver, streamGroup: dyCb.Collection<Stream>): MergeAllObserver;
+        static create(currentObserver: IObserver, streamGroup: dyCb.Collection<Stream>, groupDisposable: GroupDisposable): MergeAllObserver;
         private _currentObserver;
         currentObserver: IObserver;
-        private _streamGroup;
         private _done;
         done: boolean;
-        constructor(currentObserver: IObserver, streamGroup: dyCb.Collection<Stream>);
+        private _streamGroup;
+        private _groupDisposable;
+        constructor(currentObserver: IObserver, streamGroup: dyCb.Collection<Stream>, groupDisposable: GroupDisposable);
         protected onNext(innerSource: any): void;
         protected onError(error: any): void;
         protected onCompleted(): void;
@@ -278,6 +301,7 @@ declare module dyRt {
 declare module dyRt {
     class SubjectObserver implements IObserver {
         observers: dyCb.Collection<IObserver>;
+        private _disposable;
         isEmpty(): boolean;
         next(value: any): void;
         error(error: any): void;
@@ -285,7 +309,7 @@ declare module dyRt {
         addChild(observer: Observer): void;
         removeChild(observer: Observer): void;
         dispose(): void;
-        setDisposeHandler(): void;
+        setDisposable(disposable: IDisposable): void;
     }
 }
 
@@ -304,9 +328,9 @@ declare module dyRt {
 
 declare module dyRt {
     class BaseStream extends Stream {
-        subscribeCore(observer: IObserver): void;
+        subscribeCore(observer: IObserver): IDisposable;
         subscribe(arg1: Function | Observer | Subject, onError?: any, onCompleted?: any): IDisposable;
-        buildStream(observer: IObserver): void;
+        buildStream(observer: IObserver): IDisposable;
     }
 }
 
@@ -317,7 +341,7 @@ declare module dyRt {
         private _source;
         private _observer;
         constructor(source: Stream, onNext: Function, onError: Function, onCompleted: Function);
-        subscribeCore(observer: IObserver): void;
+        subscribeCore(observer: IObserver): IDisposable;
     }
 }
 
@@ -328,7 +352,7 @@ declare module dyRt {
         private _source;
         private _selector;
         constructor(source: Stream, selector: Function);
-        subscribeCore(observer: IObserver): void;
+        subscribeCore(observer: IObserver): IDisposable;
     }
 }
 
@@ -338,7 +362,7 @@ declare module dyRt {
         static create(array: Array<any>, scheduler: Scheduler): FromArrayStream;
         private _array;
         constructor(array: Array<any>, scheduler: Scheduler);
-        subscribeCore(observer: IObserver): void;
+        subscribeCore(observer: IObserver): SingleDisposable;
     }
 }
 
@@ -348,7 +372,7 @@ declare module dyRt {
         static create(promise: any, scheduler: Scheduler): FromPromiseStream;
         private _promise;
         constructor(promise: any, scheduler: Scheduler);
-        subscribeCore(observer: IObserver): void;
+        subscribeCore(observer: IObserver): SingleDisposable;
     }
 }
 
@@ -359,7 +383,7 @@ declare module dyRt {
         private _addHandler;
         private _removeHandler;
         constructor(addHandler: Function, removeHandler: Function);
-        subscribeCore(observer: IObserver): void;
+        subscribeCore(observer: IObserver): SingleDisposable;
     }
 }
 
@@ -379,7 +403,7 @@ declare module dyRt {
         private _interval;
         constructor(interval: number, scheduler: Scheduler);
         initWhenCreate(): void;
-        subscribeCore(observer: IObserver): void;
+        subscribeCore(observer: IObserver): SingleDisposable;
     }
 }
 
@@ -388,7 +412,7 @@ declare module dyRt {
     class IntervalRequestStream extends BaseStream {
         static create(scheduler: Scheduler): IntervalRequestStream;
         constructor(scheduler: Scheduler);
-        subscribeCore(observer: IObserver): void;
+        subscribeCore(observer: IObserver): SingleDisposable;
     }
 }
 
@@ -399,7 +423,7 @@ declare module dyRt {
         private _source;
         private _observer;
         constructor(source: Stream);
-        subscribeCore(observer: IObserver): void;
+        subscribeCore(observer: IObserver): GroupDisposable;
     }
 }
 
@@ -410,7 +434,7 @@ declare module dyRt {
         private _source;
         private _otherStream;
         constructor(source: Stream, otherStream: Stream);
-        subscribeCore(observer: IObserver): void;
+        subscribeCore(observer: IObserver): GroupDisposable;
     }
 }
 
@@ -420,7 +444,7 @@ declare module dyRt {
         static create(sources: Array<Stream>): ConcatStream;
         private _sources;
         constructor(sources: Array<Stream>);
-        subscribeCore(observer: IObserver): void;
+        subscribeCore(observer: IObserver): GroupDisposable;
     }
 }
 
@@ -431,7 +455,7 @@ declare module dyRt {
         private _source;
         private _count;
         constructor(source: Stream, count: number);
-        subscribeCore(observer: IObserver): void;
+        subscribeCore(observer: IObserver): GroupDisposable;
     }
 }
 
@@ -441,7 +465,7 @@ declare module dyRt {
         static create(source: Stream): IgnoreElementsStream;
         private _source;
         constructor(source: Stream);
-        subscribeCore(observer: IObserver): void;
+        subscribeCore(observer: IObserver): IDisposable;
     }
 }
 
@@ -516,6 +540,7 @@ declare module dyRt {
         private _streamMap;
         private _subscribedTime;
         private _disposedTime;
+        private _observer;
         setStreamMap(observer: IObserver, messages: [Record]): void;
         remove(observer: Observer): void;
         publishRecursive(observer: MockObserver, initial: any, recursiveFunc: Function): void;
@@ -553,6 +578,6 @@ declare module dyRt {
         scheduler: TestScheduler;
         private _messages;
         constructor(messages: [Record], scheduler: TestScheduler);
-        subscribeCore(observer: IObserver): void;
+        subscribeCore(observer: IObserver): SingleDisposable;
     }
 }

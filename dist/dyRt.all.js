@@ -1009,6 +1009,58 @@ var dyRt;
 
 
 
+var dyRt;
+(function (dyRt) {
+    var SingleDisposable = (function () {
+        function SingleDisposable(disposeHandler) {
+            this._disposeHandler = null;
+            this._disposeHandler = disposeHandler;
+        }
+        SingleDisposable.create = function (disposeHandler) {
+            if (disposeHandler === void 0) { disposeHandler = function () { }; }
+            var obj = new this(disposeHandler);
+            return obj;
+        };
+        SingleDisposable.prototype.setDisposeHandler = function (handler) {
+            this._disposeHandler = handler;
+        };
+        SingleDisposable.prototype.dispose = function () {
+            this._disposeHandler();
+        };
+        return SingleDisposable;
+    })();
+    dyRt.SingleDisposable = SingleDisposable;
+})(dyRt || (dyRt = {}));
+
+
+var dyRt;
+(function (dyRt) {
+    var GroupDisposable = (function () {
+        function GroupDisposable(disposable) {
+            this._group = dyCb.Collection.create();
+            if (disposable) {
+                this._group.addChild(disposable);
+            }
+        }
+        GroupDisposable.create = function (disposable) {
+            var obj = new this(disposable);
+            return obj;
+        };
+        GroupDisposable.prototype.add = function (disposable) {
+            this._group.addChild(disposable);
+            return this;
+        };
+        GroupDisposable.prototype.dispose = function () {
+            this._group.forEach(function (disposable) {
+                disposable.dispose();
+            });
+        };
+        return GroupDisposable;
+    })();
+    dyRt.GroupDisposable = GroupDisposable;
+})(dyRt || (dyRt = {}));
+
+
 
 var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -1133,6 +1185,7 @@ var dyRt;
         };
         Stream.prototype.buildStream = function (observer) {
             this.subscribeFunc(observer);
+            return dyRt.SingleDisposable.create();
         };
         Stream.prototype.do = function (onNext, onError, onCompleted) {
             return dyRt.DoStream.create(this, onNext, onError, onCompleted);
@@ -1352,7 +1405,8 @@ var dyRt;
             this.onUserError = null;
             this.onUserCompleted = null;
             this._isStop = false;
-            this._disposeHandler = dyCb.Collection.create();
+            //private _disposeHandler:dyCb.Collection<Function> = dyCb.Collection.create<Function>();
+            this._disposable = null;
             this.onUserNext = onNext || function () { };
             this.onUserError = onError || function (e) {
                 throw e;
@@ -1389,9 +1443,12 @@ var dyRt;
         Observer.prototype.dispose = function () {
             this._isStop = true;
             this._isDisposed = true;
-            this._disposeHandler.forEach(function (handler) {
-                handler();
-            });
+            if (this._disposable) {
+                this._disposable.dispose();
+            }
+            //this._disposeHandler.forEach((handler) => {
+            //    handler();
+            //});
         };
         //public fail(e) {
         //    if (!this._isStop) {
@@ -1403,7 +1460,10 @@ var dyRt;
         //    return false;
         //}
         Observer.prototype.setDisposeHandler = function (disposeHandler) {
-            this._disposeHandler = disposeHandler;
+            //this._disposeHandler = disposeHandler;
+        };
+        Observer.prototype.setDisposable = function (disposable) {
+            this._disposable = disposable;
         };
         Observer.prototype.onNext = function (value) {
             throw dyRt.ABSTRACT_METHOD();
@@ -1462,8 +1522,7 @@ var dyRt;
             if (!this._source) {
                 return;
             }
-            this._source.buildStream(this);
-            this._observer.setDisposeHandler();
+            this._observer.setDisposable(this._source.buildStream(this));
         };
         Subject.prototype.remove = function (observer) {
             this._observer.removeChild(observer);
@@ -1524,6 +1583,7 @@ var dyRt;
         };
         GeneratorSubject.prototype.onAfterCompleted = function () {
         };
+        //todo
         GeneratorSubject.prototype.subscribe = function (arg1, onError, onCompleted) {
             var observer = arg1 instanceof dyRt.Observer
                 ? arg1
@@ -1571,8 +1631,11 @@ var dyRt;
             return stream;
         };
         GeneratorSubject.prototype.start = function () {
+            var self = this;
             this._isStart = true;
-            this._setDisposeHandler();
+            this.observer.setDisposable(dyRt.SingleDisposable.create(function () {
+                self.dispose();
+            }));
         };
         GeneratorSubject.prototype.stop = function () {
             this._isStart = false;
@@ -1582,13 +1645,6 @@ var dyRt;
         };
         GeneratorSubject.prototype.dispose = function () {
             this.observer.dispose();
-        };
-        GeneratorSubject.prototype._setDisposeHandler = function () {
-            var self = this;
-            dyRt.Disposer.addDisposeHandler(function () {
-                self.dispose();
-            });
-            this.observer.setDisposeHandler();
         };
         return GeneratorSubject;
     })(dyRt.Disposer);
@@ -1799,16 +1855,18 @@ var dyRt;
 (function (dyRt) {
     var MergeAllObserver = (function (_super) {
         __extends(MergeAllObserver, _super);
-        function MergeAllObserver(currentObserver, streamGroup) {
+        function MergeAllObserver(currentObserver, streamGroup, groupDisposable) {
             _super.call(this, null, null, null);
             this._currentObserver = null;
-            this._streamGroup = null;
             this._done = false;
+            this._streamGroup = null;
+            this._groupDisposable = null;
             this._currentObserver = currentObserver;
             this._streamGroup = streamGroup;
+            this._groupDisposable = groupDisposable;
         }
-        MergeAllObserver.create = function (currentObserver, streamGroup) {
-            return new this(currentObserver, streamGroup);
+        MergeAllObserver.create = function (currentObserver, streamGroup, groupDisposable) {
+            return new this(currentObserver, streamGroup, groupDisposable);
         };
         Object.defineProperty(MergeAllObserver.prototype, "currentObserver", {
             get: function () {
@@ -1836,7 +1894,7 @@ var dyRt;
                 innerSource = dyRt.fromPromise(innerSource);
             }
             this._streamGroup.addChild(innerSource);
-            innerSource.buildStream(InnerObserver.create(this, this._streamGroup, innerSource));
+            this._groupDisposable.add(innerSource.buildStream(InnerObserver.create(this, this._streamGroup, innerSource)));
         };
         MergeAllObserver.prototype.onError = function (error) {
             this._currentObserver.error(error);
@@ -1973,6 +2031,7 @@ var dyRt;
     var SubjectObserver = (function () {
         function SubjectObserver() {
             this.observers = dyCb.Collection.create();
+            this._disposable = null;
         }
         SubjectObserver.prototype.isEmpty = function () {
             return this.observers.getCount() === 0;
@@ -1994,6 +2053,7 @@ var dyRt;
         };
         SubjectObserver.prototype.addChild = function (observer) {
             this.observers.addChild(observer);
+            observer.setDisposable(this._disposable);
         };
         SubjectObserver.prototype.removeChild = function (observer) {
             this.observers.removeChild(function (ob) {
@@ -2006,11 +2066,11 @@ var dyRt;
             });
             this.observers.removeAllChildren();
         };
-        SubjectObserver.prototype.setDisposeHandler = function () {
+        SubjectObserver.prototype.setDisposable = function (disposable) {
             this.observers.forEach(function (observer) {
-                observer.setDisposeHandler(dyRt.Disposer.getDisposeHandler());
+                observer.setDisposable(disposable);
             });
-            dyRt.Disposer.removeAllDisposeHandler();
+            this._disposable = disposable;
         };
         return SubjectObserver;
     })();
@@ -2064,7 +2124,7 @@ var dyRt;
             _super.apply(this, arguments);
         }
         BaseStream.prototype.subscribeCore = function (observer) {
-            throw dyRt.ABSTRACT_METHOD();
+            return dyCb.Log.error(true, dyCb.Log.info.ABSTRACT_METHOD);
         };
         BaseStream.prototype.subscribe = function (arg1, onError, onCompleted) {
             var observer = null;
@@ -2075,14 +2135,12 @@ var dyRt;
                 ? arg1
                 : dyRt.AutoDetachObserver.create(arg1, onError, onCompleted);
             //observer.setDisposeHandler(this.disposeHandler);
-            this.buildStream(observer);
-            observer.setDisposeHandler(dyRt.Disposer.getDisposeHandler());
-            dyRt.Disposer.removeAllDisposeHandler();
+            observer.setDisposable(this.buildStream(observer));
             return observer;
         };
         BaseStream.prototype.buildStream = function (observer) {
             _super.prototype.buildStream.call(this, observer);
-            this.subscribeCore(observer);
+            return this.subscribeCore(observer);
         };
         return BaseStream;
     })(dyRt.Stream);
@@ -2113,7 +2171,7 @@ var dyRt;
             return obj;
         };
         DoStream.prototype.subscribeCore = function (observer) {
-            this._source.buildStream(dyRt.DoObserver.create(observer, this._observer));
+            return this._source.buildStream(dyRt.DoObserver.create(observer, this._observer));
         };
         return DoStream;
     })(dyRt.BaseStream);
@@ -2144,7 +2202,7 @@ var dyRt;
             return obj;
         };
         MapStream.prototype.subscribeCore = function (observer) {
-            this._source.buildStream(dyRt.MapObserver.create(observer, this._selector));
+            return this._source.buildStream(dyRt.MapObserver.create(observer, this._selector));
         };
         return MapStream;
     })(dyRt.BaseStream);
@@ -2184,6 +2242,7 @@ var dyRt;
                 }
             }
             this.scheduler.publishRecursive(observer, 0, loopRecursive);
+            return dyRt.SingleDisposable.create();
         };
         return FromArrayStream;
     })(dyRt.BaseStream);
@@ -2212,13 +2271,13 @@ var dyRt;
             return obj;
         };
         FromPromiseStream.prototype.subscribeCore = function (observer) {
-            //todo remove test logic from product logic(as Scheduler->publicxxx, FromPromise->then...)
             this._promise.then(function (data) {
                 observer.next(data);
                 observer.completed();
             }, function (err) {
                 observer.error(err);
             }, observer);
+            return dyRt.SingleDisposable.create();
         };
         return FromPromiseStream;
     })(dyRt.BaseStream);
@@ -2253,7 +2312,7 @@ var dyRt;
                 observer.next(event);
             }
             this._addHandler(innerHandler);
-            dyRt.Disposer.addDisposeHandler(function () {
+            return dyRt.SingleDisposable.create(function () {
                 self._removeHandler(innerHandler);
             });
         };
@@ -2287,9 +2346,10 @@ var dyRt;
             }
             observer = dyRt.AutoDetachObserver.create(onNext, onError, onCompleted);
             //observer.setDisposeHandler(this.disposeHandler);
-            this.buildStream(observer);
-            observer.setDisposeHandler(dyRt.Disposer.getDisposeHandler());
-            dyRt.Disposer.removeAllDisposeHandler();
+            //
+            //observer.setDisposeHandler(Disposer.getDisposeHandler());
+            //Disposer.removeAllDisposeHandler();
+            observer.setDisposable(this.buildStream(observer));
             return observer;
         };
         return AnonymousStream;
@@ -2329,7 +2389,9 @@ var dyRt;
                 observer.next(count);
                 return count + 1;
             });
-            dyRt.Disposer.addDisposeHandler(function () {
+            //Disposer.addDisposeHandler(() => {
+            //});
+            return dyRt.SingleDisposable.create(function () {
                 dyRt.root.clearInterval(id);
             });
         };
@@ -2362,7 +2424,10 @@ var dyRt;
             this.scheduler.publishIntervalRequest(observer, function (time) {
                 observer.next(time);
             });
-            dyRt.Disposer.addDisposeHandler(function () {
+            //Disposer.addDisposeHandler(() => {
+            //});
+            //
+            return dyRt.SingleDisposable.create(function () {
                 dyRt.root.cancelNextRequestAnimationFrame(self.scheduler.requestLoopId);
             });
         };
@@ -2395,8 +2460,9 @@ var dyRt;
             return obj;
         };
         MergeAllStream.prototype.subscribeCore = function (observer) {
-            var streamGroup = dyCb.Collection.create();
-            this._source.buildStream(dyRt.MergeAllObserver.create(observer, streamGroup));
+            var streamGroup = dyCb.Collection.create(), groupDisposable = dyRt.GroupDisposable.create();
+            this._source.buildStream(dyRt.MergeAllObserver.create(observer, streamGroup, groupDisposable));
+            return groupDisposable;
         };
         return MergeAllStream;
     })(dyRt.BaseStream);
@@ -2427,8 +2493,10 @@ var dyRt;
             return obj;
         };
         TakeUntilStream.prototype.subscribeCore = function (observer) {
-            this._source.buildStream(observer);
-            this._otherStream.buildStream(dyRt.TakeUntilObserver.create(observer));
+            var group = dyRt.GroupDisposable.create();
+            group.add(this._source.buildStream(observer));
+            group.add(this._otherStream.buildStream(dyRt.TakeUntilObserver.create(observer)));
+            return group;
         };
         return TakeUntilStream;
     })(dyRt.BaseStream);
@@ -2466,17 +2534,18 @@ var dyRt;
             return obj;
         };
         ConcatStream.prototype.subscribeCore = function (observer) {
-            var self = this, count = this._sources.getCount();
+            var self = this, count = this._sources.getCount(), d = dyRt.GroupDisposable.create();
             function loopRecursive(i) {
                 if (i === count) {
                     observer.completed();
                     return;
                 }
-                self._sources.getChild(i).buildStream(dyRt.ConcatObserver.create(observer, function () {
+                d.add(self._sources.getChild(i).buildStream(dyRt.ConcatObserver.create(observer, function () {
                     loopRecursive(i + 1);
-                }));
+                })));
             }
             this.scheduler.publishRecursive(observer, 0, loopRecursive);
+            return dyRt.GroupDisposable.create(d);
         };
         return ConcatStream;
     })(dyRt.BaseStream);
@@ -2508,17 +2577,18 @@ var dyRt;
             return obj;
         };
         RepeatStream.prototype.subscribeCore = function (observer) {
-            var self = this;
+            var self = this, d = dyRt.GroupDisposable.create();
             function loopRecursive(count) {
                 if (count === 0) {
                     observer.completed();
                     return;
                 }
-                self._source.buildStream(dyRt.ConcatObserver.create(observer, function () {
+                d.add(self._source.buildStream(dyRt.ConcatObserver.create(observer, function () {
                     loopRecursive(count - 1);
-                }));
+                })));
             }
             this.scheduler.publishRecursive(observer, this._count, loopRecursive);
+            return dyRt.GroupDisposable.create(d);
         };
         return RepeatStream;
     })(dyRt.BaseStream);
@@ -2547,7 +2617,7 @@ var dyRt;
             return obj;
         };
         IgnoreElementsStream.prototype.subscribeCore = function (observer) {
-            this._source.buildStream(dyRt.IgnoreElementsObserver.create(observer));
+            return this._source.buildStream(dyRt.IgnoreElementsObserver.create(observer));
         };
         return IgnoreElementsStream;
     })(dyRt.BaseStream);
@@ -2762,6 +2832,7 @@ var dyRt;
             this._streamMap = dyCb.Hash.create();
             this._subscribedTime = null;
             this._disposedTime = null;
+            this._observer = null;
             this._isReset = isReset;
         }
         TestScheduler.next = function (tick, value) {
@@ -2819,16 +2890,19 @@ var dyRt;
             this._isDisposed = true;
         };
         TestScheduler.prototype.publishRecursive = function (observer, initial, recursiveFunc) {
-            var self = this, messages = [], copyObserver = observer.copy ? observer.copy() : observer;
+            var self = this, 
+            //messages = [],
+            next = null, completed = null;
             this._setClock();
+            next = observer.next;
+            completed = observer.completed;
             observer.next = function (value) {
+                next.call(observer, value);
                 self._tick(1);
-                messages.push(TestScheduler.next(self._clock, value));
             };
             observer.completed = function () {
+                completed.call(observer);
                 self._tick(1);
-                messages.push(TestScheduler.completed(self._clock));
-                self.setStreamMap(copyObserver, messages);
             };
             recursiveFunc(initial);
         };
@@ -2845,6 +2919,7 @@ var dyRt;
                 COUNT--;
             }
             this.setStreamMap(observer, messages);
+            //this.setStreamMap(this._observer, <[Record]>messages);
             return NaN;
         };
         TestScheduler.prototype.publishIntervalRequest = function (observer, action) {
@@ -2858,6 +2933,7 @@ var dyRt;
                 COUNT--;
             }
             this.setStreamMap(observer, messages);
+            //this.setStreamMap(this._observer, <[Record]>messages);
             return NaN;
         };
         TestScheduler.prototype._setClock = function () {
@@ -2866,7 +2942,7 @@ var dyRt;
             }
         };
         TestScheduler.prototype.startWithTime = function (create, subscribedTime, disposedTime) {
-            var observer = this.createObserver(), source, subscription;
+            var observer = this.createObserver(), source, subscription, self = this;
             this._subscribedTime = subscribedTime;
             this._disposedTime = disposedTime;
             this._clock = subscribedTime;
@@ -2876,7 +2952,9 @@ var dyRt;
             });
             this._runAt(disposedTime, function () {
                 subscription.dispose();
+                self._isDisposed = true;
             });
+            this._observer = observer;
             this.start();
             return observer;
         };
@@ -2897,6 +2975,9 @@ var dyRt;
             var extremeNumArr = this._getMinAndMaxTime(), min = extremeNumArr[0], max = extremeNumArr[1], time = min;
             //todo reduce loop time
             while (time <= max) {
+                //if(this._isDisposed){
+                //    break;
+                //}
                 //because "_exec,_runStream" may change "_clock",
                 //so it should reset the _clock
                 this._clock = time;
@@ -2988,6 +3069,7 @@ var dyRt;
         TestStream.prototype.subscribeCore = function (observer) {
             //var scheduler = <TestScheduler>(this.scheduler);
             this.scheduler.setStreamMap(observer, this._messages);
+            return dyRt.SingleDisposable.create();
         };
         return TestStream;
     })(dyRt.BaseStream);

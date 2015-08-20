@@ -14,7 +14,8 @@ module dyRt {
         protected onUserCompleted:Function = null;
 
         private _isStop:boolean = false;
-        private _disposeHandler:dyCb.Collection<Function> = dyCb.Collection.create<Function>();
+        //private _disposeHandler:dyCb.Collection<Function> = dyCb.Collection.create<Function>();
+        private _disposable:IDisposable = null;
 
         constructor(onNext:Function, onError:Function, onCompleted:Function) {
             super("Observer");
@@ -50,9 +51,13 @@ module dyRt {
             this._isStop = true;
             this._isDisposed = true;
 
-            this._disposeHandler.forEach((handler) => {
-                handler();
-            });
+            if(this._disposable){
+                this._disposable.dispose();
+            }
+
+            //this._disposeHandler.forEach((handler) => {
+            //    handler();
+            //});
         }
 
         //public fail(e) {
@@ -66,7 +71,11 @@ module dyRt {
         //}
 
         public setDisposeHandler(disposeHandler:dyCb.Collection<Function>){
-            this._disposeHandler = disposeHandler;
+            //this._disposeHandler = disposeHandler;
+        }
+
+        public setDisposable(disposable:IDisposable){
+            this._disposable = disposable;
         }
 
         protected onNext(value){

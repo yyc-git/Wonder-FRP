@@ -43,6 +43,7 @@ module dyRt {
         private _streamMap:dyCb.Hash<Function> = dyCb.Hash.create<Function>();
         private _subscribedTime:number = null;
         private _disposedTime:number = null;
+        private _observer:MockObserver = null;
 
         public setStreamMap(observer:IObserver, messages:[Record]){
             var self = this;
@@ -81,20 +82,23 @@ module dyRt {
 
         public publishRecursive(observer:MockObserver, initial:any, recursiveFunc:Function) {
             var self = this,
-                messages = [],
-                copyObserver = observer.copy? observer.copy() : observer;
+                //messages = [],
+                next = null,
+                completed = null;
 
             this._setClock();
 
+            next = observer.next;
+            completed = observer.completed;
+
             observer.next = (value) => {
+                next.call(observer, value);
                 self._tick(1);
-                messages.push(TestScheduler.next(self._clock, value));
             };
 
             observer.completed = () => {
+                completed.call(observer);
                 self._tick(1);
-                messages.push(TestScheduler.completed(self._clock));
-                self.setStreamMap(copyObserver, <[Record]>messages);
             };
 
             recursiveFunc(initial);
@@ -119,6 +123,7 @@ module dyRt {
             }
 
             this.setStreamMap(observer, <[Record]>messages);
+            //this.setStreamMap(this._observer, <[Record]>messages);
 
             return NaN;
         }
@@ -141,6 +146,7 @@ module dyRt {
             }
 
             this.setStreamMap(observer, <[Record]>messages);
+            //this.setStreamMap(this._observer, <[Record]>messages);
 
             return NaN;
         }
@@ -153,7 +159,8 @@ module dyRt {
 
         public startWithTime(create:Function, subscribedTime:number, disposedTime:number) {
             var observer = this.createObserver(),
-                source, subscription;
+                source, subscription,
+                self = this;
 
             this._subscribedTime = subscribedTime;
             this._disposedTime = disposedTime;
@@ -167,7 +174,10 @@ module dyRt {
 
             this._runAt(disposedTime, () => {
                 subscription.dispose();
+                self._isDisposed = true;
             });
+
+            this._observer = observer;
 
             this.start();
 
@@ -196,6 +206,10 @@ module dyRt {
 
             //todo reduce loop time
             while (time <= max) {
+                //if(this._isDisposed){
+                //    break;
+                //}
+
                 //because "_exec,_runStream" may change "_clock",
                 //so it should reset the _clock
 

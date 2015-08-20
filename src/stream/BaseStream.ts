@@ -1,8 +1,8 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
     export class BaseStream extends Stream{
-        public subscribeCore(observer:IObserver){
-            throw ABSTRACT_METHOD();
+        public subscribeCore(observer:IObserver):IDisposable{
+            return dyCb.Log.error(true, dyCb.Log.info.ABSTRACT_METHOD);
         }
 
         public subscribe(arg1:Function|Observer|Subject, onError?, onCompleted?):IDisposable {
@@ -18,18 +18,16 @@ module dyRt{
 
             //observer.setDisposeHandler(this.disposeHandler);
 
-            this.buildStream(observer);
 
-            observer.setDisposeHandler(Disposer.getDisposeHandler());
-            Disposer.removeAllDisposeHandler();
+            observer.setDisposable(this.buildStream(observer));
 
             return observer;
         }
 
-        public buildStream(observer:IObserver){
+        public buildStream(observer:IObserver):IDisposable{
             super.buildStream(observer);
 
-            this.subscribeCore(observer);
+            return this.subscribeCore(observer);
         }
 
         //private _hasMultiObservers(){

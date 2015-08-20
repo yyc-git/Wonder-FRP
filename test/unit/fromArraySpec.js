@@ -23,10 +23,10 @@ describe("fromArray", function(){
             });
 
             expect(results.messages).toStreamEqual(
-                    next(201, 1),
-                    next(202, 2),
-                    next(203, 3),
-                    completed(204)
+                    next(200, 1),
+                    next(201, 2),
+                    next(202, 3),
+                    completed(203)
             );
         });
         it("from empty array", function(){
@@ -37,7 +37,7 @@ describe("fromArray", function(){
             });
 
             expect(results.messages).toStreamEqual(
-                completed(201)
+                completed(200)
             );
         });
     });
