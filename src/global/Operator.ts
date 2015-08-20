@@ -41,6 +41,10 @@ module dyRt{
 
             observer.completed();
         })
-    }
+    };
+
+    export var judge = (condition:Function, thenSource:Stream, elseSource:Stream) => {
+        return condition() ? thenSource : elseSource;
+    };
 }
 

@@ -2669,6 +2669,9 @@ var dyRt;
             observer.completed();
         });
     };
+    dyRt.judge = function (condition, thenSource, elseSource) {
+        return condition() ? thenSource : elseSource;
+    };
 })(dyRt || (dyRt = {}));
 
 
