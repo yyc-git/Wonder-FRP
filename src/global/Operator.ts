@@ -43,8 +43,8 @@ module dyRt{
         })
     };
 
-    export var judge = (condition:Function, thenSource:Stream, elseSource:Stream) => {
-        return condition() ? thenSource : elseSource;
+    export var judge = (condition:Function, thenSource:Function, elseSource:Function) => {
+        return condition() ? thenSource() : elseSource();
     };
 }
 

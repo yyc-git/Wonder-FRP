@@ -2337,6 +2337,7 @@ var dyRt;
         __extends(AnonymousStream, _super);
         function AnonymousStream(subscribeFunc) {
             _super.call(this, subscribeFunc);
+            this.scheduler = dyRt.Scheduler.create();
         }
         AnonymousStream.create = function (subscribeFunc) {
             var obj = new this(subscribeFunc);
@@ -2670,7 +2671,7 @@ var dyRt;
         });
     };
     dyRt.judge = function (condition, thenSource, elseSource) {
-        return condition() ? thenSource : elseSource;
+        return condition() ? thenSource() : elseSource();
     };
 })(dyRt || (dyRt = {}));
 

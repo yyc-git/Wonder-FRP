@@ -480,7 +480,7 @@ declare module dyRt {
     var intervalRequest: (scheduler?: Scheduler) => IntervalRequestStream;
     var empty: () => AnonymousStream;
     var callFunc: (func: Function, context?: any) => AnonymousStream;
-    var judge: (condition: Function, thenSource: Stream, elseSource: Stream) => Stream;
+    var judge: (condition: Function, thenSource: Function, elseSource: Function) => any;
 }
 
 

@@ -9,6 +9,8 @@ module dyRt{
 
         constructor(subscribeFunc:Function) {
             super(subscribeFunc);
+
+            this.scheduler = Scheduler.create();
         }
 
         public subscribe(onNext, onError, onCompleted):IDisposable {
