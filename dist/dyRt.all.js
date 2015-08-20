@@ -1714,7 +1714,7 @@ var dyRt;
                 this.onUserNext(value);
             }
             catch (e) {
-                this.error(e);
+                this.onError(e);
             }
         };
         AutoDetachObserver.prototype.onError = function (err) {
@@ -1734,7 +1734,6 @@ var dyRt;
                 this.dispose();
             }
             catch (e) {
-                //this.error(e);
                 throw e;
             }
         };

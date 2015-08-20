@@ -19,7 +19,7 @@ module dyRt{
                 this.onUserNext(value);
             }
             catch (e) {
-                this.error(e);
+                this.onError(e);
             }
         }
 
@@ -41,7 +41,6 @@ module dyRt{
                 this.dispose();
             }
             catch (e) {
-                //this.error(e);
                 throw e;
             }
         }
