@@ -49,13 +49,23 @@ describe("intervalRequest", function () {
             expect(next.secondCall).toCalledWith(time);
         });
 
-        it("use cancelNextRequestAnimationFrame to dispose", function(){
-            sandbox.stub(rt.root, "cancelNextRequestAnimationFrame");
-            var suscription = rt.intervalRequest().subscribe(function(){});
+        describe("dispose", function(){
+            it("use cancelNextRequestAnimationFrame to dispose", function(){
+                sandbox.stub(rt.root, "cancelNextRequestAnimationFrame");
+                var suscription = rt.intervalRequest().subscribe(function(){});
 
-            suscription.dispose();
+                suscription.dispose();
 
-            expect(rt.root.cancelNextRequestAnimationFrame).toCalledWith(0);
+                expect(rt.root.cancelNextRequestAnimationFrame).toCalledWith(0);
+            });
+            it("set the flag 'isEnd' to true", function(){
+                var stream = rt.intervalRequest();
+                var suscription = stream.subscribe(function(){});
+
+                suscription.dispose();
+
+                expect(stream._isEnd).toBeTruthy();
+            });
         });
     });
 

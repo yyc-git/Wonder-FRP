@@ -7,6 +7,8 @@ module dyRt{
             return obj;
         }
 
+        private _isEnd:boolean = false;
+
         constructor(scheduler:Scheduler){
             super(null);
 
@@ -18,13 +20,13 @@ module dyRt{
 
             this.scheduler.publishIntervalRequest(observer, (time) => {
                 observer.next(time);
+
+                return self._isEnd;
             });
 
-            //Disposer.addDisposeHandler(() => {
-            //});
-            //
             return SingleDisposable.create(() => {
                 root.cancelNextRequestAnimationFrame(self.scheduler.requestLoopId);
+                self._isEnd = true;
             });
         }
     }

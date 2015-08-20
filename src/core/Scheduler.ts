@@ -155,10 +155,14 @@ module dyRt {
         public publishIntervalRequest(observer:IObserver, action:Function){
             var self = this,
                 loop = (time) => {
-                action(time);
+                    var isEnd = action(time);
 
-                self._requestLoopId = root.requestNextAnimationFrame(loop);
-            };
+                    if(isEnd){
+                        return;
+                    }
+
+                    self._requestLoopId = root.requestNextAnimationFrame(loop);
+                };
 
             this._requestLoopId = root.requestNextAnimationFrame(loop);
         }

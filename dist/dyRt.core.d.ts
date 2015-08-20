@@ -411,6 +411,7 @@ declare module dyRt {
 declare module dyRt {
     class IntervalRequestStream extends BaseStream {
         static create(scheduler: Scheduler): IntervalRequestStream;
+        private _isEnd;
         constructor(scheduler: Scheduler);
         subscribeCore(observer: IObserver): SingleDisposable;
     }

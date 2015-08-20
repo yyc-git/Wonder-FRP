@@ -1377,7 +1377,10 @@ var dyRt;
         };
         Scheduler.prototype.publishIntervalRequest = function (observer, action) {
             var self = this, loop = function (time) {
-                action(time);
+                var isEnd = action(time);
+                if (isEnd) {
+                    return;
+                }
                 self._requestLoopId = dyRt.root.requestNextAnimationFrame(loop);
             };
             this._requestLoopId = dyRt.root.requestNextAnimationFrame(loop);
@@ -2413,6 +2416,7 @@ var dyRt;
         __extends(IntervalRequestStream, _super);
         function IntervalRequestStream(scheduler) {
             _super.call(this, null);
+            this._isEnd = false;
             this.scheduler = scheduler;
         }
         IntervalRequestStream.create = function (scheduler) {
@@ -2423,12 +2427,11 @@ var dyRt;
             var self = this;
             this.scheduler.publishIntervalRequest(observer, function (time) {
                 observer.next(time);
+                return self._isEnd;
             });
-            //Disposer.addDisposeHandler(() => {
-            //});
-            //
             return dyRt.SingleDisposable.create(function () {
                 dyRt.root.cancelNextRequestAnimationFrame(self.scheduler.requestLoopId);
+                self._isEnd = true;
             });
         };
         return IntervalRequestStream;
