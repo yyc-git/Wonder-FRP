@@ -17,12 +17,16 @@ module dyRt {
         }
 
         protected onNext(value){
-            try{
-                this.currentObserver.next(value);
-            }
-            catch(e){
-                this.currentObserver.error(e);
-            }
+            /*!
+            if "this.currentObserver.next" error, it will pase to this.currentObserver->onError.
+            so it shouldn't invoke this.currentObserver.error here again!
+             */
+            //try{
+            this.currentObserver.next(value);
+            //}
+            //catch(e){
+            //    this.currentObserver.error(e);
+            //}
         }
 
         protected onError(error) {

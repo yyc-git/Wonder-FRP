@@ -2006,12 +2006,16 @@ var dyRt;
             return new this(currentObserver, startNextStream);
         };
         ConcatObserver.prototype.onNext = function (value) {
-            try {
-                this.currentObserver.next(value);
-            }
-            catch (e) {
-                this.currentObserver.error(e);
-            }
+            /*!
+            if "this.currentObserver.next" error, it will pase to this.currentObserver->onError.
+            so it shouldn't invoke this.currentObserver.error here again!
+             */
+            //try{
+            this.currentObserver.next(value);
+            //}
+            //catch(e){
+            //    this.currentObserver.error(e);
+            //}
         };
         ConcatObserver.prototype.onError = function (error) {
             this.currentObserver.error(error);
