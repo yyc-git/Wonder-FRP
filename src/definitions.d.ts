@@ -52,6 +52,7 @@
 /// <reference path="stream/ConcatStream"/>
 /// <reference path="stream/RepeatStream"/>
 /// <reference path="stream/IgnoreElementsStream"/>
+/// <reference path="stream/DeferStream"/>
 
 /// <reference path="global/Operator"/>
 

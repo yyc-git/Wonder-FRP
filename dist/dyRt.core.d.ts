@@ -472,6 +472,16 @@ declare module dyRt {
 
 
 declare module dyRt {
+    class DeferStream extends BaseStream {
+        static create(buildStreamFunc: Function): DeferStream;
+        private _buildStreamFunc;
+        constructor(buildStreamFunc: Function);
+        subscribeCore(observer: IObserver): GroupDisposable;
+    }
+}
+
+
+declare module dyRt {
     var createStream: (subscribeFunc: any) => AnonymousStream;
     var fromArray: (array: any[], scheduler?: Scheduler) => FromArrayStream;
     var fromPromise: (promise: any, scheduler?: Scheduler) => FromPromiseStream;
@@ -481,6 +491,7 @@ declare module dyRt {
     var empty: () => AnonymousStream;
     var callFunc: (func: Function, context?: any) => AnonymousStream;
     var judge: (condition: Function, thenSource: Function, elseSource: Function) => any;
+    var defer: (buildStreamFunc: Function) => DeferStream;
 }
 
 

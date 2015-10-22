@@ -132,6 +132,53 @@ describe("dispose", function () {
                 );
                 expect(rt.root.cancelNextRequestAnimationFrame).toCalledOnce();
             });
+            it("defer", function(){
+                sandbox.stub(rt.root, "clearInterval");
+                var stream = rt.defer(function(){
+                    return rt.interval(100, scheduler);
+                })
+
+
+                var subject = null;
+                var result = scheduler.createObserver();
+                var subscription = null;
+
+                scheduler.publicAbsolute(100, function () {
+                    subject = rt.Subject.create();
+                });
+                scheduler.publicAbsolute(150, function () {
+                    stream.subscribe(subject);
+                });
+                scheduler.publicAbsolute(200, function () {
+                    subscription = subject.subscribe(result);
+                });
+                scheduler.publicAbsolute(400, function () {
+                    subscription.dispose();
+                });
+                scheduler.publicAbsolute(250, function () {
+                    subject.start();
+                });
+                scheduler.start();
+
+                expect(result.messages).toStreamEqual(
+                    next(350, 0)
+                );
+                expect(rt.root.clearInterval).toCalledOnce();
+
+                //var promise = scheduler.createResolvedPromise(250, 1);
+                //var stream = rt.fromPromise(promise, scheduler)
+                //    .concat(rt.intervalRequest(scheduler));
+                //
+                //var results = scheduler.startWithTime(function () {
+                //    return stream;
+                //}, 150, 500);
+                //
+                //expect(rt.root.cancelNextRequestAnimationFrame).toCalledOnce();
+                //
+                //expect(results.messages).toStreamEqual(
+                //    next(250, 1), next(350, 1), next(450, 2)
+                //);
+            });
             it("test subject dispose", function () {
                 sandbox.stub(rt.root, "cancelNextRequestAnimationFrame");
                 var stream = rt.intervalRequest(scheduler)

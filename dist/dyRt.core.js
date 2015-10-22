@@ -1674,6 +1674,36 @@ var dyRt;
     dyRt.IgnoreElementsStream = IgnoreElementsStream;
 })(dyRt || (dyRt = {}));
 
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+
+var dyRt;
+(function (dyRt) {
+    var DeferStream = (function (_super) {
+        __extends(DeferStream, _super);
+        function DeferStream(buildStreamFunc) {
+            _super.call(this, null);
+            this._buildStreamFunc = null;
+            this._buildStreamFunc = buildStreamFunc;
+        }
+        DeferStream.create = function (buildStreamFunc) {
+            var obj = new this(buildStreamFunc);
+            return obj;
+        };
+        DeferStream.prototype.subscribeCore = function (observer) {
+            var group = dyRt.GroupDisposable.create();
+            group.add(this._buildStreamFunc().buildStream(observer));
+            return group;
+        };
+        return DeferStream;
+    })(dyRt.BaseStream);
+    dyRt.DeferStream = DeferStream;
+})(dyRt || (dyRt = {}));
+
 
 var dyRt;
 (function (dyRt) {
@@ -1718,6 +1748,9 @@ var dyRt;
     };
     dyRt.judge = function (condition, thenSource, elseSource) {
         return condition() ? thenSource() : elseSource();
+    };
+    dyRt.defer = function (buildStreamFunc) {
+        return dyRt.DeferStream.create(buildStreamFunc);
     };
 })(dyRt || (dyRt = {}));
 

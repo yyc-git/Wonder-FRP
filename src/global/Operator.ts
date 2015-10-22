@@ -40,11 +40,15 @@ module dyRt{
             }
 
             observer.completed();
-        })
+        });
     };
 
     export var judge = (condition:Function, thenSource:Function, elseSource:Function) => {
         return condition() ? thenSource() : elseSource();
+    };
+
+    export var defer = (buildStreamFunc:Function) => {
+        return DeferStream.create(buildStreamFunc);
     };
 }
 
