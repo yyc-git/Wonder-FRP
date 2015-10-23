@@ -1,9 +1,7 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
-    export class BaseStream extends Stream{
-        public subscribeCore(observer:IObserver):IDisposable{
-            return dyCb.Log.error(true, dyCb.Log.info.ABSTRACT_METHOD);
-        }
+    export abstract class BaseStream extends Stream{
+        public abstract subscribeCore(observer:IObserver):IDisposable;
 
         public subscribe(arg1:Function|Observer|Subject, onError?, onCompleted?):IDisposable {
             var observer:Observer = null;

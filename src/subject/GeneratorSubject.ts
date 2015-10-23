@@ -1,6 +1,6 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
-    export class GeneratorSubject extends Disposer implements IObserver {
+    export class GeneratorSubject extends Entity implements IObserver {
         public static create() {
             var obj = new this();
 

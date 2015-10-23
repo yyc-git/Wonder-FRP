@@ -955,11 +955,10 @@ var dyCb;
     }
 })(dyCb || (dyCb = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -1062,36 +1061,6 @@ var dyRt;
 
 
 
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-
-var dyRt;
-(function (dyRt) {
-    var Disposer = (function (_super) {
-        __extends(Disposer, _super);
-        function Disposer() {
-            _super.apply(this, arguments);
-        }
-        Disposer.addDisposeHandler = function (func) {
-            this._disposeHandler.addChild(func);
-        };
-        Disposer.getDisposeHandler = function () {
-            return this._disposeHandler.copy();
-        };
-        Disposer.removeAllDisposeHandler = function () {
-            this._disposeHandler.removeAllChildren();
-        };
-        //private static _disposeHandler:dyCb.Stack<Function> = dyCb.Stack.create<Function>();
-        Disposer._disposeHandler = dyCb.Collection.create();
-        return Disposer;
-    })(dyRt.Entity);
-    dyRt.Disposer = Disposer;
-})(dyRt || (dyRt = {}));
-
 
 var dyRt;
 (function (dyRt) {
@@ -1146,9 +1115,7 @@ var dyRt;
 
 var dyRt;
 (function (dyRt) {
-    dyRt.ABSTRACT_METHOD = function () {
-        return new Error("abstract method need override");
-    }, dyRt.ABSTRACT_ATTRIBUTE = null;
+    dyRt.ABSTRACT_ATTRIBUTE = null;
 })(dyRt || (dyRt = {}));
 
 
@@ -1163,11 +1130,10 @@ var dyRt;
     }
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -1180,9 +1146,6 @@ var dyRt;
             this.subscribeFunc = null;
             this.subscribeFunc = subscribeFunc || function () { };
         }
-        Stream.prototype.subscribe = function (arg1, onError, onCompleted) {
-            throw dyRt.ABSTRACT_METHOD();
-        };
         Stream.prototype.buildStream = function (observer) {
             this.subscribeFunc(observer);
             return dyRt.SingleDisposable.create();
@@ -1246,7 +1209,7 @@ var dyRt;
             subject.source = this;
         };
         return Stream;
-    })(dyRt.Disposer);
+    })(dyRt.Entity);
     dyRt.Stream = Stream;
 })(dyRt || (dyRt = {}));
 
@@ -1390,11 +1353,10 @@ var dyRt;
     dyRt.Scheduler = Scheduler;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -1468,15 +1430,6 @@ var dyRt;
         Observer.prototype.setDisposable = function (disposable) {
             this._disposable = disposable;
         };
-        Observer.prototype.onNext = function (value) {
-            throw dyRt.ABSTRACT_METHOD();
-        };
-        Observer.prototype.onError = function (error) {
-            throw dyRt.ABSTRACT_METHOD();
-        };
-        Observer.prototype.onCompleted = function () {
-            throw dyRt.ABSTRACT_METHOD();
-        };
         return Observer;
     })(dyRt.Entity);
     dyRt.Observer = Observer;
@@ -1538,11 +1491,10 @@ var dyRt;
     dyRt.Subject = Subject;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -1650,15 +1602,14 @@ var dyRt;
             this.observer.dispose();
         };
         return GeneratorSubject;
-    })(dyRt.Disposer);
+    })(dyRt.Entity);
     dyRt.GeneratorSubject = GeneratorSubject;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -1685,11 +1636,10 @@ var dyRt;
     dyRt.AnonymousObserver = AnonymousObserver;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -1742,11 +1692,10 @@ var dyRt;
     dyRt.AutoDetachObserver = AutoDetachObserver;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -1786,11 +1735,10 @@ var dyRt;
     dyRt.MapObserver = MapObserver;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -1846,11 +1794,10 @@ var dyRt;
     dyRt.DoObserver = DoObserver;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -1951,11 +1898,10 @@ var dyRt;
     })(dyRt.Observer);
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -1983,11 +1929,10 @@ var dyRt;
     dyRt.TakeUntilObserver = TakeUntilObserver;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2083,11 +2028,10 @@ var dyRt;
     dyRt.SubjectObserver = SubjectObserver;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2115,11 +2059,10 @@ var dyRt;
     dyRt.IgnoreElementsObserver = IgnoreElementsObserver;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2129,9 +2072,6 @@ var dyRt;
         function BaseStream() {
             _super.apply(this, arguments);
         }
-        BaseStream.prototype.subscribeCore = function (observer) {
-            return dyCb.Log.error(true, dyCb.Log.info.ABSTRACT_METHOD);
-        };
         BaseStream.prototype.subscribe = function (arg1, onError, onCompleted) {
             var observer = null;
             if (this.handleSubject(arg1)) {
@@ -2153,11 +2093,10 @@ var dyRt;
     dyRt.BaseStream = BaseStream;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2184,11 +2123,10 @@ var dyRt;
     dyRt.DoStream = DoStream;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2215,11 +2153,10 @@ var dyRt;
     dyRt.MapStream = MapStream;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2255,11 +2192,10 @@ var dyRt;
     dyRt.FromArrayStream = FromArrayStream;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2290,11 +2226,10 @@ var dyRt;
     dyRt.FromPromiseStream = FromPromiseStream;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2327,11 +2262,10 @@ var dyRt;
     dyRt.FromEventPatternStream = FromEventPatternStream;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2364,11 +2298,10 @@ var dyRt;
     dyRt.AnonymousStream = AnonymousStream;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2407,11 +2340,10 @@ var dyRt;
     dyRt.IntervalStream = IntervalStream;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2443,11 +2375,10 @@ var dyRt;
     dyRt.IntervalRequestStream = IntervalRequestStream;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2476,11 +2407,10 @@ var dyRt;
     dyRt.MergeAllStream = MergeAllStream;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2510,11 +2440,10 @@ var dyRt;
     dyRt.TakeUntilStream = TakeUntilStream;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2559,11 +2488,10 @@ var dyRt;
     dyRt.ConcatStream = ConcatStream;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2602,11 +2530,10 @@ var dyRt;
     dyRt.RepeatStream = RepeatStream;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2631,11 +2558,10 @@ var dyRt;
     dyRt.IgnoreElementsStream = IgnoreElementsStream;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2709,6 +2635,12 @@ var dyRt;
     dyRt.defer = function (buildStreamFunc) {
         return dyRt.DeferStream.create(buildStreamFunc);
     };
+    dyRt.just = function (returnValue) {
+        return dyRt.createStream(function (observer) {
+            observer.next(returnValue);
+            observer.completed();
+        });
+    };
 })(dyRt || (dyRt = {}));
 
 
@@ -2770,11 +2702,10 @@ var dyRt;
     dyRt.Record = Record;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -2853,11 +2784,10 @@ var dyRt;
     dyRt.MockPromise = MockPromise;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;
@@ -3087,11 +3017,10 @@ var dyRt;
     var ActionType = dyRt.ActionType;
 })(dyRt || (dyRt = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyRt;

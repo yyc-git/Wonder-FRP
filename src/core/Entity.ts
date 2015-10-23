@@ -1,6 +1,6 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
-    export class Entity{
+    export abstract class Entity{
         public static UID:number = 1;
 
         private _uid:string = null;
