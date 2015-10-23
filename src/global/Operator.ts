@@ -50,5 +50,12 @@ module dyRt{
     export var defer = (buildStreamFunc:Function) => {
         return DeferStream.create(buildStreamFunc);
     };
+
+    export var just = (returnValue:any) => {
+        return createStream((observer:IObserver) => {
+            observer.next(returnValue);
+            observer.completed();
+        });
+    }
 }
 
