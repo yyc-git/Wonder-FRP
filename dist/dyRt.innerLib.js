@@ -1,5 +1,96 @@
 var dyCb;
 (function (dyCb) {
+    var JudgeUtils = (function () {
+        function JudgeUtils() {
+        }
+        JudgeUtils.isArray = function (val) {
+            return Object.prototype.toString.call(val) === "[object Array]";
+        };
+        JudgeUtils.isFunction = function (func) {
+            return Object.prototype.toString.call(func) === "[object Function]";
+        };
+        JudgeUtils.isNumber = function (obj) {
+            return Object.prototype.toString.call(obj) === "[object Number]";
+        };
+        JudgeUtils.isString = function (str) {
+            return Object.prototype.toString.call(str) === "[object String]";
+        };
+        JudgeUtils.isBoolean = function (obj) {
+            return Object.prototype.toString.call(obj) === "[object Boolean]";
+        };
+        JudgeUtils.isDom = function (obj) {
+            return obj instanceof HTMLElement;
+        };
+        /**
+         * 判断是否为对象字面量（{}）
+         */
+        JudgeUtils.isDirectObject = function (obj) {
+            if (Object.prototype.toString.call(obj) === "[object Object]") {
+                return true;
+            }
+            return false;
+        };
+        /**
+         * 检查宿主对象是否可调用
+         *
+         * 任何对象，如果其语义在ECMAScript规范中被定义过，那么它被称为原生对象；
+         环境所提供的，而在ECMAScript规范中没有被描述的对象，我们称之为宿主对象。
+
+         该方法用于特性检测，判断对象是否可用。用法如下：
+
+         MyEngine addEvent():
+         if (Tool.judge.isHostMethod(dom, "addEventListener")) {    //判断dom是否具有addEventListener方法
+            dom.addEventListener(sEventType, fnHandler, false);
+            }
+         */
+        JudgeUtils.isHostMethod = function (object, property) {
+            var type = typeof object[property];
+            return type === "function" ||
+                (type === "object" && !!object[property]) ||
+                type === "unknown";
+        };
+        JudgeUtils.isNodeJs = function () {
+            return ((typeof global != "undefined" && global.module) || (typeof module != "undefined")) && typeof module.exports != "undefined";
+        };
+        return JudgeUtils;
+    })();
+    dyCb.JudgeUtils = JudgeUtils;
+})(dyCb || (dyCb = {}));
+
+
+var dyCb;
+(function (dyCb) {
+    Object.defineProperty(dyCb, "root", {
+        get: function () {
+            if (dyCb.JudgeUtils.isNodeJs()) {
+                return global;
+            }
+            return window;
+        }
+    });
+})(dyCb || (dyCb = {}));
+
+var dyCb;
+(function (dyCb) {
+    // performance.now polyfill
+    if ('performance' in dyCb.root === false) {
+        dyCb.root.performance = {};
+    }
+    // IE 8
+    Date.now = (Date.now || function () {
+        return new Date().getTime();
+    });
+    if ('now' in dyCb.root.performance === false) {
+        var offset = dyCb.root.performance.timing && dyCb.root.performance.timing.navigationStart ? performance.timing.navigationStart
+            : Date.now();
+        dyCb.root.performance.now = function () {
+            return Date.now() - offset;
+        };
+    }
+})(dyCb || (dyCb = {}));
+
+var dyCb;
+(function (dyCb) {
     dyCb.$BREAK = {
         break: true
     };
@@ -16,15 +107,15 @@ var dyCb;
          * @function
          * @param {String} message
          */
-        Log.log = function (message) {
-            if (window.console && window.console.trace) {
-                window.console.trace(message);
+        Log.log = function () {
+            var message = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                message[_i - 0] = arguments[_i];
             }
-            else if (window.console && window.console.log) {
-                window.console.log(message);
-            }
-            else {
-                alert(message);
+            if (!this._exec("trace", Array.prototype.slice.call(arguments, 0))) {
+                if (!this._exec("log", arguments)) {
+                    dyCb.root.alert(Array.prototype.slice.call(arguments, 0).join(","));
+                }
             }
         };
         /**
@@ -52,25 +143,52 @@ var dyCb;
          * @param cond 如果cond返回false，则断言失败，显示message
          * @param message
          */
-        Log.assert = function (cond, message) {
-            if (window.console.assert) {
-                window.console.assert(cond, message);
+        Log.assert = function (cond) {
+            var message = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                message[_i - 1] = arguments[_i];
             }
-            else {
-                if (!cond && message) {
-                    if (window.console && window.console.log) {
-                        window.console.log(message);
-                    }
-                    else {
-                        alert(message);
-                    }
+            if (cond) {
+                if (!this._exec("assert", arguments, 1)) {
+                    this.log.apply(this, Array.prototype.slice.call(arguments, 1));
                 }
             }
         };
-        Log.error = function (cond, message) {
-            if (cond) {
-                throw new Error(message);
+        Log.error = function (cond) {
+            var message = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                message[_i - 1] = arguments[_i];
             }
+            if (cond) {
+                /*!
+                console.error will not interrupt, it will throw error and continue exec the left statements
+
+                but here need interrupt! so not use it here.
+                 */
+                //if (!this._exec("error", arguments, 1)) {
+                throw new Error(Array.prototype.slice.call(arguments, 1).join("\n"));
+            }
+        };
+        Log.warn = function () {
+            var message = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                message[_i - 0] = arguments[_i];
+            }
+            var result = this._exec("warn", arguments);
+            if (!result) {
+                this.log.apply(this, arguments);
+            }
+            else {
+                this._exec("trace", ["warn trace"]);
+            }
+        };
+        Log._exec = function (consoleMethod, args, sliceBegin) {
+            if (sliceBegin === void 0) { sliceBegin = 0; }
+            if (dyCb.root.console && dyCb.root.console[consoleMethod]) {
+                dyCb.root.console[consoleMethod].apply(dyCb.root.console, Array.prototype.slice.call(args, sliceBegin));
+                return true;
+            }
+            return false;
         };
         Log.info = {
             INVALID_PARAM: "invalid parameter",
@@ -102,8 +220,14 @@ var dyCb;
                     throw new Error("arguments.length must <= 3");
                 }
             },
-            FUNC_INVALID: function (value) {
-                return this.assertion("invalid", value);
+            FUNC_INVALID: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("invalid");
+                return this.assertion.apply(this, arr);
             },
             FUNC_MUST: function () {
                 var args = [];
@@ -141,26 +265,86 @@ var dyCb;
                 arr.unshift("should");
                 return this.assertion.apply(this, arr);
             },
-            FUNC_SUPPORT: function (value) {
-                return this.assertion("support", value);
+            FUNC_SHOULD_NOT: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("should not");
+                return this.assertion.apply(this, arr);
             },
-            FUNC_NOT_SUPPORT: function (value) {
-                return this.assertion("not support", value);
+            FUNC_SUPPORT: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("support");
+                return this.assertion.apply(this, arr);
             },
-            FUNC_MUST_DEFINE: function (value) {
-                return this.assertion("must define", value);
+            FUNC_NOT_SUPPORT: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("not support");
+                return this.assertion.apply(this, arr);
             },
-            FUNC_MUST_NOT_DEFINE: function (value) {
-                return this.assertion("must not define", value);
+            FUNC_MUST_DEFINE: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("must define");
+                return this.assertion.apply(this, arr);
             },
-            FUNC_UNKNOW: function (value) {
-                return this.assertion("unknow", value);
+            FUNC_MUST_NOT_DEFINE: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("must not define");
+                return this.assertion.apply(this, arr);
             },
-            FUNC_EXPECT: function (value) {
-                return this.assertion("expect", value);
+            FUNC_UNKNOW: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("unknow");
+                return this.assertion.apply(this, arr);
             },
-            FUNC_UNEXPECT: function (value) {
-                return this.assertion("unexpected", value);
+            FUNC_EXPECT: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("expect");
+                return this.assertion.apply(this, arr);
+            },
+            FUNC_UNEXPECT: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("unexpect");
+                return this.assertion.apply(this, arr);
+            },
+            FUNC_NOT_EXIST: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var arr = Array.prototype.slice.call(arguments, 0);
+                arr.unshift("not exist");
+                return this.assertion.apply(this, arr);
             }
         };
         return Log;
@@ -211,7 +395,7 @@ var dyCb;
                 var children = arg;
                 this.children = this.children.concat(children);
             }
-            else if (arg instanceof dyCb.Collection) {
+            else if (arg instanceof List) {
                 var children = arg;
                 this.children = this.children.concat(children.getChildren());
             }
@@ -229,36 +413,26 @@ var dyCb;
             this._forEach(this.children, func, context);
             return this;
         };
-        List.prototype.filter = function (func) {
-            var scope = this.children, result = [];
-            this._forEach(this.children, function (value, index) {
-                if (!func.call(scope, value, index)) {
-                    return;
-                }
-                result.push(value);
-            });
-            return dyCb.Collection.create(result);
-        };
         //public removeChildAt (index) {
         //    Log.error(index < 0, "序号必须大于等于0");
         //
         //    this.children.splice(index, 1);
         //}
         //
-        //public copy () {
-        //    return Collection.create<T>(ExtendUtils.extendDeep(this.children));
-        //}
-        List.prototype.reverse = function () {
-            this.children.reverse();
-            return this;
+        List.prototype.toArray = function () {
+            return this.children;
         };
-        List.prototype.removeChild = function (arg) {
+        List.prototype.copyChildren = function () {
+            return this.children.slice(0);
+        };
+        List.prototype.removeChildHelper = function (arg) {
+            var result = null;
             if (dyCb.JudgeUtils.isFunction(arg)) {
                 var func = arg;
-                this._removeChild(this.children, func);
+                result = this._removeChild(this.children, func);
             }
             else if (arg.uid) {
-                this._removeChild(this.children, function (e) {
+                result = this._removeChild(this.children, function (e) {
                     if (!e.uid) {
                         return false;
                     }
@@ -266,21 +440,11 @@ var dyCb;
                 });
             }
             else {
-                this._removeChild(this.children, function (e) {
+                result = this._removeChild(this.children, function (e) {
                     return e === arg;
                 });
             }
-            return this;
-        };
-        List.prototype.sort = function (func) {
-            this.children.sort(func);
-            return this;
-        };
-        List.prototype.map = function (func) {
-            return this._map(this.children, func);
-        };
-        List.prototype.toArray = function () {
-            return dyCb.ExtendUtils.extendDeep(this.children);
+            return result;
         };
         List.prototype._indexOf = function (arr, arg) {
             var result = -1;
@@ -310,70 +474,29 @@ var dyCb;
             return this._indexOf(arr, arg) > -1;
         };
         List.prototype._forEach = function (arr, func, context) {
-            var scope = context || window, i = 0, len = arr.length;
+            var scope = context || dyCb.root, i = 0, len = arr.length;
             for (i = 0; i < len; i++) {
                 if (func.call(scope, arr[i], i) === dyCb.$BREAK) {
                     break;
                 }
             }
         };
-        List.prototype._map = function (arr, func) {
-            var resultArr = [];
-            this._forEach(arr, function (e, index) {
-                var result = func(e, index);
-                if (result !== dyCb.$REMOVE) {
-                    resultArr.push(result);
-                }
-                //e && e[handlerName] && e[handlerName].apply(context || e, valueArr);
-            });
-            return dyCb.Collection.create(resultArr);
-        };
         List.prototype._removeChild = function (arr, func) {
-            var self = this, index = null;
-            index = this._indexOf(arr, function (e, index) {
-                return !!func.call(self, e);
+            var self = this, index = null, removedElementArr = [], remainElementArr = [];
+            this._forEach(arr, function (e, index) {
+                if (!!func.call(self, e)) {
+                    removedElementArr.push(e);
+                }
+                else {
+                    remainElementArr.push(e);
+                }
             });
-            //if (index !== null && index !== -1) {
-            if (index !== -1) {
-                arr.splice(index, 1);
-            }
-            //return false;
-            return arr;
+            this.children = remainElementArr;
+            return removedElementArr;
         };
         return List;
     })();
     dyCb.List = List;
-})(dyCb || (dyCb = {}));
-
-var __extends = this.__extends || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
-};
-
-var dyCb;
-(function (dyCb) {
-    var Collection = (function (_super) {
-        __extends(Collection, _super);
-        function Collection(children) {
-            if (children === void 0) { children = []; }
-            _super.call(this);
-            this.children = children;
-        }
-        Collection.create = function (children) {
-            if (children === void 0) { children = []; }
-            var obj = new this(children);
-            return obj;
-        };
-        Collection.prototype.copy = function (isDeep) {
-            if (isDeep === void 0) { isDeep = false; }
-            return isDeep ? Collection.create(dyCb.ExtendUtils.extendDeep(this.children))
-                : Collection.create(dyCb.ExtendUtils.extend([], this.children));
-        };
-        return Collection;
-    })(dyCb.List);
-    dyCb.Collection = Collection;
 })(dyCb || (dyCb = {}));
 
 
@@ -411,23 +534,41 @@ var dyCb;
             }
             return result;
         };
+        Hash.prototype.getValues = function () {
+            var result = dyCb.Collection.create(), children = this._children, key = null;
+            for (key in children) {
+                if (children.hasOwnProperty(key)) {
+                    result.addChild(children[key]);
+                }
+            }
+            return result;
+        };
         Hash.prototype.getChild = function (key) {
             return this._children[key];
         };
         Hash.prototype.setValue = function (key, value) {
             this._children[key] = value;
+            return this;
         };
         Hash.prototype.addChild = function (key, value) {
             this._children[key] = value;
             return this;
         };
+        Hash.prototype.addChildren = function (arg) {
+            var i = null, children = null;
+            if (arg instanceof Hash) {
+                children = arg.getChildren();
+            }
+            else {
+                children = arg;
+            }
+            for (i in children) {
+                if (children.hasOwnProperty(i)) {
+                    this.addChild(i, children[i]);
+                }
+            }
+        };
         Hash.prototype.appendChild = function (key, value) {
-            //if (JudgeUtils.isArray(this._children[key])) {
-            //    this._children[key].push(value);
-            //}
-            //else {
-            //    this._children[key] = [value];
-            //}
             if (this._children[key] instanceof dyCb.Collection) {
                 var c = (this._children[key]);
                 c.addChild(value);
@@ -438,22 +579,27 @@ var dyCb;
             return this;
         };
         Hash.prototype.removeChild = function (arg) {
+            var result = [];
             if (dyCb.JudgeUtils.isString(arg)) {
                 var key = arg;
+                result.push(this._children[key]);
                 this._children[key] = undefined;
                 delete this._children[key];
             }
             else if (dyCb.JudgeUtils.isFunction(arg)) {
                 var func = arg, self_1 = this;
-                //return this._removeChild(this._children, arg);
                 this.forEach(function (val, key) {
                     if (func(val, key)) {
+                        result.push(self_1._children[key]);
                         self_1._children[key] = undefined;
                         delete self_1._children[key];
                     }
                 });
             }
-            return this;
+            return dyCb.Collection.create(result);
+        };
+        Hash.prototype.removeAllChildren = function () {
+            this._children = {};
         };
         Hash.prototype.hasChild = function (arg) {
             if (dyCb.JudgeUtils.isFunction(arguments[0])) {
@@ -490,6 +636,17 @@ var dyCb;
             });
             return Hash.create(result);
         };
+        Hash.prototype.findOne = function (func) {
+            var result = [], self = this, scope = this._children;
+            this.forEach(function (val, key) {
+                if (!func.call(scope, val, key)) {
+                    return;
+                }
+                result = [key, self.getChild(key)];
+                return dyCb.$BREAK;
+            });
+            return result;
+        };
         Hash.prototype.map = function (func) {
             var resultMap = {};
             this.forEach(function (val, key) {
@@ -501,16 +658,30 @@ var dyCb;
             });
             return Hash.create(resultMap);
         };
+        Hash.prototype.toCollection = function () {
+            var result = dyCb.Collection.create();
+            this.forEach(function (val, key) {
+                if (val instanceof dyCb.Collection) {
+                    result.addChildren(val);
+                }
+                else if (val instanceof Hash) {
+                    dyCb.Log.error(true, dyCb.Log.info.FUNC_NOT_SUPPORT("toCollection", "value is Hash"));
+                }
+                else {
+                    result.addChild(val);
+                }
+            });
+            return result;
+        };
         return Hash;
     })();
     dyCb.Hash = Hash;
 })(dyCb || (dyCb = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyCb;
@@ -541,11 +712,10 @@ var dyCb;
     dyCb.Queue = Queue;
 })(dyCb || (dyCb = {}));
 
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 
 var dyCb;
@@ -574,62 +744,6 @@ var dyCb;
         return Stack;
     })(dyCb.List);
     dyCb.Stack = Stack;
-})(dyCb || (dyCb = {}));
-
-var dyCb;
-(function (dyCb) {
-    var JudgeUtils = (function () {
-        function JudgeUtils() {
-        }
-        JudgeUtils.isArray = function (val) {
-            return Object.prototype.toString.call(val) === "[object Array]";
-        };
-        JudgeUtils.isFunction = function (func) {
-            return Object.prototype.toString.call(func) === "[object Function]";
-        };
-        JudgeUtils.isNumber = function (obj) {
-            return Object.prototype.toString.call(obj) === "[object Number]";
-        };
-        JudgeUtils.isString = function (str) {
-            return Object.prototype.toString.call(str) === "[object String]";
-        };
-        JudgeUtils.isBoolean = function (obj) {
-            return Object.prototype.toString.call(obj) === "[object Boolean]";
-        };
-        JudgeUtils.isDom = function (obj) {
-            return obj instanceof HTMLElement;
-        };
-        /**
-         * 判断是否为对象字面量（{}）
-         */
-        JudgeUtils.isDirectObject = function (obj) {
-            if (Object.prototype.toString.call(obj) === "[object Object]") {
-                return true;
-            }
-            return false;
-        };
-        /**
-         * 检查宿主对象是否可调用
-         *
-         * 任何对象，如果其语义在ECMAScript规范中被定义过，那么它被称为原生对象；
-         环境所提供的，而在ECMAScript规范中没有被描述的对象，我们称之为宿主对象。
-
-         该方法用于特性检测，判断对象是否可用。用法如下：
-
-         MyEngine addEvent():
-         if (Tool.judge.isHostMethod(dom, "addEventListener")) {    //判断dom是否具有addEventListener方法
-            dom.addEventListener(sEventType, fnHandler, false);
-            }
-         */
-        JudgeUtils.isHostMethod = function (object, property) {
-            var type = typeof object[property];
-            return type === "function" ||
-                (type === "object" && !!object[property]) ||
-                type === "unknown";
-        };
-        return JudgeUtils;
-    })();
-    dyCb.JudgeUtils = JudgeUtils;
 })(dyCb || (dyCb = {}));
 
 var dyCb;
@@ -769,7 +883,6 @@ var dyCb;
 
 var dyCb;
 (function (dyCb) {
-    //declare var window:any;
     var EventUtils = (function () {
         function EventUtils() {
         }
@@ -914,6 +1027,46 @@ var dyCb;
 
 var dyCb;
 (function (dyCb) {
+    var SPLITPATH_REGEX = /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
+    //reference from
+    //https://github.com/cookfront/learn-note/blob/master/blog-backup/2014/nodejs-path.md
+    var PathUtils = (function () {
+        function PathUtils() {
+        }
+        PathUtils.basename = function (path, ext) {
+            var f = this._splitPath(path)[2];
+            // TODO: make this comparison case-insensitive on windows?
+            if (ext && f.substr(-1 * ext.length) === ext) {
+                f = f.substr(0, f.length - ext.length);
+            }
+            return f;
+        };
+        PathUtils.extname = function (path) {
+            return this._splitPath(path)[3];
+        };
+        PathUtils.dirname = function (path) {
+            var result = this._splitPath(path), root = result[0], dir = result[1];
+            if (!root && !dir) {
+                //no dirname whatsoever
+                return '.';
+            }
+            if (dir) {
+                //it has a dirname, strip trailing slash
+                dir = dir.substr(0, dir.length - 1);
+            }
+            return root + dir;
+        };
+        PathUtils._splitPath = function (fileName) {
+            return SPLITPATH_REGEX.exec(fileName).slice(1);
+        };
+        return PathUtils;
+    })();
+    dyCb.PathUtils = PathUtils;
+})(dyCb || (dyCb = {}));
+
+
+var dyCb;
+(function (dyCb) {
     var DomQuery = (function () {
         function DomQuery(domStr) {
             this._doms = null;
@@ -937,21 +1090,84 @@ var dyCb;
     dyCb.DomQuery = DomQuery;
 })(dyCb || (dyCb = {}));
 
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+
 var dyCb;
 (function (dyCb) {
-    if ('performance' in window === false) {
-        window.performance = {};
-    }
-    // IE 8
-    Date.now = (Date.now || function () {
-        return new Date().getTime();
-    });
-    if ('now' in window.performance === false) {
-        var offset = window.performance.timing && window.performance.timing.navigationStart ? performance.timing.navigationStart
-            : Date.now();
-        window.performance.now = function () {
-            return Date.now() - offset;
+    var Collection = (function (_super) {
+        __extends(Collection, _super);
+        function Collection(children) {
+            if (children === void 0) { children = []; }
+            _super.call(this);
+            this.children = children;
+        }
+        Collection.create = function (children) {
+            if (children === void 0) { children = []; }
+            var obj = new this(children);
+            return obj;
         };
-    }
+        Collection.prototype.copy = function (isDeep) {
+            if (isDeep === void 0) { isDeep = false; }
+            return isDeep ? Collection.create(dyCb.ExtendUtils.extendDeep(this.children))
+                : Collection.create(dyCb.ExtendUtils.extend([], this.children));
+        };
+        Collection.prototype.filter = function (func) {
+            var scope = this.children, result = [];
+            this.forEach(function (value, index) {
+                if (!func.call(scope, value, index)) {
+                    return;
+                }
+                result.push(value);
+            });
+            return Collection.create(result);
+        };
+        Collection.prototype.findOne = function (func) {
+            var scope = this.children, result = null;
+            this.forEach(function (value, index) {
+                if (!func.call(scope, value, index)) {
+                    return;
+                }
+                result = value;
+                return dyCb.$BREAK;
+            });
+            return result;
+        };
+        Collection.prototype.reverse = function () {
+            return Collection.create(this.copyChildren().reverse());
+        };
+        Collection.prototype.removeChild = function (arg) {
+            return Collection.create(this.removeChildHelper(arg));
+        };
+        Collection.prototype.sort = function (func) {
+            return Collection.create(this.copyChildren().sort(func));
+        };
+        Collection.prototype.map = function (func) {
+            var resultArr = [];
+            this.forEach(function (e, index) {
+                var result = func(e, index);
+                if (result !== dyCb.$REMOVE) {
+                    resultArr.push(result);
+                }
+                //e && e[handlerName] && e[handlerName].apply(context || e, valueArr);
+            });
+            return Collection.create(resultArr);
+        };
+        Collection.prototype.removeRepeatItems = function () {
+            var resultList = Collection.create();
+            this.forEach(function (item) {
+                if (resultList.hasChild(item)) {
+                    return;
+                }
+                resultList.addChild(item);
+            });
+            return resultList;
+        };
+        return Collection;
+    })(dyCb.List);
+    dyCb.Collection = Collection;
 })(dyCb || (dyCb = {}));
 

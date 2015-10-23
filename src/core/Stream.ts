@@ -1,6 +1,6 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt{
-    export class Stream extends Disposer{
+    export abstract class Stream extends Entity{
         public scheduler:Scheduler = ABSTRACT_ATTRIBUTE;
         public subscribeFunc:Function = null;
 
@@ -10,9 +10,7 @@ module dyRt{
             this.subscribeFunc = subscribeFunc || function(){ };
         }
 
-        public subscribe(arg1:Function|Observer|Subject, onError?:Function, onCompleted?:Function):IDisposable {
-            throw ABSTRACT_METHOD();
-        }
+        public abstract subscribe(arg1:Function|Observer|Subject, onError?:Function, onCompleted?:Function):IDisposable;
 
         public buildStream(observer:IObserver):IDisposable{
             this.subscribeFunc(observer);

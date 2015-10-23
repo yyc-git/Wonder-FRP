@@ -1,20 +1,22 @@
 var through = require("through-gulp");
-var gulp = require('gulp');
-var gulpTs = require('gulp-typescript');
-var gulpSourcemaps = require('gulp-sourcemaps');
-var gulpConcat = require('gulp-concat');
-var del = require('del');
-var gulpSync = require('gulp-sync')(gulp);
-var merge = require('merge2');
-var path = require('path');
+var gulp = require("gulp");
+var gulpTs = require("gulp-typescript");
+var gulpSourcemaps = require("gulp-sourcemaps");
+var gulpConcat = require("gulp-concat");
+var del = require("del");
+var gulpSync = require("gulp-sync")(gulp);
+var merge = require("merge2");
+var path = require("path");
 var fs = require("fs-extra");
+var combineInnerLib = require("./gulp/common/combineInnerLib");
+var buildPublishFile = require("./gulp/publishToNPM/buildPublishFile");
+var config = require("./gulp/common/config");
 
-var tsFilePaths = [
-    'src/definitions.d.ts',
-    'src/*.ts',
-    'src/**/*.ts'
-];
-var distPath = path.join(process.cwd(), "dist");
+require("./gulp/publishToNPM/publishToNPM");
+
+var tsFilePaths = config.tsFilePaths;
+var distPath = config.distPath;
+var PLUGIN_NAME = "gulp file";
 
 gulp.task('clean', function() {
     return del.sync([distPath], {
@@ -28,6 +30,10 @@ gulp.task('compileTs', function() {
             declarationFiles: true,
             target: 'ES5',
             sortOutput:true,
+            experimentalDecorators: true,
+            emitDecoratorMetadata: true,
+            removeComments: true,
+            noEmitOnError: true,
             //out: 'dyR.js'
             typescript: require('typescript')
         }));
@@ -51,6 +57,10 @@ gulp.task('compileTsDebug', function() {
             declarationFiles: true,
             target: 'ES5',
             sortOutput:true,
+            experimentalDecorators: true,
+            emitDecoratorMetadata: true,
+            removeComments: true,
+            noEmitOnError: true,
             //out: 'dyR.js'
             typescript: require('typescript')
         }));
@@ -61,8 +71,6 @@ gulp.task('compileTsDebug', function() {
         .pipe(gulpSourcemaps.write())
         .pipe(gulp.dest(distPath));
 });
-
-
 
 
 
@@ -116,6 +124,7 @@ gulp.task("removeReference", function(){
 gulp.task("buildMultiDistFiles", function(done){
     buildCoreFile();
     buildAllFile();
+    buildPublishFile();
     createInnerLibJs();
     removeOriginFile();
 
@@ -137,7 +146,6 @@ function buildAllFile(){
     );
 }
 
-
 function createInnerLibJs(){
     fs.createFileSync( path.join(distPath, "dyRt.innerLib.js") );
 
@@ -145,39 +153,6 @@ function createInnerLibJs(){
         path.join(distPath, "dyRt.innerLib.js"),
         path.join(process.cwd(), "src/definitions.d.ts")
     );
-}
-
-function combineInnerLib(mainFilePath, definitionDTsPath){
-    getInnerLibDTsPathArr(definitionDTsPath).forEach(function(innerLibDtsPath){
-        fs.writeFileSync(
-            mainFilePath,
-            fs.readFileSync(innerLibDtsPath.replace("d.ts", "js"), "utf8")
-            + "\n"
-            + fs.readFileSync(mainFilePath, "utf8")
-        );
-    });
-}
-
-function getInnerLibDTsPathArr(definitionDTsPath){
-    var regex = /"[^"]+\.d\.ts"/g,
-        content = null,
-        result = null,
-        resultArr = [];
-
-    content = fs.readFileSync(definitionDTsPath, "utf8");
-
-    while((result = regex.exec(content)) !== null){
-        resultArr.push(
-            parseInnerLibDTsPath(result[0].slice(1, -1))
-        );
-    }
-
-    //to make finial file is build based on definitions.d.ts's sequence
-    return resultArr.reverse();
-}
-
-function parseInnerLibDTsPath(pathInDefinitionFile){
-    return path.join(process.cwd(), pathInDefinitionFile.slice(3));
 }
 
 
@@ -191,7 +166,8 @@ function removeOriginFile(){
 
 //todo removeReference
 //gulp.task("build", gulpSync.sync(["clean", "compileTs",  "compileTsDebug", "buildMultiDistFiles"]));
-gulp.task("build", gulpSync.sync(["clean", "compileTs",  "compileTsDebug", "buildMultiDistFiles", "removeReference"]));
+//gulp.task("build", gulpSync.sync(["clean", "compileTs",  "compileTsDebug", "buildMultiDistFiles", "removeReference"]));
+gulp.task("build", gulpSync.sync(["clean", "compileTs",  "compileTsDebug", "publishToNPM", "buildMultiDistFiles", "removeReference"]));
 
 
 

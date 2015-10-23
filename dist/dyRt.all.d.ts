@@ -8,7 +8,7 @@ declare module dyRt {
 
 
 declare module dyRt {
-    class Entity {
+    abstract class Entity {
         static UID: number;
         private _uid;
         uid: string;
@@ -55,16 +55,6 @@ declare module dyRt {
 
 
 declare module dyRt {
-    class Disposer extends Entity {
-        static addDisposeHandler(func: Function): void;
-        static getDisposeHandler(): dyCb.Collection<Function>;
-        static removeAllDisposeHandler(): void;
-        private static _disposeHandler;
-    }
-}
-
-
-declare module dyRt {
     class InnerSubscription implements IDisposable {
         static create(subject: Subject | GeneratorSubject, observer: Observer): InnerSubscription;
         private _subject;
@@ -84,12 +74,13 @@ declare module dyRt {
     }
 }
 
+
 declare module dyRt {
     var root: any;
 }
 
 declare module dyRt {
-    var ABSTRACT_METHOD: Function, ABSTRACT_ATTRIBUTE: any;
+    const ABSTRACT_ATTRIBUTE: any;
 }
 
 
@@ -98,11 +89,11 @@ declare module dyRt {
 
 
 declare module dyRt {
-    class Stream extends Disposer {
+    abstract class Stream extends Entity {
         scheduler: Scheduler;
         subscribeFunc: Function;
         constructor(subscribeFunc: any);
-        subscribe(arg1: Function | Observer | Subject, onError?: Function, onCompleted?: Function): IDisposable;
+        abstract subscribe(arg1: Function | Observer | Subject, onError?: Function, onCompleted?: Function): IDisposable;
         buildStream(observer: IObserver): IDisposable;
         do(onNext?: Function, onError?: Function, onCompleted?: Function): DoStream;
         map(selector: Function): MapStream;
@@ -135,7 +126,7 @@ declare module dyRt {
 
 
 declare module dyRt {
-    class Observer extends Entity implements IObserver {
+    abstract class Observer extends Entity implements IObserver {
         private _isDisposed;
         isDisposed: boolean;
         protected onUserNext: Function;
@@ -144,15 +135,15 @@ declare module dyRt {
         private _isStop;
         private _disposable;
         constructor(onNext: Function, onError: Function, onCompleted: Function);
-        next(value: any): void;
+        next(value: any): any;
         error(error: any): void;
         completed(): void;
         dispose(): void;
         setDisposeHandler(disposeHandler: dyCb.Collection<Function>): void;
         setDisposable(disposable: IDisposable): void;
-        protected onNext(value: any): void;
-        protected onError(error: any): void;
-        protected onCompleted(): void;
+        protected abstract onNext(value: any): any;
+        protected abstract onError(error: any): any;
+        protected abstract onCompleted(): any;
     }
 }
 
@@ -175,7 +166,7 @@ declare module dyRt {
 
 
 declare module dyRt {
-    class GeneratorSubject extends Disposer implements IObserver {
+    class GeneratorSubject extends Entity implements IObserver {
         static create(): GeneratorSubject;
         private _isStart;
         isStart: boolean;
@@ -327,8 +318,8 @@ declare module dyRt {
 
 
 declare module dyRt {
-    class BaseStream extends Stream {
-        subscribeCore(observer: IObserver): IDisposable;
+    abstract class BaseStream extends Stream {
+        abstract subscribeCore(observer: IObserver): IDisposable;
         subscribe(arg1: Function | Observer | Subject, onError?: any, onCompleted?: any): IDisposable;
         buildStream(observer: IObserver): IDisposable;
     }
@@ -492,6 +483,7 @@ declare module dyRt {
     var callFunc: (func: Function, context?: any) => AnonymousStream;
     var judge: (condition: Function, thenSource: Function, elseSource: Function) => any;
     var defer: (buildStreamFunc: Function) => DeferStream;
+    var just: (returnValue: any) => AnonymousStream;
 }
 
 

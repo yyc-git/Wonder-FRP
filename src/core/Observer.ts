@@ -1,6 +1,6 @@
 /// <reference path="../definitions.d.ts"/>
 module dyRt {
-    export class Observer extends Entity implements IObserver{
+    export abstract class Observer extends Entity implements IObserver{
         private _isDisposed:boolean = null;
         get isDisposed(){
             return this._isDisposed;
@@ -78,16 +78,10 @@ module dyRt {
             this._disposable = disposable;
         }
 
-        protected onNext(value){
-            throw ABSTRACT_METHOD();
-        }
+        protected abstract onNext(value);
 
-        protected onError(error){
-            throw ABSTRACT_METHOD();
-        }
+        protected abstract onError(error);
 
-        protected onCompleted(){
-            throw ABSTRACT_METHOD();
-        }
+        protected abstract onCompleted();
     }
 }

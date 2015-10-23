@@ -5,12 +5,12 @@ module dyRt {
             wrapper = undefined,
             callback = undefined,
             geckoVersion = null,
-            userAgent = navigator.userAgent,
+            userAgent = root.navigator && root.navigator.userAgent,
             index = 0,
             self = this;
 
         wrapper = function (time) {
-            time = performance.now();
+            time = root.performance.now();
             self.callback(time);
         };
 
@@ -105,9 +105,9 @@ module dyRt {
                     finish;
 
                 root.setTimeout(function () {
-                    start = performance.now();
+                    start = root.performance.now();
                     callback(start);
-                    finish = performance.now();
+                    finish = root.performance.now();
 
                     self.timeout = 1000 / 60 - (finish - start);
 

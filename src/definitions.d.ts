@@ -8,7 +8,6 @@
 /// <reference path="disposable/SingleDisposable"/>
 /// <reference path="disposable/GroupDisposable"/>
 /// <reference path="observer/IObserver"/>
-/// <reference path="disposable/Disposer"/>
 /// <reference path="disposable/InnerSubscription"/>
 /// <reference path="disposable/InnerSubscriptionGroup"/>
 
