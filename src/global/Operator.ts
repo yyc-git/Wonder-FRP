@@ -16,7 +16,7 @@ module dyRt{
         return FromEventPatternStream.create(addHandler, removeHandler);
     };
 
-    export var fromNodeCallback = (func:Function, context:any) =>{
+    export var fromNodeCallback = (func:Function, context?:any) =>{
         return (...funcArgs) => {
             return createStream((observer:IObserver) => {
                 var hander = (err, ...args) => {
@@ -31,6 +31,8 @@ module dyRt{
                     else {
                         observer.next(args);
                     }
+
+                    observer.completed();
                 };
 
                 funcArgs.push(hander);

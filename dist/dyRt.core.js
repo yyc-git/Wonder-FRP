@@ -1622,6 +1622,7 @@ var dyRt;
                     else {
                         observer.next(args);
                     }
+                    observer.completed();
                 };
                 funcArgs.push(hander);
                 func.apply(context, funcArgs);

@@ -19,6 +19,7 @@ describe("fromNodeCallback", function () {
         });
     });
     it("test single param", function () {
+        var result = [];
         var res = rt.fromNodeCallback(function (str, cb) {
             cb(null, str);
         })("foo");
@@ -31,8 +32,10 @@ describe("fromNodeCallback", function () {
                 expect().toFail();
             },
             function () {
-                expect().toPass();
+                result.push(1);
             });
+
+        expect(result).toEqual([1]);
     });
     it("test multi params", function () {
         var res = rt.fromNodeCallback(function (str1, str2, cb) {

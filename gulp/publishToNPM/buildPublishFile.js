@@ -4,12 +4,12 @@ var combineInnerLib = require("../common/combineInnerLib");
 var addModuleNameConverter = require("./addModuleNameConverter");
 var config = require("../common/config");
 
-var tsFilePaths = config.tsFilePaths;
+//var tsFilePaths = config.tsFilePaths;
 var distPath = config.distPath;
 
-function addDYCommonDts(targetFilePath, sourceFilePath) {
-    fs.writeFileSync(targetFilePath, fs.readFileSync(sourceFilePath).toString().concat(fs.readFileSync(targetFilePath)));
-}
+//function addDYCommonDts(targetFilePath, sourceFilePath) {
+//    fs.writeFileSync(targetFilePath, fs.readFileSync(sourceFilePath).toString().concat(fs.readFileSync(targetFilePath)));
+//}
 
 
 module.exports = function buildPublishFile() {
@@ -17,8 +17,8 @@ module.exports = function buildPublishFile() {
 
     addModuleNameConverter(path.join(distPath, "dyRt.node.d.ts"), "dyRt", "dyrt");
 
-    var DYCommonDtsPath = path.join(process.cwd(), "lib/inner/DYCommonLib/dist", "dyCb.d.ts");
-    addDYCommonDts(path.join(distPath, "dyRt.node.d.ts"), DYCommonDtsPath);
+    //var DYCommonDtsPath = path.join(process.cwd(), "lib/inner/DYCommonLib/dist", "dyCb.d.ts");
+    //addDYCommonDts(path.join(distPath, "dyRt.node.d.ts"), DYCommonDtsPath);
 
     combineInnerLib(
         path.join(distPath, "dyRt.node.js"),
