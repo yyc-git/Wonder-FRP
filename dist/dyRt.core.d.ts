@@ -477,6 +477,7 @@ declare module dyRt {
     var fromArray: (array: any[], scheduler?: Scheduler) => FromArrayStream;
     var fromPromise: (promise: any, scheduler?: Scheduler) => FromPromiseStream;
     var fromEventPattern: (addHandler: Function, removeHandler: Function) => FromEventPatternStream;
+    var fromNodeCallback: (func: Function, context: any) => (...funcArgs: any[]) => AnonymousStream;
     var interval: (interval: any, scheduler?: Scheduler) => IntervalStream;
     var intervalRequest: (scheduler?: Scheduler) => IntervalRequestStream;
     var empty: () => AnonymousStream;

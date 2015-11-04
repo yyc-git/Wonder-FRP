@@ -248,9 +248,9 @@ module dyRt {
         }
 
         private _getMinAndMaxTime(){
-            var timeArr = <dyCb.Collection<any>>(this._timerMap.getKeys().addChildren(this._streamMap.getKeys()));
+            var timeArr:any = (this._timerMap.getKeys().addChildren(this._streamMap.getKeys()));
 
-                timeArr.map((key) => {
+                timeArr = timeArr.map((key) => {
                     return Number(key);
                 }).toArray();
 

@@ -16,6 +16,29 @@ module dyRt{
         return FromEventPatternStream.create(addHandler, removeHandler);
     };
 
+    export var fromNodeCallback = (func:Function, context:any) =>{
+        return (...funcArgs) => {
+            return createStream((observer:IObserver) => {
+                var hander = (err, ...args) => {
+                    if (err) {
+                        observer.error(err);
+                        return;
+                    }
+
+                    if (args.length <= 1) {
+                        observer.next.apply(observer, args);
+                    }
+                    else {
+                        observer.next(args);
+                    }
+                };
+
+                funcArgs.push(hander);
+                func.apply(context, funcArgs);
+            });
+        }
+    };
+
     export var interval = (interval, scheduler = Scheduler.create()) => {
         return IntervalStream.create(interval, scheduler);
     };

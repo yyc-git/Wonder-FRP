@@ -2773,6 +2773,34 @@ var dyRt;
     dyRt.fromEventPattern = function (addHandler, removeHandler) {
         return dyRt.FromEventPatternStream.create(addHandler, removeHandler);
     };
+    dyRt.fromNodeCallback = function (func, context) {
+        return function () {
+            var funcArgs = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                funcArgs[_i - 0] = arguments[_i];
+            }
+            return dyRt.createStream(function (observer) {
+                var hander = function (err) {
+                    var args = [];
+                    for (var _i = 1; _i < arguments.length; _i++) {
+                        args[_i - 1] = arguments[_i];
+                    }
+                    if (err) {
+                        observer.error(err);
+                        return;
+                    }
+                    if (args.length <= 1) {
+                        observer.next.apply(observer, args);
+                    }
+                    else {
+                        observer.next(args);
+                    }
+                };
+                funcArgs.push(hander);
+                func.apply(context, funcArgs);
+            });
+        };
+    };
     dyRt.interval = function (interval, scheduler) {
         if (scheduler === void 0) { scheduler = dyRt.Scheduler.create(); }
         return dyRt.IntervalStream.create(interval, scheduler);
@@ -3124,7 +3152,7 @@ var dyRt;
         };
         TestScheduler.prototype._getMinAndMaxTime = function () {
             var timeArr = (this._timerMap.getKeys().addChildren(this._streamMap.getKeys()));
-            timeArr.map(function (key) {
+            timeArr = timeArr.map(function (key) {
                 return Number(key);
             }).toArray();
             return [Math.min.apply(Math, timeArr), Math.max.apply(Math, timeArr)];
