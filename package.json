@@ -25,7 +25,10 @@
     "merge2": "^0.3.5",
     "through-gulp": "^0.3.8",
     "typescript": "^1.6.2"
+<<<<<<< HEAD
   },
   "dependencies": {
+=======
+>>>>>>> 355016cb546833bd7a46350be62bb23be8705e42
   }
 }
