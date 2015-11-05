@@ -91,7 +91,7 @@ declare module dyRt {
 declare module dyRt {
     abstract class Stream extends Entity {
         scheduler: Scheduler;
-        subscribeFunc: Function;
+        subscribeFunc: (observer: IObserver) => Function | void;
         constructor(subscribeFunc: any);
         abstract subscribe(arg1: Function | Observer | Subject, onError?: Function, onCompleted?: Function): IDisposable;
         buildStream(observer: IObserver): IDisposable;
@@ -139,7 +139,6 @@ declare module dyRt {
         error(error: any): void;
         completed(): void;
         dispose(): void;
-        setDisposeHandler(disposeHandler: dyCb.Collection<Function>): void;
         setDisposable(disposable: IDisposable): void;
         protected abstract onNext(value: any): any;
         protected abstract onError(error: any): any;
@@ -477,7 +476,6 @@ declare module dyRt {
     var fromArray: (array: any[], scheduler?: Scheduler) => FromArrayStream;
     var fromPromise: (promise: any, scheduler?: Scheduler) => FromPromiseStream;
     var fromEventPattern: (addHandler: Function, removeHandler: Function) => FromEventPatternStream;
-    var fromNodeCallback: (func: Function, context?: any) => (...funcArgs: any[]) => AnonymousStream;
     var interval: (interval: any, scheduler?: Scheduler) => IntervalStream;
     var intervalRequest: (scheduler?: Scheduler) => IntervalRequestStream;
     var empty: () => AnonymousStream;
@@ -586,4 +584,13 @@ declare module dyRt {
         constructor(messages: [Record], scheduler: TestScheduler);
         subscribeCore(observer: IObserver): SingleDisposable;
     }
+}
+
+
+declare module dyRt {
+    var fromNodeCallback: (func: Function, context?: any) => (...funcArgs: any[]) => AnonymousStream;
+    var fromStream: (stream: any, finishEventName?: string) => AnonymousStream;
+    var fromReadableStream: (stream: any) => AnonymousStream;
+    var fromWritableStream: (stream: any) => AnonymousStream;
+    var fromTransformStream: (stream: any) => AnonymousStream;
 }

@@ -197,8 +197,7 @@ var dyRt;
             this.subscribeFunc = subscribeFunc || function () { };
         }
         Stream.prototype.buildStream = function (observer) {
-            this.subscribeFunc(observer);
-            return dyRt.SingleDisposable.create();
+            return dyRt.SingleDisposable.create((this.subscribeFunc(observer) || function () { }));
         };
         Stream.prototype.do = function (onNext, onError, onCompleted) {
             return dyRt.DoStream.create(this, onNext, onError, onCompleted);
@@ -444,8 +443,6 @@ var dyRt;
             if (this._disposable) {
                 this._disposable.dispose();
             }
-        };
-        Observer.prototype.setDisposeHandler = function (disposeHandler) {
         };
         Observer.prototype.setDisposable = function (disposable) {
             this._disposable = disposable;
@@ -1600,35 +1597,6 @@ var dyRt;
     dyRt.fromEventPattern = function (addHandler, removeHandler) {
         return dyRt.FromEventPatternStream.create(addHandler, removeHandler);
     };
-    dyRt.fromNodeCallback = function (func, context) {
-        return function () {
-            var funcArgs = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                funcArgs[_i - 0] = arguments[_i];
-            }
-            return dyRt.createStream(function (observer) {
-                var hander = function (err) {
-                    var args = [];
-                    for (var _i = 1; _i < arguments.length; _i++) {
-                        args[_i - 1] = arguments[_i];
-                    }
-                    if (err) {
-                        observer.error(err);
-                        return;
-                    }
-                    if (args.length <= 1) {
-                        observer.next.apply(observer, args);
-                    }
-                    else {
-                        observer.next(args);
-                    }
-                    observer.completed();
-                };
-                funcArgs.push(hander);
-                func.apply(context, funcArgs);
-            });
-        };
-    };
     dyRt.interval = function (interval, scheduler) {
         if (scheduler === void 0) { scheduler = dyRt.Scheduler.create(); }
         return dyRt.IntervalStream.create(interval, scheduler);
@@ -2047,4 +2015,69 @@ var dyRt;
         return TestStream;
     })(dyRt.BaseStream);
     dyRt.TestStream = TestStream;
+})(dyRt || (dyRt = {}));
+
+
+var dyRt;
+(function (dyRt) {
+    dyRt.fromNodeCallback = function (func, context) {
+        return function () {
+            var funcArgs = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                funcArgs[_i - 0] = arguments[_i];
+            }
+            return dyRt.createStream(function (observer) {
+                var hander = function (err) {
+                    var args = [];
+                    for (var _i = 1; _i < arguments.length; _i++) {
+                        args[_i - 1] = arguments[_i];
+                    }
+                    if (err) {
+                        observer.error(err);
+                        return;
+                    }
+                    if (args.length <= 1) {
+                        observer.next.apply(observer, args);
+                    }
+                    else {
+                        observer.next(args);
+                    }
+                    observer.completed();
+                };
+                funcArgs.push(hander);
+                func.apply(context, funcArgs);
+            });
+        };
+    };
+    dyRt.fromStream = function (stream, finishEventName) {
+        if (finishEventName === void 0) { finishEventName = "end"; }
+        stream.pause();
+        return dyRt.createStream(function (observer) {
+            var dataHandler = function (data) {
+                observer.next(data);
+            }, errorHandler = function (err) {
+                observer.error(err);
+            }, endHandler = function () {
+                observer.completed();
+            };
+            stream.addListener("data", dataHandler);
+            stream.addListener("error", errorHandler);
+            stream.addListener(finishEventName, endHandler);
+            stream.resume();
+            return function () {
+                stream.removeListener("data", dataHandler);
+                stream.removeListener("error", errorHandler);
+                stream.removeListener(finishEventName, endHandler);
+            };
+        });
+    };
+    dyRt.fromReadableStream = function (stream) {
+        return dyRt.fromStream(stream, "end");
+    };
+    dyRt.fromWritableStream = function (stream) {
+        return dyRt.fromStream(stream, "finish");
+    };
+    dyRt.fromTransformStream = function (stream) {
+        return dyRt.fromStream(stream, "finish");
+    };
 })(dyRt || (dyRt = {}));
