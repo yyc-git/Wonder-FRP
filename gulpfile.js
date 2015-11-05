@@ -9,10 +9,10 @@ var merge = require("merge2");
 var path = require("path");
 var fs = require("fs-extra");
 var combineInnerLib = require("./gulp/common/combineInnerLib");
-var buildPublishFile = require("./gulp/publishToNPM/buildPublishFile");
+var buildPublishFile = require("./gulp/publish_to_npm/buildPublishFile");
 var config = require("./gulp/common/config");
 
-require("./gulp/publishToNPM/publishToNPM");
+require("./gulp/publish_to_npm/publishToNPM");
 
 var tsFilePaths = config.tsFilePaths;
 var distPath = config.distPath;
