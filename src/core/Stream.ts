@@ -2,7 +2,7 @@
 module dyRt{
     export abstract class Stream extends Entity{
         public scheduler:Scheduler = ABSTRACT_ATTRIBUTE;
-        public subscribeFunc:Function = null;
+        public subscribeFunc:(observer:IObserver) => Function|void = null;
 
         constructor(subscribeFunc){
             super("Stream");
@@ -13,9 +13,7 @@ module dyRt{
         public abstract subscribe(arg1:Function|Observer|Subject, onError?:Function, onCompleted?:Function):IDisposable;
 
         public buildStream(observer:IObserver):IDisposable{
-            this.subscribeFunc(observer);
-
-            return SingleDisposable.create();
+            return SingleDisposable.create(<Function>(this.subscribeFunc(observer) || function(){}));
         }
 
         public do(onNext?:Function, onError?:Function, onCompleted?:Function) {

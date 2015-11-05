@@ -70,10 +70,6 @@ module dyRt {
         //    return false;
         //}
 
-        public setDisposeHandler(disposeHandler:dyCb.Collection<Function>){
-            //this._disposeHandler = disposeHandler;
-        }
-
         public setDisposable(disposable:IDisposable){
             this._disposable = disposable;
         }

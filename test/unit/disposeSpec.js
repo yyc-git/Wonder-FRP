@@ -224,10 +224,10 @@ describe("dispose", function () {
 
     describe("test dispose when not using subject", function () {
         describe("the default behavior of the stream operators is to dispose of the subscription as soon as possible " +
-            "(i.e, when an completed or error messages is published)", function () {
+            "dipose when an completed or error messages is published", function () {
             it("when publish error", function () {
                 var a = 0;
-                var b = 0;
+
                 var stream = rt.createStream(function (observer) {
                     observer.error();
                 });
@@ -239,14 +239,16 @@ describe("dispose", function () {
                         a = 10;
                     },
                     function () {
+                        expect().toFail();
                     }
                 );
 
                 expect(a).toEqual(10);
                 expect(subscription.isDisposed).toBeTruthy();
             });
-            it("when publish completed", function () {
+            it("dipose when publish completed", function () {
                 var b = 0;
+
                 var stream = rt.createStream(function (observer) {
                     observer.completed();
                 });
@@ -255,6 +257,7 @@ describe("dispose", function () {
                     function (x) {
                     },
                     function (e) {
+                        expect().toFail();
                     },
                     function () {
                         expect(b).toEqual(0);
@@ -263,6 +266,62 @@ describe("dispose", function () {
 
                 expect(subscription.isDisposed).toBeTruthy();
             });
+
+        });
+
+        it("if createStream->subscribeFunc->observer.error/completed is async, the returned func of subscribeFunc will be invoked when dispose;else it will not", function(done){
+            var a = 0;
+            var isDispose = false;
+
+            var stream = rt.createStream(function (observer) {
+                observer.error();
+
+                return function(){
+                    isDispose = true;
+                }
+            });
+
+            var subscription = stream.subscribe(
+                function (x) {
+                },
+                function (e) {
+                    a = 10;
+
+                    expect(isDispose).toBeFalsy();
+                },
+                function () {
+                    expect().toFail();
+                }
+            );
+
+            expect(a).toEqual(10);
+            expect(subscription.isDisposed).toBeTruthy();
+            expect(isDispose).toBeFalsy();
+
+
+
+            var stream = rt.createStream(function (observer) {
+                setTimeout(function(){
+                    observer.error();
+                }, 20);
+
+                return function(){
+                    expect(subscription.isDisposed).toBeTruthy();
+                    done();
+                }
+            });
+
+            var subscription = stream.subscribe(
+                function (x) {
+                },
+                function (e) {
+                    expect().toPass();
+                },
+                function () {
+                    expect().toFail();
+                }
+            );
+
         });
 
         describe("test multi operator", function(){
@@ -394,10 +453,7 @@ describe("dispose", function () {
                 subscription1.dispose();
                 subscription2.dispose();
 
-                expect(rt.root.clearInterval).toCalledThrice();
-                expect(rt.root.clearInterval.args).toEqual(
-                    [[8], [9], [10]]
-                )
+                expect(rt.root.clearInterval.withArgs(sinon.match.number)).toCalledThrice();
             });
         });
     });
