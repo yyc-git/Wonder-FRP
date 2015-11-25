@@ -81,5 +81,52 @@ describe("takeUntil", function () {
             );
         });
     });
+
+    it("use drag example to test trigger mousedown again after trigger mouseup", function(){
+        var sum1 = 0;
+
+        var dom = $("<div></div>");
+        $("body").append(dom);
+
+        function fromEvent(dom, eventName){
+            return rt.fromEventPattern(function(h){
+                dom.on(eventName, h);
+            }, function(h){
+                dom.off(eventName, h);
+            });
+        }
+
+        var mouseup   = fromEvent(dom, 'mouseup');
+        var mousemove = fromEvent(dom,   'mousemove');
+        var mousedown = fromEvent(dom, 'mousedown');
+
+
+
+
+        var mousedrag = mousedown.flatMap(function (md) {
+            return mousemove.takeUntil(mouseup);
+        });
+
+        mousedrag.subscribe(function(){
+            sum1++;
+        });
+
+
+
+        dom.trigger("mousedown");
+        dom.trigger("mousemove");
+        dom.trigger("mouseup");
+
+        dom.trigger("mousemove");
+
+        expect(sum1).toEqual(1);
+
+        dom.trigger("mousedown");
+        dom.trigger("mousemove");
+
+        expect(sum1).toEqual(2);
+
+        dom.remove();
+    });
 });
 
