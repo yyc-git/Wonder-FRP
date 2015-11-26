@@ -92,10 +92,15 @@ module dyRt{
                 return JudgeUtils.isEqual(stream, currentStream);
             });
 
-            //if this innerSource is async stream(as promise stream),
-            //it will first exec all parent.next and one parent.completed,
-            //then exec all this.next and all this.completed
-            //so in this case, it should invoke parent.currentObserver.completed after the last invokcation of this.completed(have invoked all the innerSource)
+            //parent.currentObserver.completed();
+            //this.dispose();
+
+            /*!
+            if this innerSource is async stream(as promise stream),
+            it will first exec all parent.next and one parent.completed,
+            then exec all this.next and all this.completed
+            so in this case, it should invoke parent.currentObserver.completed after the last invokcation of this.completed(have invoked all the innerSource)
+            */
             if(this._isAsync() && this._streamGroup.getCount() === 0){
                 parent.currentObserver.completed();
             }

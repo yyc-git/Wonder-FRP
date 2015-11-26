@@ -17,14 +17,37 @@ module dyRt {
         //private _disposeHandler:dyCb.Collection<Function> = dyCb.Collection.create<Function>();
         private _disposable:IDisposable = null;
 
-        constructor(onNext:Function, onError:Function, onCompleted:Function) {
+
+        constructor(observer:IObserver);
+        constructor(onNext:Function, onError:Function, onCompleted:Function);
+
+        constructor(...args) {
             super("Observer");
 
-            this.onUserNext = onNext || function(){};
-            this.onUserError = onError || function(e){
-                    throw e;
+            if(args.length === 1){
+                let observer:IObserver = args[0];
+
+                this.onUserNext = function(v){
+                    observer.next(v);
                 };
-            this.onUserCompleted = onCompleted || function(){};
+                this.onUserError = function(e){
+                    observer.error(e);
+                };
+                this.onUserCompleted = function(){
+                    observer.completed();
+                };
+            }
+            else{
+                let onNext = args[0],
+                    onError = args[1],
+                    onCompleted = args[2];
+
+                this.onUserNext = onNext || function(v){};
+                this.onUserError = onError || function(e){
+                        throw e;
+                    };
+                this.onUserCompleted = onCompleted || function(){};
+            }
         }
 
         public next(value) {

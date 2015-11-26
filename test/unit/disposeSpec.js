@@ -381,27 +381,30 @@ describe("dispose", function () {
                     next(210, 0), next(250, 0), next(270, 1)
                 );
             });
-            it("takeUntil", function(){
-                var promise = scheduler.createResolvedPromise(300, 1);
-                var stream1 = scheduler.createStream(
-                    next(200, 1),
-                    next(300, 2),
-                    next(400, 3),
-                    completed(401)
-                );
-                //var stream = rt.interval(100, scheduler)
-                var stream = stream1
-                    .takeUntil(rt.interval(120, scheduler));
 
-                var results = scheduler.startWithTime(function () {
-                    return stream;
-                }, 150, 500);
+            describe("takeUntil", function(){
+                it("test1", function(){
+                    var promise = scheduler.createResolvedPromise(300, 1);
+                    var stream1 = scheduler.createStream(
+                        next(200, 1),
+                        next(300, 2),
+                        next(400, 3),
+                        completed(401)
+                    );
+                    //var stream = rt.interval(100, scheduler)
+                    var stream = stream1
+                        .takeUntil(rt.interval(120, scheduler));
 
-                expect(rt.root.clearInterval        ).toCalledOnce();
+                    var results = scheduler.startWithTime(function () {
+                        return stream;
+                    }, 150, 500);
 
-                expect(results.messages).toStreamEqual(
-                    next(200, 1), completed(270)
-                );
+                    expect(rt.root.clearInterval        ).toCalledOnce();
+
+                    expect(results.messages).toStreamEqual(
+                        next(200, 1), completed(270)
+                    );
+                })
             });
             it("repeat", function(){
 

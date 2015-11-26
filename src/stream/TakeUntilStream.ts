@@ -20,10 +20,17 @@ module dyRt{
         }
 
         public subscribeCore(observer:IObserver){
-            var group = GroupDisposable.create();
+            var group = GroupDisposable.create(),
+                autoDetachObserver = AutoDetachObserver.create(observer),
+                sourceDisposable = null;
 
-            group.add(this._source.buildStream(observer));
-            group.add(this._otherStream.buildStream(TakeUntilObserver.create(observer)));
+            sourceDisposable = this._source.buildStream(observer);
+
+            group.add(sourceDisposable);
+
+            autoDetachObserver.setDisposable(sourceDisposable);
+
+            group.add(this._otherStream.buildStream(TakeUntilObserver.create(autoDetachObserver)));
 
             return group;
         }

@@ -134,6 +134,7 @@ declare module dyRt {
         protected onUserCompleted: Function;
         private _isStop;
         private _disposable;
+        constructor(observer: IObserver);
         constructor(onNext: Function, onError: Function, onCompleted: Function);
         next(value: any): any;
         error(error: any): void;
@@ -203,7 +204,8 @@ declare module dyRt {
 
 declare module dyRt {
     class AutoDetachObserver extends Observer {
-        static create(onNext: Function, onError: Function, onCompleted: Function): AutoDetachObserver;
+        static create(observer: IObserver): any;
+        static create(onNext: Function, onError: Function, onCompleted: Function): any;
         dispose(): void;
         protected onNext(value: any): void;
         protected onError(err: any): void;

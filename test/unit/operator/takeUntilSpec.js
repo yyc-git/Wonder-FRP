@@ -84,9 +84,14 @@ describe("takeUntil", function () {
 
     it("use drag example to test trigger mousedown again after trigger mouseup", function(){
         var sum1 = 0;
+        var sum2 = 0;
 
         var dom = $("<div></div>");
         $("body").append(dom);
+
+
+        sandbox.spy(dom, "on");
+        sandbox.spy(dom, "off");
 
         function fromEvent(dom, eventName){
             return rt.fromEventPattern(function(h){
@@ -96,35 +101,68 @@ describe("takeUntil", function () {
             });
         }
 
-        var mouseup   = fromEvent(dom, 'mouseup');
-        var mousemove = fromEvent(dom,   'mousemove');
+        var mouseup = fromEvent(dom, 'mouseup');
+        var mousemove = fromEvent(dom, 'mousemove');
         var mousedown = fromEvent(dom, 'mousedown');
 
 
 
 
-        var mousedrag = mousedown.flatMap(function (md) {
-            return mousemove.takeUntil(mouseup);
+        mouseup.subscribe(function(){
+            sum2++;
         });
 
-        mousedrag.subscribe(function(){
+        var mousedrag = mousedown.flatMap(function () {
+            return mousemove.do(function(){
+                console.log("mousemove")
+            }).takeUntil(mouseup);
+        });
+
+        var subscription = mousedrag.subscribe(function(){
             sum1++;
         });
 
 
 
         dom.trigger("mousedown");
-        dom.trigger("mousemove");
-        dom.trigger("mouseup");
+        expect(dom.on.withArgs("mousemove")).toCalledOnce();
+        expect(dom.on.withArgs("mouseup")).toCalled();
 
         dom.trigger("mousemove");
+        expect(dom.on.withArgs("mousemove")).toCalledOnce();
+        expect(dom.on.withArgs("mouseup")).toCalled();
+        expect(dom.off).not.toCalled();
+
+        dom.trigger("mouseup");
+        expect(dom.off).toCalledOnce();
+        expect(dom.off).toCalledWith("mousemove");
 
         expect(sum1).toEqual(1);
+        expect(sum2).toEqual(1);
+
+
+        dom.trigger("mousemove");
+        expect(sum1).toEqual(1);
+
 
         dom.trigger("mousedown");
         dom.trigger("mousemove");
-
         expect(sum1).toEqual(2);
+
+
+        dom.trigger("mouseup");
+        expect(sum1).toEqual(2);
+        expect(sum2).toEqual(2);
+        expect(dom.off.withArgs("mousemove")).toCalledTwice();
+
+
+
+        dom.trigger("mousedown");
+        dom.trigger("mousemove");
+        dom.trigger("mouseup");
+        expect(dom.off.withArgs("mousemove")).toCalledThrice();
+
+        expect(sum1).toEqual(3);
 
         dom.remove();
     });
