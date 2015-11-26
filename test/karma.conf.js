@@ -29,6 +29,7 @@ module.exports = function(config) {
         'test/helper/sinonJs/*.js',
 
         'test/unit/**'
+        //'test/unit/**/takeUntilSpec.js',
 
         //{pattern: 'dist/dyRt.all.d.ts', watched: false, included: false, served: true},
         //{pattern: 'dist/dyRt.all.js.map', watched: false, included: false, served: true}

@@ -11,7 +11,7 @@ module dyRt{
             }
 
             observer = arg1 instanceof Observer
-                ? arg1
+                ? AutoDetachObserver.create(<IObserver>arg1)
                 : AutoDetachObserver.create(<Function>arg1, onError, onCompleted);
 
             //observer.setDisposeHandler(this.disposeHandler);

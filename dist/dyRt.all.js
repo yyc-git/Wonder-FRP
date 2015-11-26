@@ -1569,7 +1569,11 @@ var dyRt;
 (function (dyRt) {
     var Observer = (function (_super) {
         __extends(Observer, _super);
-        function Observer(onNext, onError, onCompleted) {
+        function Observer() {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
             _super.call(this, "Observer");
             this._isDisposed = null;
             this.onUserNext = null;
@@ -1577,11 +1581,26 @@ var dyRt;
             this.onUserCompleted = null;
             this._isStop = false;
             this._disposable = null;
-            this.onUserNext = onNext || function () { };
-            this.onUserError = onError || function (e) {
-                throw e;
-            };
-            this.onUserCompleted = onCompleted || function () { };
+            if (args.length === 1) {
+                var observer = args[0];
+                this.onUserNext = function (v) {
+                    observer.next(v);
+                };
+                this.onUserError = function (e) {
+                    observer.error(e);
+                };
+                this.onUserCompleted = function () {
+                    observer.completed();
+                };
+            }
+            else {
+                var onNext = args[0], onError = args[1], onCompleted = args[2];
+                this.onUserNext = onNext || function (v) { };
+                this.onUserError = onError || function (e) {
+                    throw e;
+                };
+                this.onUserCompleted = onCompleted || function () { };
+            }
         }
         Object.defineProperty(Observer.prototype, "isDisposed", {
             get: function () {
@@ -1837,8 +1856,17 @@ var dyRt;
         function AutoDetachObserver() {
             _super.apply(this, arguments);
         }
-        AutoDetachObserver.create = function (onNext, onError, onCompleted) {
-            return new this(onNext, onError, onCompleted);
+        AutoDetachObserver.create = function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
+            if (args.length === 1) {
+                return new this(args[0]);
+            }
+            else {
+                return new this(args[0], args[1], args[2]);
+            }
         };
         AutoDetachObserver.prototype.dispose = function () {
             if (this.isDisposed) {
@@ -2071,6 +2099,12 @@ var dyRt;
             this._streamGroup.removeChild(function (stream) {
                 return dyRt.JudgeUtils.isEqual(stream, currentStream);
             });
+            /*!
+            if this innerSource is async stream(as promise stream),
+            it will first exec all parent.next and one parent.completed,
+            then exec all this.next and all this.completed
+            so in this case, it should invoke parent.currentObserver.completed after the last invokcation of this.completed(have invoked all the innerSource)
+            */
             if (this._isAsync() && this._streamGroup.getCount() === 0) {
                 parent.currentObserver.completed();
             }
@@ -2255,7 +2289,7 @@ var dyRt;
                 return;
             }
             observer = arg1 instanceof dyRt.Observer
-                ? arg1
+                ? dyRt.AutoDetachObserver.create(arg1)
                 : dyRt.AutoDetachObserver.create(arg1, onError, onCompleted);
             observer.setDisposable(this.buildStream(observer));
             return observer;
@@ -2598,9 +2632,11 @@ var dyRt;
             return obj;
         };
         TakeUntilStream.prototype.subscribeCore = function (observer) {
-            var group = dyRt.GroupDisposable.create();
-            group.add(this._source.buildStream(observer));
-            group.add(this._otherStream.buildStream(dyRt.TakeUntilObserver.create(observer)));
+            var group = dyRt.GroupDisposable.create(), autoDetachObserver = dyRt.AutoDetachObserver.create(observer), sourceDisposable = null;
+            sourceDisposable = this._source.buildStream(observer);
+            group.add(sourceDisposable);
+            autoDetachObserver.setDisposable(sourceDisposable);
+            group.add(this._otherStream.buildStream(dyRt.TakeUntilObserver.create(autoDetachObserver)));
             return group;
         };
         return TakeUntilStream;
