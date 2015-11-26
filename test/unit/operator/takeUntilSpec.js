@@ -117,6 +117,10 @@ describe("takeUntil", function () {
                 console.log("mousemove")
             }).takeUntil(mouseup);
         });
+        //var mousedrag = mousedown.flatMap(function () {
+        //    return mousemove;
+        //}).takeUntil(mouseup);
+        //var mousedrag = mousemove.takeUntil(mouseup);
 
         var subscription = mousedrag.subscribe(function(){
             sum1++;
@@ -143,6 +147,7 @@ describe("takeUntil", function () {
 
         dom.trigger("mousemove");
         expect(sum1).toEqual(1);
+        expect(sum2).toEqual(1);
 
 
         dom.trigger("mousedown");
