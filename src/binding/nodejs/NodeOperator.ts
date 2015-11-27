@@ -1,4 +1,4 @@
-/// <reference path="../../definitions.d.ts"/>
+/// <reference path="../../filePath.d.ts"/>
 module dyRt {
     export var fromNodeCallback = (func:Function, context?:any) => {
         return (...funcArgs) => {

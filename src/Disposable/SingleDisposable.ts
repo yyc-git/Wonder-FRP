@@ -1,4 +1,4 @@
-/// <reference path="../definitions.d.ts"/>
+/// <reference path="../filePath.d.ts"/>
 module dyRt{
     export class SingleDisposable implements IDisposable{
         public static create(disposeHandler:Function = function(){}) {

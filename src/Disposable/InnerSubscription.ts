@@ -1,4 +1,4 @@
-/// <reference path="../definitions.d.ts"/>
+/// <reference path="../filePath.d.ts"/>
 module dyRt{
 	export class InnerSubscription implements IDisposable{
 		public static create(subject:Subject|GeneratorSubject, observer:Observer) {

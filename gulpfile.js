@@ -142,7 +142,7 @@ function buildAllFile(){
 
     combineInnerLib(
         path.join(distPath, "dyRt.all.js"),
-        path.join(process.cwd(), "src/definitions.d.ts")
+        path.join(process.cwd(), "src/filePath.d.ts")
     );
 }
 
@@ -151,7 +151,7 @@ function createInnerLibJs(){
 
     combineInnerLib(
         path.join(distPath, "dyRt.innerLib.js"),
-        path.join(process.cwd(), "src/definitions.d.ts")
+        path.join(process.cwd(), "src/filePath.d.ts")
     );
 }
 
@@ -165,8 +165,6 @@ function removeOriginFile(){
 
 
 //todo removeReference
-//gulp.task("build", gulpSync.sync(["clean", "compileTs",  "compileTsDebug", "buildMultiDistFiles"]));
-//gulp.task("build", gulpSync.sync(["clean", "compileTs",  "compileTsDebug", "buildMultiDistFiles", "removeReference"]));
 gulp.task("build", gulpSync.sync(["clean", "compileTs",  "compileTsDebug", "publishToNPM", "buildMultiDistFiles", "removeReference"]));
 
 

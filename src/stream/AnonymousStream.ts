@@ -1,4 +1,4 @@
-/// <reference path="../definitions.d.ts"/>
+/// <reference path="../filePath.d.ts"/>
 module dyRt{
     export class AnonymousStream extends Stream{
         public static create(subscribeFunc:Function) {

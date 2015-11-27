@@ -1,4 +1,4 @@
-/// <reference path="../definitions.d.ts"/>
+/// <reference path="../filePath.d.ts"/>
 module dyRt{
     export class RepeatStream extends BaseStream{
         public static create(source:Stream, count:number) {

@@ -1,7 +1,7 @@
 var path = require("path");
 
 module.exports.tsFilePaths = [
-    'src/definitions.d.ts',
+    'src/filePath.d.ts',
     'src/*.ts',
     'src/**/*.ts'
 ];

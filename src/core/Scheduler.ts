@@ -1,4 +1,4 @@
-/// <reference path="../definitions.d.ts"/>
+/// <reference path="../filePath.d.ts"/>
 module dyRt {
     root.requestNextAnimationFrame = (function () {
         var originalRequestAnimationFrame = undefined,

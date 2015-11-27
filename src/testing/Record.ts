@@ -1,4 +1,4 @@
-/// <reference path="../definitions.d.ts"/>
+/// <reference path="../filePath.d.ts"/>
 module dyRt {
     var defaultIsEqual = (a, b) => {
         return a === b;

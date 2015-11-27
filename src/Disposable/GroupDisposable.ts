@@ -1,4 +1,4 @@
-/// <reference path="../definitions.d.ts"/>
+/// <reference path="../filePath.d.ts"/>
 module dyRt{
     export class GroupDisposable implements IDisposable{
         public static create(disposable?:IDisposable) {

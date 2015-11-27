@@ -1,4 +1,4 @@
-/// <reference path="../definitions"/>
+/// <reference path="../filePath"/>
 module dyRt {
     export class TestStream extends BaseStream {
         public static create(messages:[Record], scheduler:TestScheduler) {

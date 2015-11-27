@@ -15,7 +15,7 @@ function getInnerLibDTsPathArr(definitionDTsPath){
         );
     }
 
-    //to make finial file is build based on definitions.d.ts's sequence
+    //to make finial file is build based on filePath.d.ts's sequence
     return resultArr.reverse();
 }
 

@@ -22,7 +22,7 @@ module.exports = function buildPublishFile() {
 
     combineInnerLib(
         path.join(distPath, "dyRt.node.js"),
-        path.join(process.cwd(), "src/definitions.d.ts")
+        path.join(process.cwd(), "src/filePath.d.ts")
     );
 }
 

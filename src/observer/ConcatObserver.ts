@@ -1,4 +1,4 @@
-/// <reference path="../definitions.d.ts"/>
+/// <reference path="../filePath.d.ts"/>
 module dyRt {
     export class ConcatObserver extends Observer {
         public static create(currentObserver:IObserver, startNextStream:Function) {

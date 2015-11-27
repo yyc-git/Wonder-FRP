@@ -1,4 +1,4 @@
-/// <reference path="../definitions.d.ts"/>
+/// <reference path="../filePath.d.ts"/>
 module dyRt{
     export class AnonymousObserver extends Observer{
         public static create(onNext:Function, onError:Function, onCompleted:Function) {

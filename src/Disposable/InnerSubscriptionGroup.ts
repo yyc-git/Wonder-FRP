@@ -1,4 +1,4 @@
-/// <reference path="../definitions.d.ts"/>
+/// <reference path="../filePath.d.ts"/>
 module dyRt{
 	export class InnerSubscriptionGroup implements IDisposable{
 		public static create() {

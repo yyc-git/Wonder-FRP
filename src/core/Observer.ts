@@ -1,4 +1,4 @@
-/// <reference path="../definitions.d.ts"/>
+/// <reference path="../filePath.d.ts"/>
 module dyRt {
     export abstract class Observer extends Entity implements IObserver{
         private _isDisposed:boolean = null;

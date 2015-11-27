@@ -1,4 +1,4 @@
-/// <reference path="../definitions.d.ts"/>
+/// <reference path="../filePath.d.ts"/>
 module dyRt{
     export class IntervalStream extends BaseStream{
         public static create(interval:number, scheduler:Scheduler) {

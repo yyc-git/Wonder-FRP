@@ -1,4 +1,4 @@
-/// <reference path="../definitions.d.ts"/>
+/// <reference path="../filePath.d.ts"/>
 module dyRt{
     export class DoStream extends BaseStream{
         public static create(source:Stream, onNext?:Function, onError?:Function, onCompleted?:Function) {
