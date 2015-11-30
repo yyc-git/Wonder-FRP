@@ -41,10 +41,10 @@ gulp.task('compileTs', function() {
 
     return  merge([
         tsResult.dts
-            .pipe(gulpConcat('dyRt.d.ts'))
+            .pipe(gulpConcat('wdFrp.d.ts'))
             .pipe(gulp.dest(distPath)),
         tsResult.js
-            .pipe(gulpConcat('dyRt.js'))
+            .pipe(gulpConcat('wdFrp.js'))
             .pipe(gulp.dest(distPath))
     ])
 });
@@ -67,7 +67,7 @@ gulp.task('compileTsDebug', function() {
 
 
     return tsResult.js
-        .pipe(gulpConcat('dyRt.debug.js'))
+        .pipe(gulpConcat('wdFrp.debug.js'))
         .pipe(gulpSourcemaps.write())
         .pipe(gulp.dest(distPath));
 });
@@ -132,25 +132,25 @@ gulp.task("buildMultiDistFiles", function(done){
 });
 
 function buildCoreFile(){
-    fs.copySync(path.join(distPath, "dyRt.d.ts"),path.join(distPath, "dyRt.core.d.ts"));
-    fs.copySync(path.join(distPath, "dyRt.js"),path.join(distPath, "dyRt.core.js"));
+    fs.copySync(path.join(distPath, "wdFrp.d.ts"),path.join(distPath, "wdFrp.core.d.ts"));
+    fs.copySync(path.join(distPath, "wdFrp.js"),path.join(distPath, "wdFrp.core.js"));
 }
 
 function buildAllFile(){
-    fs.copySync(path.join(distPath, "dyRt.d.ts"),path.join(distPath, "dyRt.all.d.ts"));
-    fs.copySync(path.join(distPath, "dyRt.js"),path.join(distPath, "dyRt.all.js"));
+    fs.copySync(path.join(distPath, "wdFrp.d.ts"),path.join(distPath, "wdFrp.all.d.ts"));
+    fs.copySync(path.join(distPath, "wdFrp.js"),path.join(distPath, "wdFrp.all.js"));
 
     combineInnerLib(
-        path.join(distPath, "dyRt.all.js"),
+        path.join(distPath, "wdFrp.all.js"),
         path.join(process.cwd(), "src/filePath.d.ts")
     );
 }
 
 function createInnerLibJs(){
-    fs.createFileSync( path.join(distPath, "dyRt.innerLib.js") );
+    fs.createFileSync( path.join(distPath, "wdFrp.innerLib.js") );
 
     combineInnerLib(
-        path.join(distPath, "dyRt.innerLib.js"),
+        path.join(distPath, "wdFrp.innerLib.js"),
         path.join(process.cwd(), "src/filePath.d.ts")
     );
 }
@@ -158,8 +158,8 @@ function createInnerLibJs(){
 
 
 function removeOriginFile(){
-    fs.removeSync(path.join(distPath, "dyRt.d.ts"));
-    fs.removeSync(path.join(distPath, "dyRt.js"));
+    fs.removeSync(path.join(distPath, "wdFrp.d.ts"));
+    fs.removeSync(path.join(distPath, "wdFrp.js"));
 }
 
 

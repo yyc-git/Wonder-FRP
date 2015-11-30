@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class FromEventPatternStream extends BaseStream{
         public static create(addHandler:Function, removeHandler:Function) {
             var obj = new this(addHandler, removeHandler);

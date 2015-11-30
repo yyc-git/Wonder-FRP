@@ -1,6 +1,6 @@
 /// <reference path="./filePath.d.ts"/>
-module dyRt {
-    export class JudgeUtils extends dyCb.JudgeUtils {
+module wdFrp {
+    export class JudgeUtils extends wdCb.JudgeUtils {
         public static isPromise(obj){
             return !!obj
                 && !super.isFunction(obj.subscribe)

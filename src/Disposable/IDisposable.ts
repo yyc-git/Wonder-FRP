@@ -1,4 +1,4 @@
-module dyRt{
+module wdFrp{
     export interface IDisposable{
         dispose();
     }

@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class MergeAllStream extends BaseStream{
         public static create(source:Stream) {
             var obj = new this(source);
@@ -20,7 +20,7 @@ module dyRt{
         }
 
         public subscribeCore(observer:IObserver){
-            var streamGroup = dyCb.Collection.create<Stream>(),
+            var streamGroup = wdCb.Collection.create<Stream>(),
                 groupDisposable = GroupDisposable.create();
 
              this._source.buildStream(MergeAllObserver.create(observer, streamGroup, groupDisposable));

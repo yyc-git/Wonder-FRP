@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class AnonymousStream extends Stream{
         public static create(subscribeFunc:Function) {
             var obj = new this(subscribeFunc);

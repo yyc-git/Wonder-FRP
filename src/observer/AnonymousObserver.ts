@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class AnonymousObserver extends Observer{
         public static create(onNext:Function, onError:Function, onCompleted:Function) {
             return new this(onNext, onError, onCompleted);

@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export interface IObserver extends IDisposable{
         next(value:any);
         error(error:any);

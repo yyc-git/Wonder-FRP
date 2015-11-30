@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class DeferStream extends BaseStream{
         public static create(buildStreamFunc:Function) {
             var obj = new this(buildStreamFunc);

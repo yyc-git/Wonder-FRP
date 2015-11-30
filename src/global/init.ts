@@ -1,6 +1,6 @@
 /// <reference path="../filePath.d.ts"/>
 
-module dyRt{
+module wdFrp{
     //rsvp.js
     //declare var RSVP:any;
 

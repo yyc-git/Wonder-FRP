@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export abstract class BaseStream extends Stream{
         public abstract subscribeCore(observer:IObserver):IDisposable;
 

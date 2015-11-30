@@ -780,7 +780,7 @@ var Engine3D;
 (function (Engine3D) {
     var ActionManager = (function () {
         function ActionManager() {
-            this._children = dyCb.Collection.create();
+            this._children = wdCb.Collection.create();
         }
         ActionManager.create = function () {
             var obj = new this();
@@ -849,7 +849,7 @@ var Engine3D;
                 this._point = Engine3D.Vector3.create(0, 0, 0);
             }
             else {
-                dyCb.Log.error(true, "axis's length should be 1 or 2");
+                wdCb.Log.error(true, "axis's length should be 1 or 2");
             }
         }
         Rotate.create = function (matrix, actionData) {
@@ -953,7 +953,7 @@ var Engine3D;
         function WebGLContext() {
         }
         WebGLContext.createGL = function (canvasId) {
-            this.view = Engine3D.ViewWebGL.create(dyCb.DomQuery.create(canvasId).get(0));
+            this.view = Engine3D.ViewWebGL.create(wdCb.DomQuery.create(canvasId).get(0));
             this.gl = this.view.getContext();
         };
         WebGLContext.view = null;
@@ -1119,7 +1119,7 @@ var Engine3D;
             return target1.uid === target2.uid;
         };
         return JudgeUtils;
-    })(dyCb.JudgeUtils);
+    })(wdCb.JudgeUtils);
     Engine3D.JudgeUtils = JudgeUtils;
 })(Engine3D || (Engine3D = {}));
 
@@ -1156,7 +1156,7 @@ var Engine3D;
                 return shader;
             }
             else {
-                dyCb.Log.log(gl.getShaderInfoLog(shader));
+                wdCb.Log.log(gl.getShaderInfoLog(shader));
             }
         };
         return Shader;
@@ -1242,7 +1242,7 @@ var Engine3D;
             }
             this._buffer = gl.createBuffer(); // Create a buffer object
             if (!this._buffer) {
-                dyCb.Log.log('Failed to create the this._buffer object');
+                wdCb.Log.log('Failed to create the this._buffer object');
                 return null;
             }
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._buffer);
@@ -1360,7 +1360,7 @@ var Engine3D;
             }
             this._buffer = gl.createBuffer(); // Create a buffer object
             if (!this._buffer) {
-                dyCb.Log.log('Failed to create the this._buffer object');
+                wdCb.Log.log('Failed to create the this._buffer object');
                 return null;
             }
             gl.bindBuffer(gl.ARRAY_BUFFER, this._buffer);
@@ -1481,7 +1481,7 @@ var Engine3D;
 (function (Engine3D) {
     var QuadCommand = (function () {
         function QuadCommand() {
-            this._buffers = dyCb.Hash.create();
+            this._buffers = wdCb.Hash.create();
             this._color = null;
             this._drawMode = Engine3D.DrawMode.TRIANGLES;
         }
@@ -1588,7 +1588,7 @@ var Engine3D;
 (function (Engine3D) {
     var WebGLRenderer = (function () {
         function WebGLRenderer() {
-            this._commandQueue = dyCb.Collection.create();
+            this._commandQueue = wdCb.Collection.create();
             this._clearColor = Engine3D.Color.create("#000000");
             this._clearAlpha = 1.0;
         }
@@ -1661,7 +1661,7 @@ var Engine3D;
 (function (Engine3D) {
     var GLSLLoader = (function () {
         function GLSLLoader() {
-            this._container = dyCb.Hash.create();
+            this._container = wdCb.Hash.create();
         }
         GLSLLoader.getInstance = function () {
             if (this._instance === null) {
@@ -1688,7 +1688,7 @@ var Engine3D;
             return this._container.getChild(id);
         };
         GLSLLoader.prototype._loadText = function (url, callback) {
-            dyCb.AjaxUtils.ajax({
+            wdCb.AjaxUtils.ajax({
                 type: "get",
                 //async: true,
                 url: url,
@@ -1747,9 +1747,9 @@ var Engine3D;
             this._currentLoadedCount += 1;
         };
         LoaderManager.prototype.onResError = function (path, err) {
-            dyCb.Log.log("加载" + path + "资源失败");
+            wdCb.Log.log("加载" + path + "资源失败");
             if (err) {
-                dyCb.Log.log(err);
+                wdCb.Log.log(err);
             }
         };
         LoaderManager.prototype._isFinishLoad = function () {
@@ -1759,7 +1759,7 @@ var Engine3D;
                     this.onload();
                 }
                 else {
-                    dyCb.Log.assert(false, "没有定义onload");
+                    wdCb.Log.assert(false, "没有定义onload");
                 }
             }
             else {
@@ -2283,7 +2283,7 @@ var Engine3D;
 (function (Engine3D) {
     var EventListenerMap = (function () {
         function EventListenerMap() {
-            this._listenerMap = dyCb.Hash.create();
+            this._listenerMap = wdCb.Hash.create();
         }
         EventListenerMap.create = function () {
             var obj = new this();
@@ -2297,7 +2297,7 @@ var Engine3D;
         EventListenerMap.prototype.getChild = function (target, eventType) {
             var self = this;
             //
-            //return this._listenerMap.filter((list:dyCb.Collection, key:string) => {
+            //return this._listenerMap.filter((list:wdCb.Collection, key:string) => {
             //    return key === self._buildKey(target, eventType);
             //});
             //
@@ -2347,14 +2347,14 @@ var Engine3D;
                         return val.handler === handler;
                     });
                     if (list.getCount() === 0) {
-                        return dyCb.$REMOVE;
+                        return wdCb.$REMOVE;
                     }
                     return [key, list];
                 });
             }
         };
         EventListenerMap.prototype.getEventOffDataList = function (target, eventType) {
-            var result = dyCb.Collection.create(), self = this;
+            var result = wdCb.Collection.create(), self = this;
             if (arguments.length === 1) {
                 this.getChild(target)
                     .forEach(function (list, key) {
@@ -2426,7 +2426,7 @@ var Engine3D;
 //todo complete it(add more event type)
 var Engine3D;
 (function (Engine3D) {
-    var _table = dyCb.Hash.create();
+    var _table = wdCb.Hash.create();
     //todo not declare "<any>"!
     _table.addChild(Engine3D.EventType.CLICK, Engine3D.EventCategory.MOUSE);
     _table.addChild(Engine3D.EventType.MOUSEOVER, Engine3D.EventCategory.MOUSE);
@@ -2462,7 +2462,7 @@ var Engine3D;
             //abstact attri
             this.type = null;
             //get type(){
-            //    dyCb.Log.error(this._type === null, dyCb.Log.info.ABSTRACT_ATTRIBUTE);
+            //    wdCb.Log.error(this._type === null, wdCb.Log.info.ABSTRACT_ATTRIBUTE);
             //
             //    return this._type;
             //}
@@ -2489,7 +2489,7 @@ var Engine3D;
         });
         Object.defineProperty(Event.prototype, "target", {
             get: function () {
-                dyCb.Log.error(!this._target, dyCb.Log.info.FUNC_MUST_DEFINE("target"));
+                wdCb.Log.error(!this._target, wdCb.Log.info.FUNC_MUST_DEFINE("target"));
                 return this._target;
                 //return this._target;
                 //return this._event.srcElement || this._event.target;
@@ -2544,7 +2544,7 @@ var Engine3D;
             this._isStopPropagation = true;
         };
         Event.prototype.copy = function () {
-            return dyCb.Log.error(true, dyCb.Log.info.ABSTRACT_METHOD);
+            return wdCb.Log.error(true, wdCb.Log.info.ABSTRACT_METHOD);
         };
         return Event;
     })();
@@ -2646,7 +2646,7 @@ var Engine3D;
                             mouseButton = Engine3D.MouseButton.CENTER;
                             break;
                         default:
-                            dyCb.Log.error(true, dyCb.Log.info.FUNC_NOT_SUPPORT("multi mouse button"));
+                            wdCb.Log.error(true, wdCb.Log.info.FUNC_NOT_SUPPORT("multi mouse button"));
                             //mouseButton = e.button;
                             break;
                     }
@@ -2663,7 +2663,7 @@ var Engine3D;
                             mouseButton = Engine3D.MouseButton.CENTER;
                             break;
                         default:
-                            dyCb.Log.error(true, dyCb.Log.info.FUNC_NOT_SUPPORT("multi mouse button"));
+                            wdCb.Log.error(true, wdCb.Log.info.FUNC_NOT_SUPPORT("multi mouse button"));
                             //mouseButton = e.button;
                             break;
                     }
@@ -2698,7 +2698,7 @@ var Engine3D;
         function EventListener(option) {
             this._eventCategory = null;
             this._priority = null;
-            this._handlerDataList = dyCb.Collection.create();
+            this._handlerDataList = wdCb.Collection.create();
             this._eventCategory = option.eventCategory;
             this._priority = option.priority || 1;
         }
@@ -2768,13 +2768,13 @@ var Engine3D;
         function EventHandler() {
         }
         EventHandler.prototype.on = function (view, eventType, target) {
-            dyCb.Log.error(true, dyCb.Log.info.ABSTRACT_METHOD);
+            wdCb.Log.error(true, wdCb.Log.info.ABSTRACT_METHOD);
         };
         EventHandler.prototype.off = function (view, eventType, handler) {
-            dyCb.Log.error(true, dyCb.Log.info.ABSTRACT_METHOD);
+            wdCb.Log.error(true, wdCb.Log.info.ABSTRACT_METHOD);
         };
         EventHandler.prototype.trigger = function (target, eventObject, handler) {
-            dyCb.Log.error(true, dyCb.Log.info.ABSTRACT_METHOD);
+            wdCb.Log.error(true, wdCb.Log.info.ABSTRACT_METHOD);
         };
         return EventHandler;
     })();
@@ -2811,11 +2811,11 @@ var Engine3D;
         //private _eventRegister:EventRegister = null;
         EventMouseHandler.prototype.on = function (view, eventType, target) {
             var self = this, context = window, wrapHandler = null;
-            wrapHandler = dyCb.EventUtils.bindEvent(context, function (event) {
+            wrapHandler = wdCb.EventUtils.bindEvent(context, function (event) {
                 var eventObject = self._createEventObject(event, eventType, target), topTarget = Engine3D.Director.getInstance().getTopUnderPoint(eventObject.locationInView);
                 Engine3D.EventManager.emit(topTarget, eventObject);
             });
-            dyCb.EventUtils.addEvent(view.dom, eventType, wrapHandler);
+            wdCb.EventUtils.addEvent(view.dom, eventType, wrapHandler);
             return wrapHandler;
         };
         //public wrapHandler(target:GameObject, handler:Function) {
@@ -2829,18 +2829,18 @@ var Engine3D;
             //var eventRegister = EventRegister.getInstance(),
             //    view = arguments[0],
             //    target = arguments[1];
-            dyCb.EventUtils.removeEvent(view.dom, eventType, handler);
+            wdCb.EventUtils.removeEvent(view.dom, eventType, handler);
             //
             //if (arguments.length === 2) {
             //    eventRegister.getChild(target)
-            //        .forEach((list:dyCb.Collection, key:string) => {
+            //        .forEach((list:wdCb.Collection, key:string) => {
             //            if(list.getCount() === 0){
-            //                dyCb.Log.assert(false, dyCb.Log.info.FUNC_MUST_NOT_BE("value", "empty"));
+            //                wdCb.Log.assert(false, wdCb.Log.info.FUNC_MUST_NOT_BE("value", "empty"));
             //                return;
             //            }
             //
-            //            //dyCb.EventUtils.removeEvent(view.dom, eventRegister.getEventTypeFromKey(key), data.handler);
-            //            dyCb.EventUtils.removeEvent(view.dom, eventRegister.getEventTypeFromKey(key), list.getChild(0).wrapHandler);
+            //            //wdCb.EventUtils.removeEvent(view.dom, eventRegister.getEventTypeFromKey(key), data.handler);
+            //            wdCb.EventUtils.removeEvent(view.dom, eventRegister.getEventTypeFromKey(key), list.getChild(0).wrapHandler);
             //        });
             //}
             //else if (arguments.length === 3) {
@@ -2848,20 +2848,20 @@ var Engine3D;
             //
             //    eventRegister.getChild(target, eventType)
             //        .forEach((data:IEventRegisterData, key:string) => {
-            //            dyCb.EventUtils.removeEvent(view.dom, eventType, data.handler);
+            //            wdCb.EventUtils.removeEvent(view.dom, eventType, data.handler);
             //        });
             //}
             //else if (arguments.length === 4) {
             //    let eventType = arguments[2],
             //        handler = arguments[3];
             //
-            //    dyCb.EventUtils.removeEvent(view.dom, eventType, handler);
+            //    wdCb.EventUtils.removeEvent(view.dom, eventType, handler);
             //    //eventRegister.getChild(target, eventType)
             //    //    .filter((data:IEventRegisterData) => {
             //    //        return data.handler === handler;
             //    //    })
             //    //    .forEach((data:IEventRegisterData) => {
-            //    //        dyCb.EventUtils.removeEvent(view.dom, eventType, handler);
+            //    //        wdCb.EventUtils.removeEvent(view.dom, eventType, handler);
             //    //    });
             //}
         };
@@ -2911,7 +2911,7 @@ var Engine3D;
         //        name = eventObject.name;
         //
         //    function getUnderPoint(target) {
-        //        var result:dyCb.Collection = null,
+        //        var result:wdCb.Collection = null,
         //            top = null;
         //
         //        if(target === null){
@@ -2969,7 +2969,7 @@ var Engine3D;
         //}
         EventDispatcher.prototype.trigger = function (target, eventObject) {
             if (!(target instanceof Engine3D.GameObject)) {
-                dyCb.Log.log("target is not GameObject, can't trigger event");
+                wdCb.Log.log("target is not GameObject, can't trigger event");
                 return;
             }
             var self = this;
@@ -3182,7 +3182,7 @@ var Engine3D;
         EventBinder.prototype.on = function (args) {
             var target = null, view = null;
             target = arguments[0];
-            dyCb.Log.error(!(target instanceof Engine3D.GameObject), dyCb.Log.info.FUNC_MUST_BE("target", "GameObject"));
+            wdCb.Log.error(!(target instanceof Engine3D.GameObject), wdCb.Log.info.FUNC_MUST_BE("target", "GameObject"));
             view = this._getView();
             if (arguments.length === 2) {
                 var arg = arguments[1], listener = null, eventHandler = null, self_1 = this;
@@ -3207,7 +3207,7 @@ var Engine3D;
             }
             //
             //if(arguments.length === 1){
-            //    let handlerList:dyCb.Collection = FactoryEventHandler.createEventHandler();
+            //    let handlerList:wdCb.Collection = FactoryEventHandler.createEventHandler();
             //
             //    handlerList.forEach((handler:EventHandler) => {
             //        handler.off.apply(
@@ -3287,7 +3287,7 @@ var Engine3D;
                         break;
                     //todo more type
                     default:
-                        dyCb.Log.error(true, dyCb.Log.info.FUNC_INVALID("eventCategory"));
+                        wdCb.Log.error(true, wdCb.Log.info.FUNC_INVALID("eventCategory"));
                         break;
                 }
                 return handler;
@@ -3303,7 +3303,7 @@ var Engine3D;
         //            break;
         //        //todo more type
         //        default :
-        //            dyCb.Log.error(true, dyCb.Log.info.FUNC_INVALID("eventCategory"));
+        //            wdCb.Log.error(true, wdCb.Log.info.FUNC_INVALID("eventCategory"));
         //            break;
         //    }
         //
@@ -3312,7 +3312,7 @@ var Engine3D;
         //    return eventObj;
         //}
         FactoryEventHandler._createAllEventHandlers = function () {
-            return dyCb.Collection.create([Engine3D.EventMouseHandler.getInstance()]);
+            return wdCb.Collection.create([Engine3D.EventMouseHandler.getInstance()]);
         };
         return FactoryEventHandler;
     })();
@@ -3378,7 +3378,7 @@ var Engine3D;
         EventManager.fromEvent = function(target, eventType, priority){
             priority = priority || 0;
 
-            return dyRt.fromEventPattern(
+            return wdFrp.fromEventPattern(
                 function(handler){
                     EventManager.on(target, eventType, handler, priority);
                 },
@@ -3412,7 +3412,7 @@ var Engine3D;
             this._position = null;
             this._parent = null;
             this._bubbleParent = null;
-            this._children = dyCb.Collection.create();
+            this._children = wdCb.Collection.create();
             this._uid = GameObject._count;
             GameObject._count += 1;
         }
@@ -3457,7 +3457,7 @@ var Engine3D;
             configurable: true
         });
         GameObject.prototype.init = function () {
-            dyCb.Log.error(true, dyCb.Log.info.ABSTRACT_METHOD);
+            wdCb.Log.error(true, wdCb.Log.info.ABSTRACT_METHOD);
         };
         /*!
          virtual
@@ -3702,7 +3702,7 @@ var Engine3D;
         __extends(Scene, _super);
         function Scene(camera) {
             _super.call(this);
-            //private _meshes:dyCb.Collection = dyCb.Collection.create();
+            //private _meshes:wdCb.Collection = wdCb.Collection.create();
             this._camera = null;
             this._program = null;
             this._camera = camera;

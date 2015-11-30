@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class TakeUntilObserver extends Observer{
         public static create(prevObserver:IObserver) {
             return new this(prevObserver);

@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt {
+module wdFrp {
     export class ConcatObserver extends Observer {
         public static create(currentObserver:IObserver, startNextStream:Function) {
             return new this(currentObserver, startNextStream);

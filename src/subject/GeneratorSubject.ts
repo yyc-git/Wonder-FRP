@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class GeneratorSubject extends Entity implements IObserver {
         public static create() {
             var obj = new this();

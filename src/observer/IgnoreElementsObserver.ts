@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt {
+module wdFrp {
     export class IgnoreElementsObserver extends Observer {
         public static create(currentObserver:IObserver) {
             return new this(currentObserver);

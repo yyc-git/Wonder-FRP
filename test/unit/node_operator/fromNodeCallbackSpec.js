@@ -1,5 +1,5 @@
 describe("fromNodeCallback", function () {
-    var rt = dyRt;
+    var rt = wdFrp;
     var sandbox = null;
 
     beforeEach(function () {

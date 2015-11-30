@@ -1,5 +1,5 @@
 /// <reference path="../../filePath.d.ts"/>
-module dyRt {
+module wdFrp {
     export var fromNodeCallback = (func:Function, context?:any) => {
         return (...funcArgs) => {
             return createStream((observer:IObserver) => {
@@ -28,7 +28,7 @@ module dyRt {
     export var fromStream = (stream:any, finishEventName:string = "end") => {
         stream.pause();
 
-        return dyRt.createStream((observer) => {
+        return wdFrp.createStream((observer) => {
             var dataHandler = (data) => {
                     observer.next(data);
                 },

@@ -13,15 +13,15 @@ var distPath = config.distPath;
 
 
 module.exports = function buildPublishFile() {
-    fs.copySync(path.join(distPath, "dyRt.d.ts"), path.join(distPath, "dyRt.node.d.ts"));
+    fs.copySync(path.join(distPath, "wdFrp.d.ts"), path.join(distPath, "wdFrp.node.d.ts"));
 
-    addModuleNameConverter(path.join(distPath, "dyRt.node.d.ts"), "dyRt", "dyrt");
+    addModuleNameConverter(path.join(distPath, "wdFrp.node.d.ts"), "wdFrp", "wdfrp");
 
-    //var DYCommonDtsPath = path.join(process.cwd(), "lib/inner/DYCommonLib/dist", "dyCb.d.ts");
-    //addDYCommonDts(path.join(distPath, "dyRt.node.d.ts"), DYCommonDtsPath);
+    //var DYCommonDtsPath = path.join(process.cwd(), "lib/inner/DYCommonLib/dist", "wdCb.d.ts");
+    //addDYCommonDts(path.join(distPath, "wdFrp.node.d.ts"), DYCommonDtsPath);
 
     combineInnerLib(
-        path.join(distPath, "dyRt.node.js"),
+        path.join(distPath, "wdFrp.node.js"),
         path.join(process.cwd(), "src/filePath.d.ts")
     );
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title></title>
-    <script src="dist/dyRt.all.js"></script>
+    <script src="dist/wdFrp.all.js"></script>
     <script src="bower_components/jquery/dist/jquery.js"></script>
 </head>
 <body>
@@ -11,10 +11,10 @@
     <div style="width:50px;height:50px;border:1px solid red;" id="b"></div>
 </div>
 <script>
-//    var source = dyRt.interval(500);
-////    var source = dyRt.fromArray([1,2,3,4,5]);
+//    var source = wdFrp.interval(500);
+////    var source = wdFrp.fromArray([1,2,3,4,5]);
 //
-//    var subject = new dyRt.Subject();
+//    var subject = new wdFrp.Subject();
 //
 //    source.subscribe(subject);
 //    var subscription = subject.subscribe(
@@ -70,8 +70,8 @@
 //
 //var a = 0;
 //
-//var subject = dyRt.Subject.create();
-//var source = dyRt.fromArray([1,2,3]);
+//var subject = wdFrp.Subject.create();
+//var source = wdFrp.fromArray([1,2,3]);
 //source.do(function(x){
 //    a += x;
 //}).subscribe(subject);
@@ -94,13 +94,13 @@
 
 
 //
-//var sources = dyRt.fromArray([1, 2])
+//var sources = wdFrp.fromArray([1, 2])
 //        .map(function(value){
 //            if(value === 2){
-//                return dyRt.interval(100);
+//                return wdFrp.interval(100);
 //            }
 //            else{
-//                return dyRt.interval(60);
+//                return wdFrp.interval(60);
 //            }
 //        });
 //    sources.mergeAll().subscribe(function(x){
@@ -120,13 +120,13 @@
 
 //var a = 0,
 //        b = 0;
-//var source = dyRt.createStream(function (observer) {
+//var source = wdFrp.createStream(function (observer) {
 //    observer.next(1);
 //    observer.next(2);
 //    observer.completed();
 //});
-////var subject = dyRt.Subject.create();
-//var subject = new dyRt.Subject();
+////var subject = wdFrp.Subject.create();
+//var subject = new wdFrp.Subject();
 //
 //source.subscribe(subject);
 //subject.subscribe(function(x){

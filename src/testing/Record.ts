@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt {
+module wdFrp {
     var defaultIsEqual = (a, b) => {
         return a === b;
     };

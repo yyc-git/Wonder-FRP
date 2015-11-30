@@ -1,7 +1,7 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class SubjectObserver implements IObserver{
-        public observers:dyCb.Collection<IObserver> = dyCb.Collection.create<IObserver>();
+        public observers:wdCb.Collection<IObserver> = wdCb.Collection.create<IObserver>();
 
         private _disposable:IDisposable = null;
 

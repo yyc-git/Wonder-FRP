@@ -1,12 +1,12 @@
 {
-  "name": "dyrt",
-  "version": "0.1.6",
-  "main": "dist/dyRt.node.js",
+  "name": "wdfrp",
+  "version": "0.1.0",
+  "main": "dist/wdFrp.node.js",
   "keywords": [
     "FRP",
     "Reactive",
     "DYReactive",
-    "dyrt"
+    "wdfrp"
   ],
   "devDependencies": {
     "del": "^1.2.0",

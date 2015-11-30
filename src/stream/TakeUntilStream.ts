@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class TakeUntilStream extends BaseStream{
         public static create(source:Stream, otherSteam:Stream) {
             var obj = new this(source, otherSteam);

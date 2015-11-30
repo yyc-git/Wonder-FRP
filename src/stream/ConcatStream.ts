@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class ConcatStream extends BaseStream{
         public static create(sources:Array<Stream>) {
             var obj = new this(sources);
@@ -7,7 +7,7 @@ module dyRt{
             return obj;
         }
 
-        private _sources:dyCb.Collection<Stream> = dyCb.Collection.create<Stream>();
+        private _sources:wdCb.Collection<Stream> = wdCb.Collection.create<Stream>();
 
         constructor(sources:Array<Stream>){
             super(null);

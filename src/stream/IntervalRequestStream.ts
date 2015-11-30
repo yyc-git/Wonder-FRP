@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class IntervalRequestStream extends BaseStream{
         public static create(scheduler:Scheduler) {
             var obj = new this(scheduler);

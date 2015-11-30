@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class MapStream extends BaseStream{
         public static create(source:Stream, selector:Function) {
             var obj = new this(source, selector);

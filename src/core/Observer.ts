@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt {
+module wdFrp {
     export abstract class Observer extends Entity implements IObserver{
         private _isDisposed:boolean = null;
         get isDisposed(){
@@ -14,7 +14,7 @@ module dyRt {
         protected onUserCompleted:Function = null;
 
         private _isStop:boolean = false;
-        //private _disposeHandler:dyCb.Collection<Function> = dyCb.Collection.create<Function>();
+        //private _disposeHandler:wdCb.Collection<Function> = wdCb.Collection.create<Function>();
         private _disposable:IDisposable = null;
 
 

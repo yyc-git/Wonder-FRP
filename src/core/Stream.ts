@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export abstract class Stream extends Entity{
         public scheduler:Scheduler = ABSTRACT_ATTRIBUTE;
         public subscribeFunc:(observer:IObserver) => Function|void = null;

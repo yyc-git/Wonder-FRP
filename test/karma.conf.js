@@ -20,8 +20,8 @@ module.exports = function(config) {
         //'reference/RxJS/dist/rx.all.js',
         'reference/rsvp.js/dist/rsvp.js',
 
-        'dist/dyRt.innerLib.js',
-        'dist/dyRt.debug.js',
+        'dist/wdFrp.innerLib.js',
+        'dist/wdFrp.debug.js',
 
         'test/unit/lib/Engine.debug.js',
 
@@ -31,8 +31,8 @@ module.exports = function(config) {
         'test/unit/**'
         //'test/unit/**/takeUntilSpec.js',
 
-        //{pattern: 'dist/dyRt.all.d.ts', watched: false, included: false, served: true},
-        //{pattern: 'dist/dyRt.all.js.map', watched: false, included: false, served: true}
+        //{pattern: 'dist/wdFrp.all.d.ts', watched: false, included: false, served: true},
+        //{pattern: 'dist/wdFrp.all.js.map', watched: false, included: false, served: true}
         //{pattern: 'src/**', watched: false, included: false, served: true}
     ],
 

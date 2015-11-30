@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class SingleDisposable implements IDisposable{
         public static create(disposeHandler:Function = function(){}) {
         	var obj = new this(disposeHandler);

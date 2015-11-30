@@ -1,5 +1,5 @@
 describe("callFunc", function(){
-    var rt = dyRt,
+    var rt = wdFrp,
         TestScheduler = rt.TestScheduler,
         next = TestScheduler.next,
         completed = TestScheduler.completed;

@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class AutoDetachObserver extends Observer{
         public static create(observer:IObserver);
         public static create(onNext:Function, onError:Function, onCompleted:Function);
@@ -15,7 +15,7 @@ module dyRt{
 
         public dispose(){
             if(this.isDisposed){
-                dyCb.Log.log("only can dispose once");
+                wdCb.Log.log("only can dispose once");
                 return;
             }
 

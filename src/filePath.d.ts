@@ -1,4 +1,4 @@
-/// <reference path="../lib/inner/DYCommonLib/dist/dyCb.d.ts"/>
+/// <reference path="../lib/inner/DYCommonLib/dist/wdCb.d.ts"/>
 
 /// <reference path="JudgeUtils"/>
 

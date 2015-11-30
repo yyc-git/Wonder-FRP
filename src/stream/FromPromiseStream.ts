@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class FromPromiseStream extends BaseStream{
         public static create(promise:any, scheduler:Scheduler) {
         	var obj = new this(promise, scheduler);

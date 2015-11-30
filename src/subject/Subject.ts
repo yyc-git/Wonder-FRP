@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class Subject implements IObserver{
         public static create() {
             var obj = new this();

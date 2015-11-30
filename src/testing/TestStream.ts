@@ -1,5 +1,5 @@
 /// <reference path="../filePath"/>
-module dyRt {
+module wdFrp {
     export class TestStream extends BaseStream {
         public static create(messages:[Record], scheduler:TestScheduler) {
             var obj = new this(messages, scheduler);

@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class IgnoreElementsStream extends BaseStream{
         public static create(source:Stream) {
             var obj = new this(source);

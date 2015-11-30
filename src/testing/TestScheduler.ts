@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt {
+module wdFrp {
     const SUBSCRIBE_TIME = 200;
     const DISPOSE_TIME = 1000;
 
@@ -39,8 +39,8 @@ module dyRt {
 
         private _isReset:boolean = false;
         private _isDisposed:boolean = false;
-        private _timerMap:dyCb.Hash<Function> = dyCb.Hash.create<Function>();
-        private _streamMap:dyCb.Hash<Function> = dyCb.Hash.create<Function>();
+        private _timerMap:wdCb.Hash<Function> = wdCb.Hash.create<Function>();
+        private _streamMap:wdCb.Hash<Function> = wdCb.Hash.create<Function>();
         private _subscribedTime:number = null;
         private _disposedTime:number = null;
         private _observer:MockObserver = null;
@@ -68,7 +68,7 @@ module dyRt {
                         };
                         break;
                     default:
-                        dyCb.Log.error(true, dyCb.Log.info.FUNC_UNKNOW("actionType"));
+                        wdCb.Log.error(true, wdCb.Log.info.FUNC_UNKNOW("actionType"));
                         break;
                 }
 

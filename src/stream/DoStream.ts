@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class DoStream extends BaseStream{
         public static create(source:Stream, onNext?:Function, onError?:Function, onCompleted?:Function) {
             var obj = new this(source, onNext, onError, onCompleted);

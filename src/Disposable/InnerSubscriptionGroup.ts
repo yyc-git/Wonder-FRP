@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
 	export class InnerSubscriptionGroup implements IDisposable{
 		public static create() {
 			var obj = new this();
@@ -7,7 +7,7 @@ module dyRt{
 			return obj;
 		}
 
-		private _container:dyCb.Collection<IDisposable> = dyCb.Collection.create<IDisposable>();
+		private _container:wdCb.Collection<IDisposable> = wdCb.Collection.create<IDisposable>();
 
 		public addChild(child:IDisposable){
 			this._container.addChild(child);

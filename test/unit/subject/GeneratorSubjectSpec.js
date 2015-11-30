@@ -1,5 +1,5 @@
 describe("GeneratorSubject", function () {
-    var rt = dyRt;
+    var rt = wdFrp;
     var subject = null;
     var sandbox = null;
     var result = null;

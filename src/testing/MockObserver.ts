@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class MockObserver extends Observer{
         public static create(scheduler:TestScheduler) {
             var obj = new this(scheduler);

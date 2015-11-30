@@ -10,4 +10,4 @@ src/**/*.js.map
 src/*.js
 src/*.js.map
 dist/*
-!dist/dyRt.node.*
+!dist/wdFrp.node.*

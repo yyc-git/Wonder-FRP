@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt {
+module wdFrp {
     root.requestNextAnimationFrame = (function () {
         var originalRequestAnimationFrame = undefined,
             wrapper = undefined,

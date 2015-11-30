@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class GroupDisposable implements IDisposable{
         public static create(disposable?:IDisposable) {
             var obj = new this(disposable);
@@ -7,7 +7,7 @@ module dyRt{
             return obj;
         }
 
-        private _group:dyCb.Collection<IDisposable> = dyCb.Collection.create<IDisposable>();
+        private _group:wdCb.Collection<IDisposable> = wdCb.Collection.create<IDisposable>();
 
         constructor(disposable?:IDisposable){
             if(disposable){

@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class RepeatStream extends BaseStream{
         public static create(source:Stream, count:number) {
             var obj = new this(source, count);

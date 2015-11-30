@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
     export class DoObserver extends Observer{
         public static create(currentObserver:IObserver, prevObserver:IObserver) {
             return new this(currentObserver, prevObserver);

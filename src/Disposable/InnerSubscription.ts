@@ -1,5 +1,5 @@
 /// <reference path="../filePath.d.ts"/>
-module dyRt{
+module wdFrp{
 	export class InnerSubscription implements IDisposable{
 		public static create(subject:Subject|GeneratorSubject, observer:Observer) {
 			var obj = new this(subject, observer);
