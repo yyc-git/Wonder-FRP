@@ -1,4 +1,4 @@
-/// <reference path="../lib/inner/DYCommonLib/dist/wdCb.d.ts"/>
+/// <reference path="../lib/inner/Wonder-CommonLib/dist/wdCb.d.ts"/>
 
 /// <reference path="JudgeUtils"/>
 

@@ -4,9 +4,7 @@
   "main": "dist/wdFrp.node.js",
   "keywords": [
     "FRP",
-    "Reactive",
-    "DYReactive",
-    "wdfrp"
+    "Wonder-FRP"
   ],
   "devDependencies": {
     "del": "^1.2.0",

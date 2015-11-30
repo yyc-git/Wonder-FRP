@@ -14,7 +14,7 @@ describe("fromEventPattern", function () {
         sandbox.restore();
     });
 
-    describe("DYEngine event test", function(){
+    describe("Wonder engine event test", function(){
         var canvasId = null;
         var scene = null;
 
