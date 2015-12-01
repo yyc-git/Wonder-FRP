@@ -39,7 +39,7 @@ declare module wdFrp {
         static create(disposable?: IDisposable): GroupDisposable;
         private _group;
         constructor(disposable?: IDisposable);
-        add(disposable: IDisposable): GroupDisposable;
+        add(disposable: IDisposable): this;
         dispose(): void;
     }
 }
