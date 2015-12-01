@@ -1,0 +1,5 @@
+* Wonder-FRP
+Wonder-FRP is a functional reactive programming library writing in typescipt.
+* License
+MIT Licence
+
