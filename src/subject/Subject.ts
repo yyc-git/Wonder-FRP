@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class Subject implements IObserver{
         public static create() {

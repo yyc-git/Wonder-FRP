@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class IntervalStream extends BaseStream{
         public static create(interval:number, scheduler:Scheduler) {

@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export abstract class Stream extends Entity{
         public scheduler:Scheduler = ABSTRACT_ATTRIBUTE;

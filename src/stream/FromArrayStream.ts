@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class FromArrayStream extends BaseStream{
         public static create(array:Array<any>, scheduler:Scheduler) {

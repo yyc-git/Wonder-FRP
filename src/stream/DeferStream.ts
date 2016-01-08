@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class DeferStream extends BaseStream{
         public static create(buildStreamFunc:Function) {

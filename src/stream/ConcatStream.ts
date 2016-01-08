@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class ConcatStream extends BaseStream{
         public static create(sources:Array<Stream>) {

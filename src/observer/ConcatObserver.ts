@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp {
     export class ConcatObserver extends Observer {
         public static create(currentObserver:IObserver, startNextStream:Function) {

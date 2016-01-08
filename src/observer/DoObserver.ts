@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class DoObserver extends Observer{
         public static create(currentObserver:IObserver, prevObserver:IObserver) {

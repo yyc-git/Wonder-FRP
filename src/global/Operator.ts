@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export var createStream = (subscribeFunc) => {
         return AnonymousStream.create(subscribeFunc);

@@ -1334,6 +1334,70 @@ var wdFrp;
 
 var wdFrp;
 (function (wdFrp) {
+    wdFrp.fromNodeCallback = function (func, context) {
+        return function () {
+            var funcArgs = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                funcArgs[_i - 0] = arguments[_i];
+            }
+            return wdFrp.createStream(function (observer) {
+                var hander = function (err) {
+                    var args = [];
+                    for (var _i = 1; _i < arguments.length; _i++) {
+                        args[_i - 1] = arguments[_i];
+                    }
+                    if (err) {
+                        observer.error(err);
+                        return;
+                    }
+                    if (args.length <= 1) {
+                        observer.next.apply(observer, args);
+                    }
+                    else {
+                        observer.next(args);
+                    }
+                    observer.completed();
+                };
+                funcArgs.push(hander);
+                func.apply(context, funcArgs);
+            });
+        };
+    };
+    wdFrp.fromStream = function (stream, finishEventName) {
+        if (finishEventName === void 0) { finishEventName = "end"; }
+        stream.pause();
+        return wdFrp.createStream(function (observer) {
+            var dataHandler = function (data) {
+                observer.next(data);
+            }, errorHandler = function (err) {
+                observer.error(err);
+            }, endHandler = function () {
+                observer.completed();
+            };
+            stream.addListener("data", dataHandler);
+            stream.addListener("error", errorHandler);
+            stream.addListener(finishEventName, endHandler);
+            stream.resume();
+            return function () {
+                stream.removeListener("data", dataHandler);
+                stream.removeListener("error", errorHandler);
+                stream.removeListener(finishEventName, endHandler);
+            };
+        });
+    };
+    wdFrp.fromReadableStream = function (stream) {
+        return wdFrp.fromStream(stream, "end");
+    };
+    wdFrp.fromWritableStream = function (stream) {
+        return wdFrp.fromStream(stream, "finish");
+    };
+    wdFrp.fromTransformStream = function (stream) {
+        return wdFrp.fromStream(stream, "finish");
+    };
+})(wdFrp || (wdFrp = {}));
+
+var wdFrp;
+(function (wdFrp) {
     var Entity = (function () {
         function Entity(uidPre) {
             this._uid = null;
@@ -3279,68 +3343,4 @@ var wdFrp;
         return TestStream;
     })(wdFrp.BaseStream);
     wdFrp.TestStream = TestStream;
-})(wdFrp || (wdFrp = {}));
-
-var wdFrp;
-(function (wdFrp) {
-    wdFrp.fromNodeCallback = function (func, context) {
-        return function () {
-            var funcArgs = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                funcArgs[_i - 0] = arguments[_i];
-            }
-            return wdFrp.createStream(function (observer) {
-                var hander = function (err) {
-                    var args = [];
-                    for (var _i = 1; _i < arguments.length; _i++) {
-                        args[_i - 1] = arguments[_i];
-                    }
-                    if (err) {
-                        observer.error(err);
-                        return;
-                    }
-                    if (args.length <= 1) {
-                        observer.next.apply(observer, args);
-                    }
-                    else {
-                        observer.next(args);
-                    }
-                    observer.completed();
-                };
-                funcArgs.push(hander);
-                func.apply(context, funcArgs);
-            });
-        };
-    };
-    wdFrp.fromStream = function (stream, finishEventName) {
-        if (finishEventName === void 0) { finishEventName = "end"; }
-        stream.pause();
-        return wdFrp.createStream(function (observer) {
-            var dataHandler = function (data) {
-                observer.next(data);
-            }, errorHandler = function (err) {
-                observer.error(err);
-            }, endHandler = function () {
-                observer.completed();
-            };
-            stream.addListener("data", dataHandler);
-            stream.addListener("error", errorHandler);
-            stream.addListener(finishEventName, endHandler);
-            stream.resume();
-            return function () {
-                stream.removeListener("data", dataHandler);
-                stream.removeListener("error", errorHandler);
-                stream.removeListener(finishEventName, endHandler);
-            };
-        });
-    };
-    wdFrp.fromReadableStream = function (stream) {
-        return wdFrp.fromStream(stream, "end");
-    };
-    wdFrp.fromWritableStream = function (stream) {
-        return wdFrp.fromStream(stream, "finish");
-    };
-    wdFrp.fromTransformStream = function (stream) {
-        return wdFrp.fromStream(stream, "finish");
-    };
 })(wdFrp || (wdFrp = {}));

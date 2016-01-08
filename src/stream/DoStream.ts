@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class DoStream extends BaseStream{
         public static create(source:Stream, onNext?:Function, onError?:Function, onCompleted?:Function) {

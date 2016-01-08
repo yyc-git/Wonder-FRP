@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp {
     root.requestNextAnimationFrame = (function () {
         var originalRequestAnimationFrame = undefined,

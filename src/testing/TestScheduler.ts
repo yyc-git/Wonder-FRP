@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp {
     const SUBSCRIBE_TIME = 200;
     const DISPOSE_TIME = 1000;

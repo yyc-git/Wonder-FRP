@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
 	export class InnerSubscription implements IDisposable{
 		public static create(subject:Subject|GeneratorSubject, observer:Observer) {

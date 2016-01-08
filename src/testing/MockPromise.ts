@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class MockPromise{
         public static create(scheduler:TestScheduler, messages:[Record]) {

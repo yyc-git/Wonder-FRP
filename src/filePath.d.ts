@@ -2,6 +2,9 @@
 
 /// <reference path="JudgeUtils"/>
 
+
+/// <reference path="binding/nodejs/NodeOperator"/>
+
 /// <reference path="core/Entity"/>
 
 /// <reference path="disposable/IDisposable"/>

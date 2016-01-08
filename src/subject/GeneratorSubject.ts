@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class GeneratorSubject extends Entity implements IObserver {
         public static create() {

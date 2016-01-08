@@ -1,4 +1,3 @@
-/// <reference path="./filePath.d.ts"/>
 module wdFrp {
     export class JudgeUtils extends wdCb.JudgeUtils {
         public static isPromise(obj){

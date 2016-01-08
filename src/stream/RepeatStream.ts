@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class RepeatStream extends BaseStream{
         public static create(source:Stream, count:number) {

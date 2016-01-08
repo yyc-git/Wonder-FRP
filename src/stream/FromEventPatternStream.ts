@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class FromEventPatternStream extends BaseStream{
         public static create(addHandler:Function, removeHandler:Function) {

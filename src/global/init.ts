@@ -1,5 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
-
 module wdFrp{
     //rsvp.js
     //declare var RSVP:any;

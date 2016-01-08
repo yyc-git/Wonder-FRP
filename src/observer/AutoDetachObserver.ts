@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class AutoDetachObserver extends Observer{
         public static create(observer:IObserver);

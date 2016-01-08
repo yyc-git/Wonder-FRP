@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class TakeUntilStream extends BaseStream{
         public static create(source:Stream, otherSteam:Stream) {

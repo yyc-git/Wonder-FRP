@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class MockObserver extends Observer{
         public static create(scheduler:TestScheduler) {

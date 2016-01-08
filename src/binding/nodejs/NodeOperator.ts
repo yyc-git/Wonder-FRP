@@ -1,4 +1,3 @@
-/// <reference path="../../filePath.d.ts"/>
 module wdFrp {
     export var fromNodeCallback = (func:Function, context?:any) => {
         return (...funcArgs) => {

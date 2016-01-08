@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class SingleDisposable implements IDisposable{
         public static create(disposeHandler:Function = function(){}) {

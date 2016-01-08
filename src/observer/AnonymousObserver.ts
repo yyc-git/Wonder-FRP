@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class AnonymousObserver extends Observer{
         public static create(onNext:Function, onError:Function, onCompleted:Function) {

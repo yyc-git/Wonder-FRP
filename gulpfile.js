@@ -16,6 +16,9 @@ require("./gulp/publish_to_npm/publishToNPM");
 
 var tsFilePaths = config.tsFilePaths;
 var distPath = config.distPath;
+var definitionsPath = config.definitionsPath;
+var tsconfigFile = config.tsconfigFile;
+
 var PLUGIN_NAME = "gulp file";
 
 gulp.task('clean', function() {
@@ -24,52 +27,94 @@ gulp.task('clean', function() {
     });
 });
 
-gulp.task('compileTs', function() {
-    var tsResult = gulp.src(tsFilePaths)
-        .pipe(gulpTs({
-            declarationFiles: true,
-            target: 'ES5',
-            sortOutput:true,
-            experimentalDecorators: true,
-            emitDecoratorMetadata: true,
-            removeComments: true,
-            noEmitOnError: true,
-            //out: 'dyR.js'
-            typescript: require('typescript')
+
+
+
+gulp.task("compileTsConfig", function(){
+    var mapFilePath = function(item){
+        var result = /"([^"]+)"/g.exec(item)[1];
+
+        if(result.indexOf(".d.ts") > -1){
+            return result;
+        }
+
+        return result + ".ts";
+    }
+
+    var filterFilePath = function(item){
+        return item !== "";
+    }
+
+    return gulp.src(tsconfigFile)
+        .pipe(through(function (file, encoding, callback) {
+            var arr = null,
+                tsconfig = null,
+                outputConfigStr = null;
+
+            if (file.isNull()) {
+                this.emit("error", new gutil.PluginError(PLUGIN_NAME, 'Streaming not supported'));
+                return callback();
+            }
+            if (file.isBuffer()) {
+                arr = fs.readFileSync(path.join(process.cwd(), definitionsPath), "utf8").split('\n').filter(filterFilePath).map(mapFilePath);
+
+                tsconfig = JSON.parse(file.contents);
+                tsconfig.files = arr;
+
+                outputConfigStr = JSON.stringify(tsconfig,null,"\t");
+
+                fs.writeFileSync(file.path,outputConfigStr);
+
+                this.push(file);
+
+                callback();
+            }
+            if (file.isStream()) {
+                this.emit("error", new gutil.PluginError(PLUGIN_NAME, 'Streaming not supported'));
+                return callback();
+            }
+        }, function (callback) {
+            callback();
         }));
+});
+
+gulp.task("compileTs", function() {
+    var tsProject = gulpTs.createProject(path.join(process.cwd(), tsconfigFile), {
+        sortOutput: true,
+        declaration: true,
+        typescript: require('typescript')
+    });
+
+    var tsResult = tsProject.src()
+        .pipe(gulpTs(tsProject));
 
 
-    return  merge([
+    return merge([
         tsResult.dts
-            .pipe(gulpConcat('wdFrp.d.ts'))
-            .pipe(gulp.dest(distPath)),
+            .pipe(gulpConcat("wdFrp.d.ts"))
+            .pipe(gulp.dest("dist")),
         tsResult.js
-            .pipe(gulpConcat('wdFrp.js'))
-            .pipe(gulp.dest(distPath))
+            .pipe(gulpConcat("wdFrp.js"))
+            .pipe(gulp.dest("dist/"))
     ])
 });
 
+gulp.task("compileTsDebug", function() {
+    var tsProject = gulpTs.createProject(path.join(process.cwd(), tsconfigFile), {
+        out: "wdFrp.debug.js",
+        typescript: require('typescript')
+    });
 
-gulp.task('compileTsDebug', function() {
-    var tsResult = gulp.src(tsFilePaths)
+    var tsResult = tsProject.src()
         .pipe(gulpSourcemaps.init())
-        .pipe(gulpTs({
-            declarationFiles: true,
-            target: 'ES5',
-            sortOutput:true,
-            experimentalDecorators: true,
-            emitDecoratorMetadata: true,
-            removeComments: true,
-            noEmitOnError: true,
-            //out: 'dyR.js'
-            typescript: require('typescript')
-        }));
+        .pipe(gulpTs(tsProject));
 
 
-    return tsResult.js
-        .pipe(gulpConcat('wdFrp.debug.js'))
-        .pipe(gulpSourcemaps.write())
-        .pipe(gulp.dest(distPath));
+    return merge([
+        tsResult.js
+            .pipe(gulpSourcemaps.write())
+            .pipe(gulp.dest("dist/"))
+    ])
 });
 
 
@@ -165,7 +210,7 @@ function removeOriginFile(){
 
 
 //todo removeReference
-gulp.task("build", gulpSync.sync(["clean", "compileTs",  "compileTsDebug", "publishToNPM", "buildMultiDistFiles", "removeReference"]));
+gulp.task("build", gulpSync.sync(["clean", "compileTsConfig", "compileTs",  "compileTsDebug", "publishToNPM", "buildMultiDistFiles", "removeReference"]));
 
 
 
@@ -233,7 +278,7 @@ gulp.task("test", function (done) {
 //    //})
 //});
 gulp.task("watch", function(){
-    gulp.watch(tsFilePaths, ["compileTsDebug"]);
+    gulp.watch(tsFilePaths, ["compileTsConfig", "compileTsDebug"]);
 });
 
 //

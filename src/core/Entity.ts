@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export abstract class Entity{
         public static UID:number = 1;

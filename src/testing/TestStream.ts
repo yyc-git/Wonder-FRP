@@ -1,4 +1,3 @@
-/// <reference path="../filePath"/>
 module wdFrp {
     export class TestStream extends BaseStream {
         public static create(messages:[Record], scheduler:TestScheduler) {

@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class FromPromiseStream extends BaseStream{
         public static create(promise:any, scheduler:Scheduler) {

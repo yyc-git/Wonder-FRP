@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class MergeAllObserver extends Observer{
         public static create(currentObserver:IObserver, streamGroup:wdCb.Collection<Stream>, groupDisposable:GroupDisposable) {

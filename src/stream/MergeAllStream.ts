@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class MergeAllStream extends BaseStream{
         public static create(source:Stream) {

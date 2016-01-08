@@ -1,4 +1,3 @@
-
 declare module wdFrp {
     class JudgeUtils extends wdCb.JudgeUtils {
         static isPromise(obj: any): boolean;
@@ -6,6 +5,13 @@ declare module wdFrp {
     }
 }
 
+declare module wdFrp {
+    var fromNodeCallback: (func: Function, context?: any) => (...funcArgs: any[]) => AnonymousStream;
+    var fromStream: (stream: any, finishEventName?: string) => AnonymousStream;
+    var fromReadableStream: (stream: any) => AnonymousStream;
+    var fromWritableStream: (stream: any) => AnonymousStream;
+    var fromTransformStream: (stream: any) => AnonymousStream;
+}
 
 declare module wdFrp {
     abstract class Entity {
@@ -22,7 +28,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class SingleDisposable implements IDisposable {
         static create(disposeHandler?: Function): SingleDisposable;
@@ -32,7 +37,6 @@ declare module wdFrp {
         dispose(): void;
     }
 }
-
 
 declare module wdFrp {
     class GroupDisposable implements IDisposable {
@@ -44,7 +48,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     interface IObserver extends IDisposable {
         next(value: any): any;
@@ -52,7 +55,6 @@ declare module wdFrp {
         completed(): any;
     }
 }
-
 
 declare module wdFrp {
     class InnerSubscription implements IDisposable {
@@ -64,7 +66,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class InnerSubscriptionGroup implements IDisposable {
         static create(): InnerSubscriptionGroup;
@@ -74,7 +75,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     var root: any;
 }
@@ -83,10 +83,8 @@ declare module wdFrp {
     const ABSTRACT_ATTRIBUTE: any;
 }
 
-
 declare module wdFrp {
 }
-
 
 declare module wdFrp {
     abstract class Stream extends Entity {
@@ -112,7 +110,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class Scheduler {
         static create(...args: any[]): Scheduler;
@@ -123,7 +120,6 @@ declare module wdFrp {
         publishIntervalRequest(observer: IObserver, action: Function): void;
     }
 }
-
 
 declare module wdFrp {
     abstract class Observer extends Entity implements IObserver {
@@ -147,7 +143,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class Subject implements IObserver {
         static create(): Subject;
@@ -163,7 +158,6 @@ declare module wdFrp {
         dispose(): void;
     }
 }
-
 
 declare module wdFrp {
     class GeneratorSubject extends Entity implements IObserver {
@@ -191,7 +185,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class AnonymousObserver extends Observer {
         static create(onNext: Function, onError: Function, onCompleted: Function): AnonymousObserver;
@@ -200,7 +193,6 @@ declare module wdFrp {
         protected onCompleted(): void;
     }
 }
-
 
 declare module wdFrp {
     class AutoDetachObserver extends Observer {
@@ -212,7 +204,6 @@ declare module wdFrp {
         protected onCompleted(): void;
     }
 }
-
 
 declare module wdFrp {
     class MapObserver extends Observer {
@@ -226,7 +217,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class DoObserver extends Observer {
         static create(currentObserver: IObserver, prevObserver: IObserver): DoObserver;
@@ -238,7 +228,6 @@ declare module wdFrp {
         protected onCompleted(): void;
     }
 }
-
 
 declare module wdFrp {
     class MergeAllObserver extends Observer {
@@ -256,7 +245,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class TakeUntilObserver extends Observer {
         static create(prevObserver: IObserver): TakeUntilObserver;
@@ -267,7 +255,6 @@ declare module wdFrp {
         protected onCompleted(): void;
     }
 }
-
 
 declare module wdFrp {
     class ConcatObserver extends Observer {
@@ -281,14 +268,12 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     interface ISubjectObserver {
         addChild(observer: Observer): any;
         removeChild(observer: Observer): any;
     }
 }
-
 
 declare module wdFrp {
     class SubjectObserver implements IObserver {
@@ -305,7 +290,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class IgnoreElementsObserver extends Observer {
         static create(currentObserver: IObserver): IgnoreElementsObserver;
@@ -317,7 +301,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     abstract class BaseStream extends Stream {
         abstract subscribeCore(observer: IObserver): IDisposable;
@@ -325,7 +308,6 @@ declare module wdFrp {
         buildStream(observer: IObserver): IDisposable;
     }
 }
-
 
 declare module wdFrp {
     class DoStream extends BaseStream {
@@ -337,7 +319,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class MapStream extends BaseStream {
         static create(source: Stream, selector: Function): MapStream;
@@ -348,7 +329,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class FromArrayStream extends BaseStream {
         static create(array: Array<any>, scheduler: Scheduler): FromArrayStream;
@@ -358,7 +338,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class FromPromiseStream extends BaseStream {
         static create(promise: any, scheduler: Scheduler): FromPromiseStream;
@@ -367,7 +346,6 @@ declare module wdFrp {
         subscribeCore(observer: IObserver): SingleDisposable;
     }
 }
-
 
 declare module wdFrp {
     class FromEventPatternStream extends BaseStream {
@@ -379,7 +357,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class AnonymousStream extends Stream {
         static create(subscribeFunc: Function): AnonymousStream;
@@ -387,7 +364,6 @@ declare module wdFrp {
         subscribe(onNext: any, onError: any, onCompleted: any): IDisposable;
     }
 }
-
 
 declare module wdFrp {
     class IntervalStream extends BaseStream {
@@ -399,7 +375,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class IntervalRequestStream extends BaseStream {
         static create(scheduler: Scheduler): IntervalRequestStream;
@@ -408,7 +383,6 @@ declare module wdFrp {
         subscribeCore(observer: IObserver): SingleDisposable;
     }
 }
-
 
 declare module wdFrp {
     class MergeAllStream extends BaseStream {
@@ -420,7 +394,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class TakeUntilStream extends BaseStream {
         static create(source: Stream, otherSteam: Stream): TakeUntilStream;
@@ -431,7 +404,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class ConcatStream extends BaseStream {
         static create(sources: Array<Stream>): ConcatStream;
@@ -440,7 +412,6 @@ declare module wdFrp {
         subscribeCore(observer: IObserver): GroupDisposable;
     }
 }
-
 
 declare module wdFrp {
     class RepeatStream extends BaseStream {
@@ -452,7 +423,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class IgnoreElementsStream extends BaseStream {
         static create(source: Stream): IgnoreElementsStream;
@@ -462,7 +432,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class DeferStream extends BaseStream {
         static create(buildStreamFunc: Function): DeferStream;
@@ -471,7 +440,6 @@ declare module wdFrp {
         subscribeCore(observer: IObserver): GroupDisposable;
     }
 }
-
 
 declare module wdFrp {
     var createStream: (subscribeFunc: any) => AnonymousStream;
@@ -486,7 +454,6 @@ declare module wdFrp {
     var defer: (buildStreamFunc: Function) => DeferStream;
     var just: (returnValue: any) => AnonymousStream;
 }
-
 
 declare module wdFrp {
     class Record {
@@ -503,7 +470,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class MockObserver extends Observer {
         static create(scheduler: TestScheduler): MockObserver;
@@ -519,7 +485,6 @@ declare module wdFrp {
     }
 }
 
-
 declare module wdFrp {
     class MockPromise {
         static create(scheduler: TestScheduler, messages: [Record]): MockPromise;
@@ -529,7 +494,6 @@ declare module wdFrp {
         then(successCb: Function, errorCb: Function, observer: IObserver): void;
     }
 }
-
 
 declare module wdFrp {
     class TestScheduler extends Scheduler {
@@ -586,13 +550,4 @@ declare module wdFrp {
         constructor(messages: [Record], scheduler: TestScheduler);
         subscribeCore(observer: IObserver): SingleDisposable;
     }
-}
-
-
-declare module wdFrp {
-    var fromNodeCallback: (func: Function, context?: any) => (...funcArgs: any[]) => AnonymousStream;
-    var fromStream: (stream: any, finishEventName?: string) => AnonymousStream;
-    var fromReadableStream: (stream: any) => AnonymousStream;
-    var fromWritableStream: (stream: any) => AnonymousStream;
-    var fromTransformStream: (stream: any) => AnonymousStream;
 }

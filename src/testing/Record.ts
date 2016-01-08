@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp {
     var defaultIsEqual = (a, b) => {
         return a === b;

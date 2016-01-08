@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export abstract class BaseStream extends Stream{
         public abstract subscribeCore(observer:IObserver):IDisposable;

@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp {
     export class MapObserver extends Observer {
         public static create(currentObserver:IObserver, selector:Function) {

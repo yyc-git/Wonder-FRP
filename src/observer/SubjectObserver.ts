@@ -1,4 +1,3 @@
-/// <reference path="../filePath.d.ts"/>
 module wdFrp{
     export class SubjectObserver implements IObserver{
         public observers:wdCb.Collection<IObserver> = wdCb.Collection.create<IObserver>();
