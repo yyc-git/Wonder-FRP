@@ -97,6 +97,17 @@ module wdFrp{
             });
         }
 
+        public filter(predicate:(value:any)=>boolean, thisArg = this){
+            if(this instanceof FilterStream){
+                let self:any = this;
+
+                return self.internalFilter(predicate, thisArg);
+            }
+
+            return FilterStream.create(this, predicate, thisArg);
+
+        }
+
         public concat(streamArr:Array<Stream>);
         public concat(...otherStream);
 

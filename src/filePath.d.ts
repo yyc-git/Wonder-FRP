@@ -46,6 +46,7 @@
 /// <reference path="observer/ISubjectObserver"/>
 /// <reference path="observer/SubjectObserver"/>
 /// <reference path="observer/IgnoreElementsObserver"/>
+/// <reference path="observer/FilterObserver"/>
 
 /// <reference path="stream/BaseStream"/>
 /// <reference path="stream/DoStream"/>
@@ -62,6 +63,7 @@
 /// <reference path="stream/RepeatStream"/>
 /// <reference path="stream/IgnoreElementsStream"/>
 /// <reference path="stream/DeferStream"/>
+/// <reference path="stream/FilterStream"/>
 
 /// <reference path="global/Operator"/>
 
