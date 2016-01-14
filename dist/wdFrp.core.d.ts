@@ -2,6 +2,7 @@ declare module wdFrp {
     class JudgeUtils extends wdCb.JudgeUtils {
         static isPromise(obj: any): boolean;
         static isEqual(ob1: Entity, ob2: Entity): boolean;
+        static isIObserver(i: IObserver): () => any;
     }
 }
 
@@ -20,6 +21,23 @@ declare module wdFrp {
         uid: string;
         constructor(uidPre: string);
     }
+}
+
+declare module wdFrp {
+    class Main {
+        static isTest: boolean;
+    }
+}
+
+declare module wdFrp {
+    function assert(cond: boolean, message?: string): void;
+    function require(InFunc: any): (target: any, name: any, descriptor: any) => any;
+    function ensure(OutFunc: any): (target: any, name: any, descriptor: any) => any;
+    function requireGetter(InFunc: any): (target: any, name: any, descriptor: any) => any;
+    function requireSetter(InFunc: any): (target: any, name: any, descriptor: any) => any;
+    function ensureGetter(OutFunc: any): (target: any, name: any, descriptor: any) => any;
+    function ensureSetter(OutFunc: any): (target: any, name: any, descriptor: any) => any;
+    function invariant(func: any): (target: any) => void;
 }
 
 declare module wdFrp {
@@ -98,13 +116,15 @@ declare module wdFrp {
         flatMap(selector: Function): MergeAllStream;
         mergeAll(): MergeAllStream;
         takeUntil(otherStream: Stream): TakeUntilStream;
+        take(count?: number): AnonymousStream;
+        takeLast(count?: number): AnonymousStream;
         concat(streamArr: Array<Stream>): any;
         concat(...otherStream: any[]): any;
         merge(streamArr: Array<Stream>): any;
         merge(...otherStream: any[]): any;
         repeat(count?: number): RepeatStream;
         ignoreElements(): IgnoreElementsStream;
-        protected handleSubject(arg: any): boolean;
+        protected handleSubject(subject: any): boolean;
         private _isSubject(subject);
         private _setSubject(subject);
     }
@@ -361,7 +381,11 @@ declare module wdFrp {
     class AnonymousStream extends Stream {
         static create(subscribeFunc: Function): AnonymousStream;
         constructor(subscribeFunc: Function);
-        subscribe(onNext: any, onError: any, onCompleted: any): IDisposable;
+        subscribe(subject: Subject): IDisposable;
+        subscribe(observer: IObserver): IDisposable;
+        subscribe(onNext: (value: any) => void): IDisposable;
+        subscribe(onNext: (value: any) => void, onError: (e: any) => void): IDisposable;
+        subscribe(onNext: (value: any) => void, onError: (e: any) => void, onComplete: () => void): IDisposable;
     }
 }
 

@@ -1327,6 +1327,9 @@ var wdFrp;
         JudgeUtils.isEqual = function (ob1, ob2) {
             return ob1.uid === ob2.uid;
         };
+        JudgeUtils.isIObserver = function (i) {
+            return i.next && i.error && i.completed;
+        };
         return JudgeUtils;
     })(wdCb.JudgeUtils);
     wdFrp.JudgeUtils = JudgeUtils;
@@ -1417,6 +1420,123 @@ var wdFrp;
         return Entity;
     })();
     wdFrp.Entity = Entity;
+})(wdFrp || (wdFrp = {}));
+
+var wdFrp;
+(function (wdFrp) {
+    var Main = (function () {
+        function Main() {
+        }
+        Main.isTest = false;
+        return Main;
+    })();
+    wdFrp.Main = Main;
+})(wdFrp || (wdFrp = {}));
+
+var wdFrp;
+(function (wdFrp) {
+    var Log = wdCb.Log;
+    function assert(cond, message) {
+        if (message === void 0) { message = "contract error"; }
+        Log.error(!cond, message);
+    }
+    wdFrp.assert = assert;
+    function require(InFunc) {
+        return function (target, name, descriptor) {
+            var value = descriptor.value;
+            descriptor.value = function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                if (wdFrp.Main.isTest) {
+                    InFunc.apply(this, args);
+                }
+                return value.apply(this, args);
+            };
+            return descriptor;
+        };
+    }
+    wdFrp.require = require;
+    function ensure(OutFunc) {
+        return function (target, name, descriptor) {
+            var value = descriptor.value;
+            descriptor.value = function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                var result = value.apply(this, args), params = [result].concat(args);
+                if (wdFrp.Main.isTest) {
+                    OutFunc.apply(this, params);
+                }
+                return result;
+            };
+            return descriptor;
+        };
+    }
+    wdFrp.ensure = ensure;
+    function requireGetter(InFunc) {
+        return function (target, name, descriptor) {
+            var getter = descriptor.get;
+            descriptor.get = function () {
+                if (wdFrp.Main.isTest) {
+                    InFunc.call(this);
+                }
+                return getter.call(this);
+            };
+            return descriptor;
+        };
+    }
+    wdFrp.requireGetter = requireGetter;
+    function requireSetter(InFunc) {
+        return function (target, name, descriptor) {
+            var setter = descriptor.set;
+            descriptor.set = function (val) {
+                if (wdFrp.Main.isTest) {
+                    InFunc.call(this, val);
+                }
+                setter.call(this, val);
+            };
+            return descriptor;
+        };
+    }
+    wdFrp.requireSetter = requireSetter;
+    function ensureGetter(OutFunc) {
+        return function (target, name, descriptor) {
+            var getter = descriptor.get;
+            descriptor.get = function () {
+                var result = getter.call(this);
+                if (wdFrp.Main.isTest) {
+                    OutFunc.call(this, result);
+                }
+                return result;
+            };
+            return descriptor;
+        };
+    }
+    wdFrp.ensureGetter = ensureGetter;
+    function ensureSetter(OutFunc) {
+        return function (target, name, descriptor) {
+            var setter = descriptor.set;
+            descriptor.set = function (val) {
+                var result = setter.call(this, val), params = [result, val];
+                if (wdFrp.Main.isTest) {
+                    OutFunc.apply(this, params);
+                }
+            };
+            return descriptor;
+        };
+    }
+    wdFrp.ensureSetter = ensureSetter;
+    function invariant(func) {
+        return function (target) {
+            if (wdFrp.Main.isTest) {
+                func(target);
+            }
+        };
+    }
+    wdFrp.invariant = invariant;
 })(wdFrp || (wdFrp = {}));
 
 
@@ -1550,8 +1670,15 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 var wdFrp;
 (function (wdFrp) {
+    var Log = wdCb.Log;
     var Stream = (function (_super) {
         __extends(Stream, _super);
         function Stream(subscribeFunc) {
@@ -1577,6 +1704,51 @@ var wdFrp;
         };
         Stream.prototype.takeUntil = function (otherStream) {
             return wdFrp.TakeUntilStream.create(this, otherStream);
+        };
+        Stream.prototype.take = function (count) {
+            if (count === void 0) { count = 1; }
+            var self = this;
+            if (count === 0) {
+                return wdFrp.empty();
+            }
+            return wdFrp.createStream(function (observer) {
+                self.subscribe(function (value) {
+                    if (count > 0) {
+                        observer.next(value);
+                    }
+                    count--;
+                    if (count <= 0) {
+                        observer.completed();
+                    }
+                }, function (e) {
+                    observer.error(e);
+                }, function () {
+                    observer.completed();
+                });
+            });
+        };
+        Stream.prototype.takeLast = function (count) {
+            if (count === void 0) { count = 1; }
+            var self = this;
+            if (count === 0) {
+                return wdFrp.empty();
+            }
+            return wdFrp.createStream(function (observer) {
+                var queue = [];
+                self.subscribe(function (value) {
+                    queue.push(value);
+                    if (queue.length > count) {
+                        queue.shift();
+                    }
+                }, function (e) {
+                    observer.error(e);
+                }, function () {
+                    while (queue.length > 0) {
+                        observer.next(queue.shift());
+                    }
+                    observer.completed();
+                });
+            });
         };
         Stream.prototype.concat = function () {
             var args = null;
@@ -1608,9 +1780,9 @@ var wdFrp;
         Stream.prototype.ignoreElements = function () {
             return wdFrp.IgnoreElementsStream.create(this);
         };
-        Stream.prototype.handleSubject = function (arg) {
-            if (this._isSubject(arg)) {
-                this._setSubject(arg);
+        Stream.prototype.handleSubject = function (subject) {
+            if (this._isSubject(subject)) {
+                this._setSubject(subject);
                 return true;
             }
             return false;
@@ -1621,6 +1793,18 @@ var wdFrp;
         Stream.prototype._setSubject = function (subject) {
             subject.source = this;
         };
+        __decorate([
+            wdFrp.require(function (count) {
+                if (count === void 0) { count = 1; }
+                wdFrp.assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
+            })
+        ], Stream.prototype, "take", null);
+        __decorate([
+            wdFrp.require(function (count) {
+                if (count === void 0) { count = 1; }
+                wdFrp.assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
+            })
+        ], Stream.prototype, "takeLast", null);
         return Stream;
     })(wdFrp.Entity);
     wdFrp.Stream = Stream;
@@ -2625,12 +2809,24 @@ var wdFrp;
             var obj = new this(subscribeFunc);
             return obj;
         };
-        AnonymousStream.prototype.subscribe = function (onNext, onError, onCompleted) {
+        AnonymousStream.prototype.subscribe = function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
             var observer = null;
-            if (this.handleSubject(arguments[0])) {
+            if (args[0] instanceof wdFrp.Subject) {
+                var subject = args[0];
+                this.handleSubject(subject);
                 return;
             }
-            observer = wdFrp.AutoDetachObserver.create(onNext, onError, onCompleted);
+            else if (wdFrp.JudgeUtils.isIObserver(args[0])) {
+                observer = wdFrp.AutoDetachObserver.create(args[0]);
+            }
+            else {
+                var onNext = args[0], onError = args[1] || null, onCompleted = args[2] || null;
+                observer = wdFrp.AutoDetachObserver.create(onNext, onError, onCompleted);
+            }
             observer.setDisposable(this.buildStream(observer));
             return observer;
         };

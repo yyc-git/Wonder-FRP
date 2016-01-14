@@ -13,6 +13,8 @@
 		"JudgeUtils.ts",
 		"binding/nodejs/NodeOperator.ts",
 		"core/Entity.ts",
+		"core/Main.ts",
+		"definition/typescript/decorator/contract.ts",
 		"disposable/IDisposable.ts",
 		"disposable/SingleDisposable.ts",
 		"disposable/GroupDisposable.ts",
