@@ -118,6 +118,7 @@ declare module wdFrp {
         takeUntil(otherStream: Stream): TakeUntilStream;
         take(count?: number): AnonymousStream;
         takeLast(count?: number): AnonymousStream;
+        filter(predicate: (value: any) => boolean, thisArg?: this): any;
         concat(streamArr: Array<Stream>): any;
         concat(...otherStream: any[]): any;
         merge(streamArr: Array<Stream>): any;
@@ -322,6 +323,20 @@ declare module wdFrp {
 }
 
 declare module wdFrp {
+    class FilterObserver extends Observer {
+        static create(prevObserver: IObserver, predicate: (value: any, index?: number, source?: Stream) => boolean, source: Stream): FilterObserver;
+        private _prevObserver;
+        private _source;
+        private _predicate;
+        private _i;
+        constructor(prevObserver: IObserver, predicate: (value: any) => boolean, source: Stream);
+        protected onNext(value: any): void;
+        protected onError(error: any): void;
+        protected onCompleted(): void;
+    }
+}
+
+declare module wdFrp {
     abstract class BaseStream extends Stream {
         abstract subscribeCore(observer: IObserver): IDisposable;
         subscribe(arg1: Function | Observer | Subject, onError?: any, onCompleted?: any): IDisposable;
@@ -462,6 +477,18 @@ declare module wdFrp {
         private _buildStreamFunc;
         constructor(buildStreamFunc: Function);
         subscribeCore(observer: IObserver): GroupDisposable;
+    }
+}
+
+declare module wdFrp {
+    class FilterStream extends BaseStream {
+        static create(source: Stream, predicate: (value: any, index?: number, source?: Stream) => boolean, thisArg: any): FilterStream;
+        constructor(source: Stream, predicate: (value: any, index?: number, source?: Stream) => boolean, thisArg: any);
+        predicate: (value: any, index?: number, source?: Stream) => boolean;
+        private _source;
+        subscribeCore(observer: IObserver): IDisposable;
+        internalFilter(predicate: (value: any, index?: number, source?: Stream) => boolean, thisArg: any): FilterStream;
+        private _innerPredicate(predicate, self);
     }
 }
 
