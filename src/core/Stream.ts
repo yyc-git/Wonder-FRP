@@ -1,4 +1,6 @@
 module wdFrp{
+    import Log = wdCb.Log;
+
     export abstract class Stream extends Entity{
         public scheduler:Scheduler = ABSTRACT_ATTRIBUTE;
         public subscribeFunc:(observer:IObserver) => Function|void = null;
@@ -35,6 +37,34 @@ module wdFrp{
             return TakeUntilStream.create(this, otherStream);
         }
 
+        @require(function(count:number = 1){
+            assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
+        })
+        public take(count:number = 1){
+            var self = this;
+
+            if(count === 0){
+                return empty();
+            }
+
+            return createStream((observer:IObserver) => {
+                self.subscribe((value:any) => {
+                    if(count > 0){
+                        observer.next(value);
+                    }
+
+                    count--;
+
+                    if(count <= 0){
+                        observer.completed();
+                    }
+                }, (e:any) => {
+                    observer.error(e);
+                }, () => {
+                    observer.completed();
+                });
+            });
+        }
 
         public concat(streamArr:Array<Stream>);
         public concat(...otherStream);
@@ -83,20 +113,20 @@ module wdFrp{
             return IgnoreElementsStream.create(this);
         }
 
-        protected handleSubject(arg){
-            if(this._isSubject(arg)){
-                this._setSubject(arg);
+        protected handleSubject(subject:any){
+            if(this._isSubject(subject)){
+                this._setSubject(subject);
                 return true;
             }
 
             return false;
         }
 
-        private _isSubject(subject){
+        private _isSubject(subject:Subject){
             return subject instanceof Subject;
         }
 
-        private _setSubject(subject){
+        private _setSubject(subject:Subject){
             subject.source = this;
         }
     }

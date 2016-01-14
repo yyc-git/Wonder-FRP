@@ -6,6 +6,11 @@
 /// <reference path="binding/nodejs/NodeOperator"/>
 
 /// <reference path="core/Entity"/>
+/// <reference path="core/Main"/>
+
+
+/// <reference path="definition/typescript/decorator/contract"/>
+
 
 /// <reference path="disposable/IDisposable"/>
 /// <reference path="disposable/SingleDisposable"/>
@@ -17,6 +22,8 @@
 /// <reference path="global/Variable"/>
 /// <reference path="global/Const"/>
 /// <reference path="global/init"/>
+
+
 
 
 /// <reference path="core/Stream"/>

@@ -28,6 +28,10 @@ module.exports = function(config) {
         'test/helper/jasmine/**',
         'test/helper/sinonJs/*.js',
 
+        'test/unit/*Tool.js',
+        'test/unit/**/*Tool.js',
+
+
         'test/unit/**'
         //'test/unit/**/takeUntilSpec.js',
 
@@ -74,7 +78,8 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome', 'Firefox'],
+    //browsers: ['Chrome', 'Firefox'],
+      browsers: ['Chrome'],
 
 
     // Continuous Integration mode
