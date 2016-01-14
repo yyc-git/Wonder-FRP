@@ -1,4 +1,4 @@
-describe("take", function () {
+describe("takeLast", function () {
     var rt = wdFrp,
         TestScheduler = rt.TestScheduler,
         next = TestScheduler.next,
@@ -17,19 +17,26 @@ describe("take", function () {
         sandbox.restore();
     });
 
-    describe("Returns a specified number of contiguous elements from the start of an Stream sequence", function () {
-        it("if count < 0, contract error", function(){
+    describe("Returns a specified number of contiguous elements from the end of an Stream sequence" +
+        "This operator accumulates a buffer with a length enough to store elements count elements. Upon completion of the source sequence, this buffer is drained on the result sequence. This causes the elements to be delayed.", function () {
+        it("complete_takeLast_one", function () {
             var stream1 = scheduler.createStream(
                 next(100, 1),
                 next(200, 2),
                 next(300, 3),
-                completed(301)
+                completed(310)
             );
-            expect(function(){
-                stream1.take(-1);
-            }).toThrow();
+
+            var results = scheduler.startWithSubscribe(function () {
+                return stream1.takeLast();
+            }, 50);
+
+            expect(results.messages).toStreamEqual(
+                next(310, 3),
+                completed(310)
+            );
         });
-        it("complete_take_one", function () {
+        it("complete_takeLast_before", function () {
             var stream1 = scheduler.createStream(
                 next(100, 1),
                 next(200, 2),
@@ -38,15 +45,16 @@ describe("take", function () {
             );
 
             var results = scheduler.startWithSubscribe(function () {
-                return stream1.take();
+                return stream1.takeLast(2);
             }, 50);
 
             expect(results.messages).toStreamEqual(
-                next(100, 1),
-                completed(100)
+                next(301, 2),
+                next(301, 3),
+                completed(301)
             );
         });
-        it("complete_take_before", function () {
+        it("complete_takeLast_exceed", function () {
             var stream1 = scheduler.createStream(
                 next(100, 1),
                 next(200, 2),
@@ -55,31 +63,13 @@ describe("take", function () {
             );
 
             var results = scheduler.startWithSubscribe(function () {
-                return stream1.take(2);
+                return stream1.takeLast(10);
             }, 50);
 
             expect(results.messages).toStreamEqual(
-                next(100, 1),
-                next(200, 2),
-                completed(200)
-            );
-        });
-        it("complete_take_exceed", function () {
-            var stream1 = scheduler.createStream(
-                next(100, 1),
-                next(200, 2),
-                next(300, 3),
-                completed(301)
-            );
-
-            var results = scheduler.startWithSubscribe(function () {
-                return stream1.take(10);
-            }, 50);
-
-            expect(results.messages).toStreamEqual(
-                next(100, 1),
-                next(200, 2),
-                next(300, 3),
+                next(301, 1),
+                next(301, 2),
+                next(301, 3),
                 completed(301)
             );
         });
@@ -93,12 +83,11 @@ describe("take", function () {
             );
 
             var results = scheduler.startWithSubscribe(function () {
-                return stream1.take(1);
+                return stream1.takeLast(1);
             }, 50);
 
             expect(results.messages).toStreamEqual(
-                next(100, 1),
-                completed(100)
+                error(200, e)
             );
         });
         it("error_same", function () {
@@ -111,11 +100,10 @@ describe("take", function () {
             );
 
             var results = scheduler.startWithSubscribe(function () {
-                return stream1.take(2);
+                return stream1.takeLast(2);
             }, 50);
 
             expect(results.messages).toStreamEqual(
-                next(100, 1),
                 error(200, e)
             );
         });
@@ -129,11 +117,10 @@ describe("take", function () {
             );
 
             var results = scheduler.startWithSubscribe(function () {
-                return stream1.take(10);
+                return stream1.takeLast(10);
             }, 50);
 
             expect(results.messages).toStreamEqual(
-                next(100, 1),
                 error(200, e)
             );
         });
@@ -146,13 +133,10 @@ describe("take", function () {
             );
 
             var results = scheduler.startWithTime(function () {
-                return stream1.take(2);
+                return stream1.takeLast(2);
             }, 50, 210);
 
             expect(results.messages).toStreamEqual(
-                next(100, 1),
-                next(200, 2),
-                completed(200)
             );
         });
         it("dispose_after", function () {
@@ -164,12 +148,10 @@ describe("take", function () {
             );
 
             var results = scheduler.startWithTime(function () {
-                return stream1.take(5);
+                return stream1.takeLast(5);
             }, 50, 210);
 
             expect(results.messages).toStreamEqual(
-                next(100, 1),
-                next(200, 2)
             );
         });
     });

@@ -66,6 +66,37 @@ module wdFrp{
             });
         }
 
+        @require(function(count:number = 1){
+            assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
+        })
+        public takeLast(count:number = 1){
+            var self = this;
+
+            if(count === 0){
+                return empty();
+            }
+
+            return createStream((observer:IObserver) => {
+                var queue = [];
+
+                self.subscribe((value:any) => {
+                    queue.push(value);
+
+                    if(queue.length > count){
+                        queue.shift();
+                    }
+                }, (e:any) => {
+                    observer.error(e);
+                }, () => {
+                    while(queue.length > 0){
+                        observer.next(queue.shift());
+                    }
+
+                    observer.completed();
+                });
+            });
+        }
+
         public concat(streamArr:Array<Stream>);
         public concat(...otherStream);
 
