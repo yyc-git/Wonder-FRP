@@ -699,12 +699,8 @@ var wdFrp;
             configurable: true
         });
         Observer.prototype.next = function (value) {
-            var args = [];
-            for (var _i = 1; _i < arguments.length; _i++) {
-                args[_i - 1] = arguments[_i];
-            }
             if (!this._isStop) {
-                return this.onNext.apply(this, arguments);
+                return this.onNext(value);
             }
         };
         Observer.prototype.error = function (error) {
@@ -914,11 +910,7 @@ var wdFrp;
             return new this(onNext, onError, onCompleted);
         };
         AnonymousObserver.prototype.onNext = function (value) {
-            var args = [];
-            for (var _i = 1; _i < arguments.length; _i++) {
-                args[_i - 1] = arguments[_i];
-            }
-            this.onUserNext.apply(this, arguments);
+            this.onUserNext(value);
         };
         AnonymousObserver.prototype.onError = function (error) {
             this.onUserError(error);
@@ -963,12 +955,8 @@ var wdFrp;
             _super.prototype.dispose.call(this);
         };
         AutoDetachObserver.prototype.onNext = function (value) {
-            var args = [];
-            for (var _i = 1; _i < arguments.length; _i++) {
-                args[_i - 1] = arguments[_i];
-            }
             try {
-                this.onUserNext.apply(this, arguments);
+                this.onUserNext(value);
             }
             catch (e) {
                 this.onError(e);
@@ -1369,7 +1357,7 @@ var wdFrp;
         FilterObserver.prototype.onNext = function (value) {
             try {
                 if (this.predicate(value, this.i++, this.source)) {
-                    this.prevObserver.next(value, 1);
+                    this.prevObserver.next(value);
                 }
             }
             catch (e) {
@@ -1404,19 +1392,31 @@ var wdFrp;
             return new this(prevObserver, predicate, source);
         };
         FilterWithStateObserver.prototype.onNext = function (value) {
+            var data = null;
             try {
                 if (this.predicate(value, this.i++, this.source)) {
                     if (!this._isTrigger) {
-                        this.prevObserver.next(value, wdFrp.FilterState.ENTER);
+                        data = {
+                            value: value,
+                            state: wdFrp.FilterState.ENTER
+                        };
                     }
                     else {
-                        this.prevObserver.next(value, wdFrp.FilterState.TRIGGER);
+                        data = {
+                            value: value,
+                            state: wdFrp.FilterState.TRIGGER
+                        };
                     }
+                    this.prevObserver.next(data);
                     this._isTrigger = true;
                 }
                 else {
                     if (this._isTrigger) {
-                        this.prevObserver.next(value, wdFrp.FilterState.LEAVE);
+                        data = {
+                            value: value,
+                            state: wdFrp.FilterState.LEAVE
+                        };
+                        this.prevObserver.next(data);
                     }
                     this._isTrigger = false;
                 }
@@ -2169,13 +2169,31 @@ var wdFrp;
             configurable: true
         });
         MockObserver.prototype.onNext = function (value) {
-            this._messages.push(wdFrp.Record.create(this._scheduler.clock, value));
+            var record = null;
+            if (wdFrp.JudgeUtils.isDirectObject(value)) {
+                record = wdFrp.Record.create(this._scheduler.clock, value, wdFrp.ActionType.NEXT, function (a, b) {
+                    var result = true;
+                    for (var i in a) {
+                        if (a.hasOwnProperty(i)) {
+                            if (a[i] !== b[i]) {
+                                result = false;
+                                break;
+                            }
+                        }
+                    }
+                    return result;
+                });
+            }
+            else {
+                record = wdFrp.Record.create(this._scheduler.clock, value, wdFrp.ActionType.NEXT);
+            }
+            this._messages.push(record);
         };
         MockObserver.prototype.onError = function (error) {
-            this._messages.push(wdFrp.Record.create(this._scheduler.clock, error));
+            this._messages.push(wdFrp.Record.create(this._scheduler.clock, error, wdFrp.ActionType.ERROR));
         };
         MockObserver.prototype.onCompleted = function () {
-            this._messages.push(wdFrp.Record.create(this._scheduler.clock, null));
+            this._messages.push(wdFrp.Record.create(this._scheduler.clock, null, wdFrp.ActionType.COMPLETED));
         };
         MockObserver.prototype.dispose = function () {
             _super.prototype.dispose.call(this);
@@ -2236,7 +2254,23 @@ var wdFrp;
             this._isReset = isReset;
         }
         TestScheduler.next = function (tick, value) {
-            return wdFrp.Record.create(tick, value, wdFrp.ActionType.NEXT);
+            if (wdFrp.JudgeUtils.isDirectObject(value)) {
+                return wdFrp.Record.create(tick, value, wdFrp.ActionType.NEXT, function (a, b) {
+                    var result = true;
+                    for (var i in a) {
+                        if (a.hasOwnProperty(i)) {
+                            if (a[i] !== b[i]) {
+                                result = false;
+                                break;
+                            }
+                        }
+                    }
+                    return result;
+                });
+            }
+            else {
+                return wdFrp.Record.create(tick, value, wdFrp.ActionType.NEXT);
+            }
         };
         TestScheduler.error = function (tick, error) {
             return wdFrp.Record.create(tick, error, wdFrp.ActionType.ERROR);

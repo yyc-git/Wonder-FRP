@@ -68,7 +68,7 @@ declare module wdFrp {
 
 declare module wdFrp {
     interface IObserver extends IDisposable {
-        next(value: any, ...args: any[]): any;
+        next(value: any): any;
         error(error: any): any;
         completed(): any;
     }
@@ -155,12 +155,12 @@ declare module wdFrp {
         private _disposable;
         constructor(observer: IObserver);
         constructor(onNext: Function, onError: Function, onCompleted: Function);
-        next(value: any, ...args: any[]): any;
+        next(value: any): any;
         error(error: any): void;
         completed(): void;
         dispose(): void;
         setDisposable(disposable: IDisposable): void;
-        protected abstract onNext(value: any, ...args: any[]): any;
+        protected abstract onNext(value: any): any;
         protected abstract onError(error: any): any;
         protected abstract onCompleted(): any;
     }
@@ -211,7 +211,7 @@ declare module wdFrp {
 declare module wdFrp {
     class AnonymousObserver extends Observer {
         static create(onNext: Function, onError: Function, onCompleted: Function): AnonymousObserver;
-        protected onNext(value: any, ...args: any[]): void;
+        protected onNext(value: any): void;
         protected onError(error: any): void;
         protected onCompleted(): void;
     }
@@ -222,7 +222,7 @@ declare module wdFrp {
         static create(observer: IObserver): any;
         static create(onNext: Function, onError: Function, onCompleted: Function): any;
         dispose(): void;
-        protected onNext(value: any, ...args: any[]): void;
+        protected onNext(value: any): void;
         protected onError(error: any): void;
         protected onCompleted(): void;
     }
