@@ -478,6 +478,14 @@ var wdFrp;
             }
             return wdFrp.FilterStream.create(this, predicate, thisArg);
         };
+        Stream.prototype.filterWithState = function (predicate, thisArg) {
+            if (thisArg === void 0) { thisArg = this; }
+            if (this instanceof wdFrp.FilterStream) {
+                var self_2 = this;
+                return self_2.internalFilter(predicate, thisArg);
+            }
+            return wdFrp.FilterWithStateStream.create(this, predicate, thisArg);
+        };
         Stream.prototype.concat = function () {
             var args = null;
             if (wdFrp.JudgeUtils.isArray(arguments[0])) {
@@ -691,8 +699,12 @@ var wdFrp;
             configurable: true
         });
         Observer.prototype.next = function (value) {
+            var args = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args[_i - 1] = arguments[_i];
+            }
             if (!this._isStop) {
-                return this.onNext(value);
+                return this.onNext.apply(this, arguments);
             }
         };
         Observer.prototype.error = function (error) {
@@ -902,7 +914,11 @@ var wdFrp;
             return new this(onNext, onError, onCompleted);
         };
         AnonymousObserver.prototype.onNext = function (value) {
-            this.onUserNext(value);
+            var args = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args[_i - 1] = arguments[_i];
+            }
+            this.onUserNext.apply(this, arguments);
         };
         AnonymousObserver.prototype.onError = function (error) {
             this.onUserError(error);
@@ -947,16 +963,20 @@ var wdFrp;
             _super.prototype.dispose.call(this);
         };
         AutoDetachObserver.prototype.onNext = function (value) {
+            var args = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args[_i - 1] = arguments[_i];
+            }
             try {
-                this.onUserNext(value);
+                this.onUserNext.apply(this, arguments);
             }
             catch (e) {
                 this.onError(e);
             }
         };
-        AutoDetachObserver.prototype.onError = function (err) {
+        AutoDetachObserver.prototype.onError = function (error) {
             try {
-                this.onUserError(err);
+                this.onUserError(error);
             }
             catch (e) {
                 throw e;
@@ -1335,36 +1355,79 @@ var wdFrp;
         __extends(FilterObserver, _super);
         function FilterObserver(prevObserver, predicate, source) {
             _super.call(this, null, null, null);
-            this._prevObserver = null;
-            this._source = null;
-            this._predicate = null;
-            this._i = 0;
-            this._prevObserver = prevObserver;
-            this._predicate = predicate;
-            this._source = source;
+            this.prevObserver = null;
+            this.source = null;
+            this.i = 0;
+            this.predicate = null;
+            this.prevObserver = prevObserver;
+            this.predicate = predicate;
+            this.source = source;
         }
         FilterObserver.create = function (prevObserver, predicate, source) {
             return new this(prevObserver, predicate, source);
         };
         FilterObserver.prototype.onNext = function (value) {
             try {
-                if (this._predicate(value, this._i++, this._source)) {
-                    this._prevObserver.next(value);
+                if (this.predicate(value, this.i++, this.source)) {
+                    this.prevObserver.next(value, 1);
                 }
             }
             catch (e) {
-                this._prevObserver.error(e);
+                this.prevObserver.error(e);
             }
         };
         FilterObserver.prototype.onError = function (error) {
-            this._prevObserver.error(error);
+            this.prevObserver.error(error);
         };
         FilterObserver.prototype.onCompleted = function () {
-            this._prevObserver.completed();
+            this.prevObserver.completed();
         };
         return FilterObserver;
     })(wdFrp.Observer);
     wdFrp.FilterObserver = FilterObserver;
+})(wdFrp || (wdFrp = {}));
+
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var wdFrp;
+(function (wdFrp) {
+    var FilterWithStateObserver = (function (_super) {
+        __extends(FilterWithStateObserver, _super);
+        function FilterWithStateObserver() {
+            _super.apply(this, arguments);
+            this._isTrigger = false;
+        }
+        FilterWithStateObserver.create = function (prevObserver, predicate, source) {
+            return new this(prevObserver, predicate, source);
+        };
+        FilterWithStateObserver.prototype.onNext = function (value) {
+            try {
+                if (this.predicate(value, this.i++, this.source)) {
+                    if (!this._isTrigger) {
+                        this.prevObserver.next(value, wdFrp.FilterState.ENTER);
+                    }
+                    else {
+                        this.prevObserver.next(value, wdFrp.FilterState.TRIGGER);
+                    }
+                    this._isTrigger = true;
+                }
+                else {
+                    if (this._isTrigger) {
+                        this.prevObserver.next(value, wdFrp.FilterState.LEAVE);
+                    }
+                    this._isTrigger = false;
+                }
+            }
+            catch (e) {
+                this.prevObserver.error(e);
+            }
+        };
+        return FilterWithStateObserver;
+    })(wdFrp.FilterObserver);
+    wdFrp.FilterWithStateObserver = FilterWithStateObserver;
 })(wdFrp || (wdFrp = {}));
 
 var __extends = (this && this.__extends) || function (d, b) {
@@ -1904,10 +1967,16 @@ var wdFrp;
             return obj;
         };
         FilterStream.prototype.subscribeCore = function (observer) {
-            return this._source.subscribe(wdFrp.FilterObserver.create(observer, this.predicate, this));
+            return this._source.subscribe(this.createObserver(observer));
         };
         FilterStream.prototype.internalFilter = function (predicate, thisArg) {
-            return FilterStream.create(this._source, this._innerPredicate(predicate, this), thisArg);
+            return this.createStreamForInternalFilter(this._source, this._innerPredicate(predicate, this), thisArg);
+        };
+        FilterStream.prototype.createObserver = function (observer) {
+            return wdFrp.FilterObserver.create(observer, this.predicate, this);
+        };
+        FilterStream.prototype.createStreamForInternalFilter = function (source, innerPredicate, thisArg) {
+            return FilterStream.create(source, innerPredicate, thisArg);
         };
         FilterStream.prototype._innerPredicate = function (predicate, self) {
             var _this = this;
@@ -1918,6 +1987,33 @@ var wdFrp;
         return FilterStream;
     })(wdFrp.BaseStream);
     wdFrp.FilterStream = FilterStream;
+})(wdFrp || (wdFrp = {}));
+
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var wdFrp;
+(function (wdFrp) {
+    var FilterWithStateStream = (function (_super) {
+        __extends(FilterWithStateStream, _super);
+        function FilterWithStateStream() {
+            _super.apply(this, arguments);
+        }
+        FilterWithStateStream.create = function (source, predicate, thisArg) {
+            var obj = new this(source, predicate, thisArg);
+            return obj;
+        };
+        FilterWithStateStream.prototype.createObserver = function (observer) {
+            return wdFrp.FilterWithStateObserver.create(observer, this.predicate, this);
+        };
+        FilterWithStateStream.prototype.createStreamForInternalFilter = function (source, innerPredicate, thisArg) {
+            return FilterWithStateStream.create(source, innerPredicate, thisArg);
+        };
+        return FilterWithStateStream;
+    })(wdFrp.FilterStream);
+    wdFrp.FilterWithStateStream = FilterWithStateStream;
 })(wdFrp || (wdFrp = {}));
 
 var wdFrp;
@@ -1973,6 +2069,16 @@ var wdFrp;
             observer.completed();
         });
     };
+})(wdFrp || (wdFrp = {}));
+
+var wdFrp;
+(function (wdFrp) {
+    (function (FilterState) {
+        FilterState[FilterState["TRIGGER"] = 0] = "TRIGGER";
+        FilterState[FilterState["ENTER"] = 1] = "ENTER";
+        FilterState[FilterState["LEAVE"] = 2] = "LEAVE";
+    })(wdFrp.FilterState || (wdFrp.FilterState = {}));
+    var FilterState = wdFrp.FilterState;
 })(wdFrp || (wdFrp = {}));
 
 var wdFrp;

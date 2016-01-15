@@ -68,7 +68,7 @@ declare module wdFrp {
 
 declare module wdFrp {
     interface IObserver extends IDisposable {
-        next(value: any): any;
+        next(value: any, ...args: any[]): any;
         error(error: any): any;
         completed(): any;
     }
@@ -120,6 +120,7 @@ declare module wdFrp {
         takeLast(count?: number): AnonymousStream;
         takeWhile(predicate: (value: any, index: number, source: Stream) => boolean, thisArg?: this): AnonymousStream;
         filter(predicate: (value: any) => boolean, thisArg?: this): any;
+        filterWithState(predicate: (value: any) => boolean, thisArg?: this): any;
         concat(streamArr: Array<Stream>): any;
         concat(...otherStream: any[]): any;
         merge(streamArr: Array<Stream>): any;
@@ -154,12 +155,12 @@ declare module wdFrp {
         private _disposable;
         constructor(observer: IObserver);
         constructor(onNext: Function, onError: Function, onCompleted: Function);
-        next(value: any): any;
+        next(value: any, ...args: any[]): any;
         error(error: any): void;
         completed(): void;
         dispose(): void;
         setDisposable(disposable: IDisposable): void;
-        protected abstract onNext(value: any): any;
+        protected abstract onNext(value: any, ...args: any[]): any;
         protected abstract onError(error: any): any;
         protected abstract onCompleted(): any;
     }
@@ -210,7 +211,7 @@ declare module wdFrp {
 declare module wdFrp {
     class AnonymousObserver extends Observer {
         static create(onNext: Function, onError: Function, onCompleted: Function): AnonymousObserver;
-        protected onNext(value: any): void;
+        protected onNext(value: any, ...args: any[]): void;
         protected onError(error: any): void;
         protected onCompleted(): void;
     }
@@ -221,8 +222,8 @@ declare module wdFrp {
         static create(observer: IObserver): any;
         static create(onNext: Function, onError: Function, onCompleted: Function): any;
         dispose(): void;
-        protected onNext(value: any): void;
-        protected onError(err: any): void;
+        protected onNext(value: any, ...args: any[]): void;
+        protected onError(error: any): void;
         protected onCompleted(): void;
     }
 }
@@ -326,14 +327,22 @@ declare module wdFrp {
 declare module wdFrp {
     class FilterObserver extends Observer {
         static create(prevObserver: IObserver, predicate: (value: any, index?: number, source?: Stream) => boolean, source: Stream): FilterObserver;
-        private _prevObserver;
-        private _source;
-        private _predicate;
-        private _i;
         constructor(prevObserver: IObserver, predicate: (value: any) => boolean, source: Stream);
+        protected prevObserver: IObserver;
+        protected source: Stream;
+        protected i: number;
+        protected predicate: (value: any, index?: number, source?: Stream) => boolean;
         protected onNext(value: any): void;
         protected onError(error: any): void;
         protected onCompleted(): void;
+    }
+}
+
+declare module wdFrp {
+    class FilterWithStateObserver extends FilterObserver {
+        static create(prevObserver: IObserver, predicate: (value: any, index?: number, source?: Stream) => boolean, source: Stream): FilterWithStateObserver;
+        private _isTrigger;
+        protected onNext(value: any): void;
     }
 }
 
@@ -488,8 +497,18 @@ declare module wdFrp {
         predicate: (value: any, index?: number, source?: Stream) => boolean;
         private _source;
         subscribeCore(observer: IObserver): IDisposable;
-        internalFilter(predicate: (value: any, index?: number, source?: Stream) => boolean, thisArg: any): FilterStream;
+        internalFilter(predicate: (value: any, index?: number, source?: Stream) => boolean, thisArg: any): Stream;
+        protected createObserver(observer: IObserver): Observer;
+        protected createStreamForInternalFilter(source: Stream, innerPredicate: any, thisArg: any): Stream;
         private _innerPredicate(predicate, self);
+    }
+}
+
+declare module wdFrp {
+    class FilterWithStateStream extends FilterStream {
+        static create(source: Stream, predicate: (value: any, index?: number, source?: Stream) => boolean, thisArg: any): FilterWithStateStream;
+        protected createObserver(observer: IObserver): FilterWithStateObserver;
+        protected createStreamForInternalFilter(source: Stream, innerPredicate: any, thisArg: any): Stream;
     }
 }
 
@@ -505,6 +524,14 @@ declare module wdFrp {
     var judge: (condition: Function, thenSource: Function, elseSource: Function) => any;
     var defer: (buildStreamFunc: Function) => DeferStream;
     var just: (returnValue: any) => AnonymousStream;
+}
+
+declare module wdFrp {
+    enum FilterState {
+        TRIGGER = 0,
+        ENTER = 1,
+        LEAVE = 2,
+    }
 }
 
 declare module wdFrp {
