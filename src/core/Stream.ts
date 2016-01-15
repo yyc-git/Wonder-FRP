@@ -97,6 +97,40 @@ module wdFrp{
             });
         }
 
+        public takeWhile(predicate:(value:any, index:number, source:Stream)=>boolean, thisArg = this){
+            var self = this,
+                bindPredicate = null;
+
+            bindPredicate = wdCb.FunctionUtils.bind(thisArg, predicate);
+
+            return createStream((observer:IObserver) => {
+                var i = 0,
+                    isStart = false;
+
+                self.subscribe((value:any) => {
+                    if(bindPredicate(value, i++, self)){
+                        try{
+                            observer.next(value);
+                            isStart = true;
+                        }
+                        catch(e){
+                            observer.error(e);
+                            return;
+                        }
+                    }
+                    else{
+                        if(isStart){
+                            observer.completed();
+                        }
+                    }
+                }, (e:any) => {
+                    observer.error(e);
+                }, () => {
+                    observer.completed();
+                });
+            });
+        }
+
         public filter(predicate:(value:any)=>boolean, thisArg = this){
             if(this instanceof FilterStream){
                 let self:any = this;
