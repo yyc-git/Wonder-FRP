@@ -11,8 +11,6 @@ module wdFrp{
 
             this._source = source;
             this.predicate = wdCb.FunctionUtils.bind(thisArg, predicate);
-
-            //this.scheduler = this._source.scheduler;
         }
 
         public predicate:(value:any, index?:number, source?:Stream)=>boolean = null;
