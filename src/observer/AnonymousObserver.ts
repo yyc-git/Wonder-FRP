@@ -4,11 +4,11 @@ module wdFrp{
             return new this(onNext, onError, onCompleted);
         }
 
-        protected onNext(value){
-            this.onUserNext(value);
+        protected onNext(value:any, ...args){
+            this.onUserNext.apply(this, arguments);
         }
 
-        protected onError(error){
+        protected onError(error:any){
             this.onUserError(error);
         }
 

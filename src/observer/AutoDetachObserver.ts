@@ -21,18 +21,18 @@ module wdFrp{
             super.dispose();
         }
 
-        protected onNext(value) {
+        protected onNext(value:any, ...args) {
             try {
-                this.onUserNext(value);
+                this.onUserNext.apply(this, arguments);
             }
             catch (e) {
                 this.onError(e);
             }
         }
 
-        protected onError(err) {
+        protected onError(error:any) {
             try {
-                this.onUserError(err);
+                this.onUserError(error);
             }
             catch (e) {
                 throw e;

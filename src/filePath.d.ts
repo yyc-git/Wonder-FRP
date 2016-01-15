@@ -47,6 +47,7 @@
 /// <reference path="observer/SubjectObserver"/>
 /// <reference path="observer/IgnoreElementsObserver"/>
 /// <reference path="observer/FilterObserver"/>
+/// <reference path="observer/FilterWithStateObserver"/>
 
 /// <reference path="stream/BaseStream"/>
 /// <reference path="stream/DoStream"/>
@@ -64,8 +65,11 @@
 /// <reference path="stream/IgnoreElementsStream"/>
 /// <reference path="stream/DeferStream"/>
 /// <reference path="stream/FilterStream"/>
+/// <reference path="stream/FilterWithStateStream"/>
 
 /// <reference path="global/Operator"/>
+
+/// <reference path="enum/FilterState"/>
 
 /// <reference path="testing/Record"/>
 /// <reference path="testing/MockObserver"/>

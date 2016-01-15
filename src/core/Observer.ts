@@ -49,13 +49,13 @@ module wdFrp {
             }
         }
 
-        public next(value) {
+        public next(value:any, ...args) {
             if (!this._isStop) {
-                return this.onNext(value);
+                return this.onNext.apply(this, arguments);
             }
         }
 
-        public error(error) {
+        public error(error:any) {
             if (!this._isStop) {
                 this._isStop = true;
                 this.onError(error);
@@ -96,9 +96,9 @@ module wdFrp {
             this._disposable = disposable;
         }
 
-        protected abstract onNext(value);
+        protected abstract onNext(value:any, ...args);
 
-        protected abstract onError(error);
+        protected abstract onError(error:any);
 
         protected abstract onCompleted();
     }

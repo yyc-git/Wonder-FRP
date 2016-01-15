@@ -139,7 +139,16 @@ module wdFrp{
             }
 
             return FilterStream.create(this, predicate, thisArg);
+        }
 
+        public filterWithState(predicate:(value:any)=>boolean, thisArg = this){
+            if(this instanceof FilterStream){
+                let self:any = this;
+
+                return self.internalFilter(predicate, thisArg);
+            }
+
+            return FilterWithStateStream.create(this, predicate, thisArg);
         }
 
         public concat(streamArr:Array<Stream>);
