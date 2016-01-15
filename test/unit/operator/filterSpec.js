@@ -120,16 +120,17 @@ describe("filter", function () {
                 completed(301)
             );
 
-            var results = scheduler.startWithTime(function () {
+            var results = scheduler.startWithSubscribe(function () {
                 return stream1.filter(function(value){
                     return value === 1 || value === 2;
                 }).filter(function(value){
                     return value === 2;
                 });
-            }, 50, 210);
+            }, 50);
 
             expect(results.messages).toStreamEqual(
-                next(200, 2)
+                next(200, 2),
+                completed(301)
             );
         });
     });

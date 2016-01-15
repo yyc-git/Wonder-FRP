@@ -49,9 +49,9 @@ module wdFrp {
             }
         }
 
-        public next(value:any, ...args) {
+        public next(value:any) {
             if (!this._isStop) {
-                return this.onNext.apply(this, arguments);
+                return this.onNext(value);
             }
         }
 
@@ -96,7 +96,7 @@ module wdFrp {
             this._disposable = disposable;
         }
 
-        protected abstract onNext(value:any, ...args);
+        protected abstract onNext(value:any);
 
         protected abstract onError(error:any);
 

@@ -20,7 +20,7 @@ module wdFrp {
         protected onNext(value) {
             try {
                 if (this.predicate(value, this.i++, this.source)) {
-                    this.prevObserver.next(value, 1);
+                    this.prevObserver.next(value);
                 }
             }
             catch (e) {

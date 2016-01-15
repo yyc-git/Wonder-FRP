@@ -21,9 +21,9 @@ module wdFrp{
             super.dispose();
         }
 
-        protected onNext(value:any, ...args) {
+        protected onNext(value:any) {
             try {
-                this.onUserNext.apply(this, arguments);
+                this.onUserNext(value);
             }
             catch (e) {
                 this.onError(e);

@@ -4,7 +4,25 @@ module wdFrp {
 
     export class TestScheduler extends Scheduler {
         public static next(tick, value) {
-            return Record.create(tick, value, ActionType.NEXT);
+            if(JudgeUtils.isDirectObject(value)){
+                return Record.create(tick, value, ActionType.NEXT, (a, b) => {
+                    var result = true;
+
+                    for(let i in a){
+                        if(a.hasOwnProperty(i)){
+                            if(a[i] !== b[i]){
+                                result = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    return result;
+                });
+            }
+            else{
+                return Record.create(tick, value, ActionType.NEXT);
+            }
         }
 
         public static error(tick, error) {

@@ -4,8 +4,8 @@ module wdFrp{
             return new this(onNext, onError, onCompleted);
         }
 
-        protected onNext(value:any, ...args){
-            this.onUserNext.apply(this, arguments);
+        protected onNext(value:any){
+            this.onUserNext(value);
         }
 
         protected onError(error:any){

@@ -7,20 +7,35 @@ module wdFrp {
         private _isTrigger:boolean = false;
 
         protected onNext(value) {
+            var data:{value:any, state:FilterState} = null;
+
             try {
                 if (this.predicate(value, this.i++, this.source)) {
                     if(!this._isTrigger){
-                        this.prevObserver.next(value, FilterState.ENTER);
+                        data = {
+                            value:value,
+                            state:FilterState.ENTER
+                        };
                     }
                     else{
-                        this.prevObserver.next(value, FilterState.TRIGGER);
+                        data = {
+                            value:value,
+                            state:FilterState.TRIGGER
+                        };
                     }
+
+                    this.prevObserver.next(data);
 
                     this._isTrigger = true;
                 }
                 else{
                     if(this._isTrigger){
-                        this.prevObserver.next(value, FilterState.LEAVE);
+                        data = {
+                            value:value,
+                            state:FilterState.LEAVE
+                        };
+
+                        this.prevObserver.next(data);
                     }
 
                     this._isTrigger = false;

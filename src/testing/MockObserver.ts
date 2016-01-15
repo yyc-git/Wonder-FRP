@@ -23,15 +23,37 @@ module wdFrp{
         }
 
         protected onNext(value){
-            this._messages.push(Record.create(this._scheduler.clock, value));
+            var record = null;
+
+            if(JudgeUtils.isDirectObject(value)){
+                record = Record.create(this._scheduler.clock, value, ActionType.NEXT, (a, b) => {
+                    var result = true;
+
+                    for(let i in a){
+                        if(a.hasOwnProperty(i)){
+                            if(a[i] !== b[i]){
+                                result = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    return result;
+                });
+            }
+            else{
+                record = Record.create(this._scheduler.clock, value, ActionType.NEXT);
+            }
+
+            this._messages.push(record);
         }
 
         protected onError(error){
-            this._messages.push(Record.create(this._scheduler.clock, error));
+            this._messages.push(Record.create(this._scheduler.clock, error, ActionType.ERROR));
         }
 
         protected onCompleted(){
-            this._messages.push(Record.create(this._scheduler.clock, null));
+            this._messages.push(Record.create(this._scheduler.clock, null, ActionType.COMPLETED));
         }
 
         public dispose(){
