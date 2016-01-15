@@ -441,6 +441,35 @@ var wdFrp;
                 });
             });
         };
+        Stream.prototype.takeWhile = function (predicate, thisArg) {
+            if (thisArg === void 0) { thisArg = this; }
+            var self = this, bindPredicate = null;
+            bindPredicate = wdCb.FunctionUtils.bind(thisArg, predicate);
+            return wdFrp.createStream(function (observer) {
+                var i = 0, isStart = false;
+                self.subscribe(function (value) {
+                    if (bindPredicate(value, i++, self)) {
+                        try {
+                            observer.next(value);
+                            isStart = true;
+                        }
+                        catch (e) {
+                            observer.error(e);
+                            return;
+                        }
+                    }
+                    else {
+                        if (isStart) {
+                            observer.completed();
+                        }
+                    }
+                }, function (e) {
+                    observer.error(e);
+                }, function () {
+                    observer.completed();
+                });
+            });
+        };
         Stream.prototype.filter = function (predicate, thisArg) {
             if (thisArg === void 0) { thisArg = this; }
             if (this instanceof wdFrp.FilterStream) {

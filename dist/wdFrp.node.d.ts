@@ -118,6 +118,7 @@ declare module wdFrp {
         takeUntil(otherStream: Stream): TakeUntilStream;
         take(count?: number): AnonymousStream;
         takeLast(count?: number): AnonymousStream;
+        takeWhile(predicate: (value: any, index: number, source: Stream) => boolean, thisArg?: this): AnonymousStream;
         filter(predicate: (value: any) => boolean, thisArg?: this): any;
         concat(streamArr: Array<Stream>): any;
         concat(...otherStream: any[]): any;
