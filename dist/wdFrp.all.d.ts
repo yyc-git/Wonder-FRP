@@ -560,7 +560,7 @@ declare module wdFrp {
         protected onError(error: any): void;
         protected onCompleted(): void;
         dispose(): void;
-        copy(): MockObserver;
+        clone(): MockObserver;
     }
 }
 

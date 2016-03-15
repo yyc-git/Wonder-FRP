@@ -2199,7 +2199,7 @@ var wdFrp;
             _super.prototype.dispose.call(this);
             this._scheduler.remove(this);
         };
-        MockObserver.prototype.copy = function () {
+        MockObserver.prototype.clone = function () {
             var result = MockObserver.create(this._scheduler);
             result.messages = this._messages;
             return result;

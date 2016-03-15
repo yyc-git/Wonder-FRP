@@ -142,7 +142,7 @@ var Engine3D;
             this._values[2] = -this._values[2];
             return this;
         };
-        Vector3.prototype.copy = function () {
+        Vector3.prototype.clone = function () {
             var result = Vector3.create(), i = 0, len = this._values.length;
             for (i = 0; i < len; i++) {
                 result.values[i] = this._values[i];
@@ -733,7 +733,7 @@ var Engine3D;
             result[3] = vec4[0] * mat1[3] + vec4[1] * mat1[7] + vec4[2] * mat1[11] + vec4[3] * mat1[15];
             return Engine3D.Vector4.create(result[0], result[1], result[2], result[3]);
         };
-        Matrix.prototype.copy = function () {
+        Matrix.prototype.clone = function () {
             var result = Matrix.create(), i = 0, len = this._values.length;
             for (i = 0; i < len; i++) {
                 result.values[i] = this._values[i];
@@ -860,7 +860,7 @@ var Engine3D;
             var movePoint = null, backPoint = null;
             this._angle = this._speed;
             if (this._isNotRotateAroundOriginPoint()) {
-                movePoint = this._point.copy().reverse().values;
+                movePoint = this._point.clone().reverse().values;
                 backPoint = this._point.values;
                 this.matrix.translate(movePoint[0], movePoint[1], movePoint[2]);
                 this.matrix.rotate(this._angle, this._axis.values[0], this._axis.values[1], this._axis.values[2]);
@@ -2543,7 +2543,7 @@ var Engine3D;
         Event.prototype.stopPropagation = function () {
             this._isStopPropagation = true;
         };
-        Event.prototype.copy = function () {
+        Event.prototype.clone = function () {
             return wdCb.Log.error(true, wdCb.Log.info.ABSTRACT_METHOD);
         };
         return Event;
@@ -2988,8 +2988,8 @@ var Engine3D;
                 Engine3D.FactoryEventHandler.createEventHandler(eventCategory).trigger(
                 //target,
                 listenerData.currentTarget, 
-                //todo need copy?
-                //eventObject.copy(),
+                //todo need clone?
+                //eventObject.clone(),
                 eventObject, 
                 //FactoryEventHandler.createEvent(eventCategory, eventType, EventPhase.EMIT),
                 listenerData.handler);
@@ -3759,7 +3759,7 @@ var Engine3D;
             this._program.setUniformData("u_mvpMatrix", Engine3D.UniformDataType.FLOAT_MAT4, this._computeMvpMatrix(mesh));
         };
         Scene.prototype._computeMvpMatrix = function (mesh) {
-            return mesh.matrix.copy().applyMatrix(this._camera.computeVpMatrix());
+            return mesh.matrix.clone().applyMatrix(this._camera.computeVpMatrix());
         };
         return Scene;
     })(Engine3D.GameObject);

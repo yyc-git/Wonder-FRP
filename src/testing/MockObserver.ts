@@ -62,7 +62,7 @@ module wdFrp{
             this._scheduler.remove(this);
         }
 
-        public copy(){
+        public clone(){
             var result = MockObserver.create(this._scheduler);
 
             result.messages = this._messages;
