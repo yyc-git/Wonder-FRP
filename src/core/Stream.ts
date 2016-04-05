@@ -29,6 +29,10 @@ module wdFrp{
             return this.map(selector).mergeAll();
         }
 
+        public concatMap(selector:Function){
+            return this.map(selector).concatAll();
+        }
+
         public mergeAll(){
             return MergeAllStream.create(this);
         }
