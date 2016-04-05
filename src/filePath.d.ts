@@ -24,6 +24,7 @@
 /// <reference path="global/init"/>
 
 
+/// <reference path="extend/root"/>
 
 
 /// <reference path="core/Stream"/>
@@ -58,6 +59,7 @@
 /// <reference path="stream/AnonymousStream"/>
 /// <reference path="stream/IntervalStream"/>
 /// <reference path="stream/IntervalRequestStream"/>
+/// <reference path="stream/TimeoutStream"/>
 /// <reference path="stream/MergeAllStream"/>
 /// <reference path="stream/TakeUntilStream"/>
 /// <reference path="stream/ConcatStream"/>

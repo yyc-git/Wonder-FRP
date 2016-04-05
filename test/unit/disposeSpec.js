@@ -132,6 +132,26 @@ describe("dispose", function () {
                 );
                 expect(rt.root.cancelNextRequestAnimationFrame).toCalledOnce();
             });
+            it("timeout", function () {
+                sandbox.stub(rt.root, "clearTimeout");
+                var stream = rt.timeout(200, scheduler)
+                    .do(function(value){
+                    });
+
+                var result = scheduler.createObserver();
+                var subscription = null;
+
+                scheduler.publicAbsolute(100, function () {
+                    subscription = stream.subscribe(result);
+                });
+                scheduler.publicAbsolute(400, function () {
+                    subscription.dispose();
+                });
+
+                scheduler.start();
+
+                expect(rt.root.clearTimeout).toCalledOnce();
+            });
             it("defer", function(){
                 sandbox.stub(rt.root, "clearInterval");
                 var stream = rt.defer(function(){

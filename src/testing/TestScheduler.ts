@@ -168,6 +168,20 @@ module wdFrp {
             return NaN;
         }
 
+        public publishTimeout(observer:IObserver, time:number, action:Function):number{
+            var messages = [];
+
+            this._setClock();
+
+            this._tick(time);
+
+            messages.push(TestScheduler.next(this._clock, time), TestScheduler.completed(this._clock + 1));
+
+            this.setStreamMap(observer, <[Record]>messages);
+
+            return NaN;
+        }
+
         private _setClock(){
             if(this._isReset){
                 this._clock = this._subscribedTime;

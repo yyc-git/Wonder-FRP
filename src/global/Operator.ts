@@ -23,6 +23,9 @@ module wdFrp{
         return IntervalRequestStream.create(scheduler);
     };
 
+    export var timeout = (time, scheduler = Scheduler.create()) => {
+        return TimeoutStream.create(time, scheduler);
+    };
     export var empty = () => {
         return createStream((observer:IObserver) =>{
             observer.completed();
