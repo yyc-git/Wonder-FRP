@@ -33,9 +33,9 @@ module wdFrp{
             return MergeAllStream.create(this);
         }
 
-        //public concatAll(){
-        //    return ConcatAllStream.create(this);
-        //}
+        public concatAll(){
+            return this.merge(1);
+        }
 
         public takeUntil(otherStream:Stream){
             return TakeUntilStream.create(this, otherStream);
