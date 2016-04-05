@@ -552,6 +552,31 @@ var wdFrp;
                 });
             });
         };
+        Stream.prototype.lastOrDefault = function (defaultValue) {
+            if (defaultValue === void 0) { defaultValue = null; }
+            var self = this;
+            return wdFrp.createStream(function (observer) {
+                var queue = [];
+                self.subscribe(function (value) {
+                    queue.push(value);
+                    if (queue.length > 1) {
+                        queue.shift();
+                    }
+                }, function (e) {
+                    observer.error(e);
+                }, function () {
+                    if (queue.length === 0) {
+                        observer.next(defaultValue);
+                    }
+                    else {
+                        while (queue.length > 0) {
+                            observer.next(queue.shift());
+                        }
+                    }
+                    observer.completed();
+                });
+            });
+        };
         Stream.prototype.filter = function (predicate, thisArg) {
             if (thisArg === void 0) { thisArg = this; }
             if (this instanceof wdFrp.FilterStream) {

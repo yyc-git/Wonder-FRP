@@ -155,5 +155,19 @@ describe("takeLast", function () {
             );
         });
     });
+
+    it("if the stream is empty, it will trigger observer->completed", function () {
+        var stream1 = scheduler.createStream(
+            completed(310)
+        );
+
+        var results = scheduler.startWithSubscribe(function () {
+            return stream1.takeLast()
+        }, 50);
+
+        expect(results.messages).toStreamEqual(
+            completed(310)
+        );
+    });
 });
 

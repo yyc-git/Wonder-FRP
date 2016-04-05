@@ -139,6 +139,35 @@ module wdFrp{
             });
         }
 
+        public lastOrDefault(defaultValue:any = null){
+            var self = this;
+
+            return createStream((observer:IObserver) => {
+                var queue = [];
+
+                self.subscribe((value:any) => {
+                    queue.push(value);
+
+                    if(queue.length > 1){
+                        queue.shift();
+                    }
+                }, (e:any) => {
+                    observer.error(e);
+                }, () => {
+                    if(queue.length === 0){
+                        observer.next(defaultValue);
+                    }
+                    else{
+                        while(queue.length > 0){
+                            observer.next(queue.shift());
+                        }
+                    }
+
+                    observer.completed();
+                });
+            });
+        }
+
         public filter(predicate:(value:any)=>boolean, thisArg = this){
             if(this instanceof FilterStream){
                 let self:any = this;
