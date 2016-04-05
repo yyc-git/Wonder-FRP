@@ -17,6 +17,81 @@ describe("merge", function () {
         sandbox.restore();
     });
 
+    describe("merge maxConcurrent", function(){
+        beforeEach(function(){
+        });
+
+        it("maxConcurrent (Number): Maximum number of inner observable sequences being subscribed to concurrently", function(){
+            var scheduler = TestScheduler.create(true);
+            var stream = rt.fromArray([1, 2])
+                .map(function(value){
+                    if(value === 1){
+                        return rt.timeout(100, scheduler);
+                    }
+                    else{
+                        return rt.interval(60, scheduler);
+                    }
+                })
+                .merge(1);
+            var results = scheduler.startWithSubscribe(function () {
+                return stream;
+            });
+
+            expect(results.messages).toStreamContain(
+                next(300, 100), next(320, 1), next(380, 2)
+            );
+        });
+
+        describe("test maxConcurrent > 1", function(){
+            it("test1", function () {
+                var stream = rt.fromArray([1, 2, 3])
+                    .map(function(value){
+                        switch (value){
+                            case 1:
+                                return rt.just(20);
+                            case 2:
+                                return rt.timeout(100, scheduler);
+                            case 3:
+                                return rt.timeout(60, scheduler);
+                        }
+                    })
+                    .merge(2);
+                var results = scheduler.startWithSubscribe(function () {
+                    return stream;
+                });
+
+                expect(results.messages).toStreamContain(
+                    next(200, 20), next(300, 100), next(361, 60), completed(362)
+                );
+            });
+            it("test 2", function(){
+                var stream = rt.fromArray([1, 2, 3, 4, 5])
+                    .map(function(value){
+                        switch (value){
+                            case 1:
+                                return rt.just(20);
+                            case 2:
+                                return rt.timeout(100, scheduler);
+                            case 3:
+                                return rt.timeout(60, scheduler);
+                            case 4:
+                                return rt.just(30);
+                            case 5:
+                                return rt.timeout(20, scheduler);
+                        }
+                    })
+                    .merge(2);
+                var results = scheduler.startWithSubscribe(function () {
+                    return stream;
+                });
+
+                expect(results.messages).toStreamContain(
+                    next(200, 20), next(300, 100), next(361, 60), next(362, 30), next(382, 20), completed(383)
+                );
+            });
+        });
+    });
+
     it("merge array", function(){
         var stream = rt.fromArray([1, 2])
             .merge(rt.fromArray([3, 4]))
@@ -65,6 +140,7 @@ describe("merge", function () {
             done();
         });
     });
+
     it("merge interval", function(){
         var scheduler = TestScheduler.create(true);
 

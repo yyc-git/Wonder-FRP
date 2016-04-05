@@ -6,9 +6,6 @@ module wdFrp{
             return obj;
         }
 
-        private _source:Stream = null;
-        private _observer:Observer = null;
-
         constructor(source:Stream){
             super(null);
 
@@ -17,6 +14,9 @@ module wdFrp{
 
             this.scheduler = this._source.scheduler;
         }
+
+        private _source:Stream = null;
+        private _observer:Observer = null;
 
         public subscribeCore(observer:IObserver){
             var streamGroup = wdCb.Collection.create<Stream>(),

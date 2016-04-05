@@ -1,4 +1,6 @@
 module wdFrp{
+    import Log = wdCb.Log;
+
     export class MergeAllObserver extends Observer{
         public static create(currentObserver:IObserver, streamGroup:wdCb.Collection<Stream>, groupDisposable:GroupDisposable) {
             return new this(currentObserver, streamGroup, groupDisposable);
@@ -31,9 +33,11 @@ module wdFrp{
             this._groupDisposable = groupDisposable;
         }
 
-        protected onNext(innerSource:any){
-            wdCb.Log.error(!(innerSource instanceof Stream || JudgeUtils.isPromise(innerSource)), wdCb.Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
+        @require(function(innerSource:any){
+            assert(innerSource instanceof Stream || JudgeUtils.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
 
+        })
+        protected onNext(innerSource:any){
             if(JudgeUtils.isPromise(innerSource)){
                 innerSource = fromPromise(innerSource);
             }

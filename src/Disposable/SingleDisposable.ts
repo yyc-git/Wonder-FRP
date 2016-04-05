@@ -1,5 +1,5 @@
 module wdFrp{
-    export class SingleDisposable implements IDisposable{
+    export class SingleDisposable extends Entity implements IDisposable{
         public static create(disposeHandler:Function = function(){}) {
         	var obj = new this(disposeHandler);
 
@@ -9,6 +9,8 @@ module wdFrp{
         private _disposeHandler:Function = null;
 
         constructor(disposeHandler:Function){
+            super("SingleDisposable");
+
         	this._disposeHandler = disposeHandler;
         }
 

@@ -33,6 +33,10 @@ module wdFrp{
             return MergeAllStream.create(this);
         }
 
+        //public concatAll(){
+        //    return ConcatAllStream.create(this);
+        //}
+
         public takeUntil(otherStream:Stream){
             return TakeUntilStream.create(this, otherStream);
         }
@@ -169,19 +173,24 @@ module wdFrp{
             return ConcatStream.create(args);
         }
 
+        public merge(maxConcurrent:number);
         public merge(streamArr:Array<Stream>);
-        public merge(...otherStream);
+        public merge(...otherStreams);
 
-        public merge(){
-            var args:Array<Stream> = null,
-                stream:Stream = null;
+        public merge(...args){
+            if(JudgeUtils.isNumber(args[0])){
+                var maxConcurrent:number = args[0];
 
-            if(JudgeUtils.isArray(arguments[0])){
+                return MergeStream.create(this, maxConcurrent);
+            }
+
+            if(JudgeUtils.isArray(args[0])){
                 args = arguments[0];
             }
             else{
-                args = Array.prototype.slice.call(arguments, 0);
             }
+
+            let stream:Stream = null;
 
             args.unshift(this);
 

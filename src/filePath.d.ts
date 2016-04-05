@@ -42,6 +42,7 @@
 /// <reference path="observer/MapObserver"/>
 /// <reference path="observer/DoObserver"/>
 /// <reference path="observer/MergeAllObserver"/>
+/// <reference path="observer/MergeObserver"/>
 /// <reference path="observer/TakeUntilObserver"/>
 /// <reference path="observer/ConcatObserver"/>
 /// <reference path="observer/ISubjectObserver"/>
@@ -61,6 +62,7 @@
 /// <reference path="stream/IntervalRequestStream"/>
 /// <reference path="stream/TimeoutStream"/>
 /// <reference path="stream/MergeAllStream"/>
+/// <reference path="stream/MergeStream"/>
 /// <reference path="stream/TakeUntilStream"/>
 /// <reference path="stream/ConcatStream"/>
 /// <reference path="stream/RepeatStream"/>
