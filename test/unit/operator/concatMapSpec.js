@@ -86,5 +86,22 @@ describe("concatMap", function () {
                 });
         });
     });
+
+    it("fix bug: if only one element, the stream should complete when this element complete", function () {
+        var scheduler = TestScheduler.create(true);
+        var stream = rt.fromArray([1])
+            .concatMap(function(value){
+                if(value === 1){
+                    return rt.timeout(100, scheduler);
+                }
+            });
+        var results = scheduler.startWithSubscribe(function () {
+            return stream;
+        });
+
+        expect(results.messages).toStreamContain(
+            next(300, 100) , completed(301)
+        );
+    });
 });
 

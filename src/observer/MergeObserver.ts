@@ -2,37 +2,36 @@ module wdFrp{
     import Log = wdCb.Log;
 
     export class MergeObserver extends Observer{
-        public static create(currentObserver:IObserver, maxConcurrent:number, groupDisposable:GroupDisposable) {
-            return new this(currentObserver, maxConcurrent, groupDisposable);
+        public static create(currentObserver:IObserver, maxConcurrent:number, streamGroup:wdCb.Collection<Stream>, groupDisposable:GroupDisposable) {
+            return new this(currentObserver, maxConcurrent, streamGroup, groupDisposable);
         }
 
-        constructor(currentObserver:IObserver, maxConcurrent:number, groupDisposable:GroupDisposable){
+        constructor(currentObserver:IObserver, maxConcurrent:number, streamGroup:wdCb.Collection<Stream>, groupDisposable:GroupDisposable){
             super(null, null, null);
 
             this.currentObserver = currentObserver;
             this._maxConcurrent = maxConcurrent;
-            this.groupDisposable = groupDisposable;
+            this._streamGroup = streamGroup;
+            this._groupDisposable = groupDisposable;
         }
 
         public done:boolean = false;
         public currentObserver:IObserver = null;
         public activeCount:number = 0;
         public q:Array<Stream> = [];
-        public groupDisposable:GroupDisposable = null;
 
         private _maxConcurrent:number = null;
+        private _groupDisposable:GroupDisposable = null;
+        private _streamGroup:wdCb.Collection<Stream> = null;
 
         public handleSubscribe(innerSource:any){
-            var disposable:IDisposable = null,
-                innerObserver:InnerObserver = InnerObserver.create(this);
-
             if(JudgeUtils.isPromise(innerSource)){
                 innerSource = fromPromise(innerSource);
             }
 
-            disposable = innerSource.buildStream(innerObserver);
+            this._streamGroup.addChild(innerSource);
 
-            this.groupDisposable.add(disposable);
+            this._groupDisposable.add(innerSource.buildStream(InnerObserver.create(this, this._streamGroup, innerSource)));
         }
 
         @require(function(innerSource:any){
@@ -57,7 +56,7 @@ module wdFrp{
         protected onCompleted(){
             this.done = true;
 
-            if(this.activeCount === 0){
+            if(this._streamGroup.getCount() === 0){
                 this.currentObserver.completed();
             }
         }
@@ -68,19 +67,23 @@ module wdFrp{
     }
 
     class InnerObserver extends Observer{
-        public static create(parent:MergeObserver) {
-            var obj = new this(parent);
+        public static create(parent:MergeObserver, streamGroup:wdCb.Collection<Stream>, currentStream:Stream) {
+            var obj = new this(parent, streamGroup, currentStream);
 
             return obj;
         }
 
-        constructor(parent:MergeObserver){
+        constructor(parent:MergeObserver, streamGroup:wdCb.Collection<Stream>, currentStream:Stream){
             super(null, null, null);
 
             this._parent = parent;
+            this._streamGroup = streamGroup;
+            this._currentStream = currentStream;
         }
 
         private _parent:MergeObserver = null;
+        private _streamGroup:wdCb.Collection<Stream> = null;
+        private _currentStream:Stream = null;
 
         protected onNext(value){
             this._parent.currentObserver.next(value);
@@ -93,12 +96,14 @@ module wdFrp{
         protected onCompleted(){
             var parent = this._parent;
 
+            this._streamGroup.removeChild(this._currentStream);
+
             if (parent.q.length > 0) {
                 parent.activeCount = 0;
                 parent.handleSubscribe(parent.q.shift());
             }
             else {
-                if(this._isAsync() && parent.activeCount === 0){
+                if(this._isAsync() && this._streamGroup.getCount() === 0){
                     parent.currentObserver.completed();
                 }
             }

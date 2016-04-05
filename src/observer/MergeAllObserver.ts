@@ -6,32 +6,19 @@ module wdFrp{
             return new this(currentObserver, streamGroup, groupDisposable);
         }
 
-        private _currentObserver:IObserver = null;
-        get currentObserver(){
-            return this._currentObserver;
-        }
-        set currentObserver(currentObserver:IObserver){
-            this._currentObserver = currentObserver;
-        }
-
-        private _done:boolean = false;
-        get done(){
-            return this._done;
-        }
-        set done(done:boolean){
-            this._done = done;
-        }
-
-        private _streamGroup:wdCb.Collection<Stream> = null;
-        private _groupDisposable:GroupDisposable = null;
-
         constructor(currentObserver:IObserver, streamGroup:wdCb.Collection<Stream>, groupDisposable:GroupDisposable){
             super(null, null, null);
 
-            this._currentObserver = currentObserver;
+            this.currentObserver = currentObserver;
             this._streamGroup = streamGroup;
             this._groupDisposable = groupDisposable;
         }
+
+        public done:boolean = false;
+        public currentObserver:IObserver = null;
+
+        private _streamGroup:wdCb.Collection<Stream> = null;
+        private _groupDisposable:GroupDisposable = null;
 
         @require(function(innerSource:any){
             assert(innerSource instanceof Stream || JudgeUtils.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
@@ -48,14 +35,14 @@ module wdFrp{
         }
 
         protected onError(error){
-            this._currentObserver.error(error);
+            this.currentObserver.error(error);
         }
 
         protected onCompleted(){
             this.done = true;
 
             if(this._streamGroup.getCount() === 0){
-                this._currentObserver.completed();
+                this.currentObserver.completed();
             }
         }
     }
@@ -67,10 +54,6 @@ module wdFrp{
         	return obj;
         }
 
-        private _parent:MergeAllObserver = null;
-        private _streamGroup:wdCb.Collection<Stream> = null;
-        private _currentStream:Stream = null;
-
         constructor(parent:MergeAllObserver, streamGroup:wdCb.Collection<Stream>, currentStream:Stream){
             super(null, null, null);
 
@@ -78,6 +61,10 @@ module wdFrp{
             this._streamGroup = streamGroup;
             this._currentStream = currentStream;
         }
+
+        private _parent:MergeAllObserver = null;
+        private _streamGroup:wdCb.Collection<Stream> = null;
+        private _currentStream:Stream = null;
 
         protected onNext(value){
             this._parent.currentObserver.next(value);

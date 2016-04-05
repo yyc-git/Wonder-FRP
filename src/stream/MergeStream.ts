@@ -19,9 +19,13 @@ module wdFrp {
         private _maxConcurrent:number = null;
 
         public subscribeCore(observer:IObserver){
-            var groupDisposable = GroupDisposable.create();
+            //var groupDisposable = GroupDisposable.create();
+            //
+            //this._source.buildStream(MergeObserver.create(observer, this._maxConcurrent, groupDisposable));
+            var streamGroup = wdCb.Collection.create<Stream>(),
+                groupDisposable = GroupDisposable.create();
 
-            this._source.buildStream(MergeObserver.create(observer, this._maxConcurrent, groupDisposable));
+            this._source.buildStream(MergeObserver.create(observer, this._maxConcurrent, streamGroup, groupDisposable));
 
             return groupDisposable;
         }

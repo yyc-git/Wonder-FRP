@@ -1147,37 +1147,17 @@ var wdFrp;
         __extends(MergeAllObserver, _super);
         function MergeAllObserver(currentObserver, streamGroup, groupDisposable) {
             _super.call(this, null, null, null);
-            this._currentObserver = null;
-            this._done = false;
+            this.done = false;
+            this.currentObserver = null;
             this._streamGroup = null;
             this._groupDisposable = null;
-            this._currentObserver = currentObserver;
+            this.currentObserver = currentObserver;
             this._streamGroup = streamGroup;
             this._groupDisposable = groupDisposable;
         }
         MergeAllObserver.create = function (currentObserver, streamGroup, groupDisposable) {
             return new this(currentObserver, streamGroup, groupDisposable);
         };
-        Object.defineProperty(MergeAllObserver.prototype, "currentObserver", {
-            get: function () {
-                return this._currentObserver;
-            },
-            set: function (currentObserver) {
-                this._currentObserver = currentObserver;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(MergeAllObserver.prototype, "done", {
-            get: function () {
-                return this._done;
-            },
-            set: function (done) {
-                this._done = done;
-            },
-            enumerable: true,
-            configurable: true
-        });
         MergeAllObserver.prototype.onNext = function (innerSource) {
             if (wdFrp.JudgeUtils.isPromise(innerSource)) {
                 innerSource = wdFrp.fromPromise(innerSource);
@@ -1186,12 +1166,12 @@ var wdFrp;
             this._groupDisposable.add(innerSource.buildStream(InnerObserver.create(this, this._streamGroup, innerSource)));
         };
         MergeAllObserver.prototype.onError = function (error) {
-            this._currentObserver.error(error);
+            this.currentObserver.error(error);
         };
         MergeAllObserver.prototype.onCompleted = function () {
             this.done = true;
             if (this._streamGroup.getCount() === 0) {
-                this._currentObserver.completed();
+                this.currentObserver.completed();
             }
         };
         __decorate([
@@ -1255,28 +1235,29 @@ var wdFrp;
     var Log = wdCb.Log;
     var MergeObserver = (function (_super) {
         __extends(MergeObserver, _super);
-        function MergeObserver(currentObserver, maxConcurrent, groupDisposable) {
+        function MergeObserver(currentObserver, maxConcurrent, streamGroup, groupDisposable) {
             _super.call(this, null, null, null);
             this.done = false;
             this.currentObserver = null;
             this.activeCount = 0;
             this.q = [];
-            this.groupDisposable = null;
             this._maxConcurrent = null;
+            this._groupDisposable = null;
+            this._streamGroup = null;
             this.currentObserver = currentObserver;
             this._maxConcurrent = maxConcurrent;
-            this.groupDisposable = groupDisposable;
+            this._streamGroup = streamGroup;
+            this._groupDisposable = groupDisposable;
         }
-        MergeObserver.create = function (currentObserver, maxConcurrent, groupDisposable) {
-            return new this(currentObserver, maxConcurrent, groupDisposable);
+        MergeObserver.create = function (currentObserver, maxConcurrent, streamGroup, groupDisposable) {
+            return new this(currentObserver, maxConcurrent, streamGroup, groupDisposable);
         };
         MergeObserver.prototype.handleSubscribe = function (innerSource) {
-            var disposable = null, innerObserver = InnerObserver.create(this);
             if (wdFrp.JudgeUtils.isPromise(innerSource)) {
                 innerSource = wdFrp.fromPromise(innerSource);
             }
-            disposable = innerSource.buildStream(innerObserver);
-            this.groupDisposable.add(disposable);
+            this._streamGroup.addChild(innerSource);
+            this._groupDisposable.add(innerSource.buildStream(InnerObserver.create(this, this._streamGroup, innerSource)));
         };
         MergeObserver.prototype.onNext = function (innerSource) {
             if (this._isReachMaxConcurrent()) {
@@ -1291,7 +1272,7 @@ var wdFrp;
         };
         MergeObserver.prototype.onCompleted = function () {
             this.done = true;
-            if (this.activeCount === 0) {
+            if (this._streamGroup.getCount() === 0) {
                 this.currentObserver.completed();
             }
         };
@@ -1308,13 +1289,17 @@ var wdFrp;
     wdFrp.MergeObserver = MergeObserver;
     var InnerObserver = (function (_super) {
         __extends(InnerObserver, _super);
-        function InnerObserver(parent) {
+        function InnerObserver(parent, streamGroup, currentStream) {
             _super.call(this, null, null, null);
             this._parent = null;
+            this._streamGroup = null;
+            this._currentStream = null;
             this._parent = parent;
+            this._streamGroup = streamGroup;
+            this._currentStream = currentStream;
         }
-        InnerObserver.create = function (parent) {
-            var obj = new this(parent);
+        InnerObserver.create = function (parent, streamGroup, currentStream) {
+            var obj = new this(parent, streamGroup, currentStream);
             return obj;
         };
         InnerObserver.prototype.onNext = function (value) {
@@ -1325,12 +1310,13 @@ var wdFrp;
         };
         InnerObserver.prototype.onCompleted = function () {
             var parent = this._parent;
+            this._streamGroup.removeChild(this._currentStream);
             if (parent.q.length > 0) {
                 parent.activeCount = 0;
                 parent.handleSubscribe(parent.q.shift());
             }
             else {
-                if (this._isAsync() && parent.activeCount === 0) {
+                if (this._isAsync() && this._streamGroup.getCount() === 0) {
                     parent.currentObserver.completed();
                 }
             }
@@ -1994,8 +1980,8 @@ var wdFrp;
             return obj;
         };
         MergeStream.prototype.subscribeCore = function (observer) {
-            var groupDisposable = wdFrp.GroupDisposable.create();
-            this._source.buildStream(wdFrp.MergeObserver.create(observer, this._maxConcurrent, groupDisposable));
+            var streamGroup = wdCb.Collection.create(), groupDisposable = wdFrp.GroupDisposable.create();
+            this._source.buildStream(wdFrp.MergeObserver.create(observer, this._maxConcurrent, streamGroup, groupDisposable));
             return groupDisposable;
         };
         return MergeStream;

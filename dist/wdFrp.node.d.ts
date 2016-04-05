@@ -263,13 +263,11 @@ declare module wdFrp {
 declare module wdFrp {
     class MergeAllObserver extends Observer {
         static create(currentObserver: IObserver, streamGroup: wdCb.Collection<Stream>, groupDisposable: GroupDisposable): MergeAllObserver;
-        private _currentObserver;
-        currentObserver: IObserver;
-        private _done;
+        constructor(currentObserver: IObserver, streamGroup: wdCb.Collection<Stream>, groupDisposable: GroupDisposable);
         done: boolean;
+        currentObserver: IObserver;
         private _streamGroup;
         private _groupDisposable;
-        constructor(currentObserver: IObserver, streamGroup: wdCb.Collection<Stream>, groupDisposable: GroupDisposable);
         protected onNext(innerSource: any): void;
         protected onError(error: any): void;
         protected onCompleted(): void;
@@ -278,14 +276,15 @@ declare module wdFrp {
 
 declare module wdFrp {
     class MergeObserver extends Observer {
-        static create(currentObserver: IObserver, maxConcurrent: number, groupDisposable: GroupDisposable): MergeObserver;
-        constructor(currentObserver: IObserver, maxConcurrent: number, groupDisposable: GroupDisposable);
+        static create(currentObserver: IObserver, maxConcurrent: number, streamGroup: wdCb.Collection<Stream>, groupDisposable: GroupDisposable): MergeObserver;
+        constructor(currentObserver: IObserver, maxConcurrent: number, streamGroup: wdCb.Collection<Stream>, groupDisposable: GroupDisposable);
         done: boolean;
         currentObserver: IObserver;
         activeCount: number;
         q: Array<Stream>;
-        groupDisposable: GroupDisposable;
         private _maxConcurrent;
+        private _groupDisposable;
+        private _streamGroup;
         handleSubscribe(innerSource: any): void;
         protected onNext(innerSource: any): void;
         protected onError(error: any): void;
