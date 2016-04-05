@@ -232,10 +232,17 @@ var wdFrp;
 
 
 
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var wdFrp;
 (function (wdFrp) {
-    var SingleDisposable = (function () {
+    var SingleDisposable = (function (_super) {
+        __extends(SingleDisposable, _super);
         function SingleDisposable(disposeHandler) {
+            _super.call(this, "SingleDisposable");
             this._disposeHandler = null;
             this._disposeHandler = disposeHandler;
         }
@@ -251,14 +258,21 @@ var wdFrp;
             this._disposeHandler();
         };
         return SingleDisposable;
-    })();
+    })(wdFrp.Entity);
     wdFrp.SingleDisposable = SingleDisposable;
 })(wdFrp || (wdFrp = {}));
 
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var wdFrp;
 (function (wdFrp) {
-    var GroupDisposable = (function () {
+    var GroupDisposable = (function (_super) {
+        __extends(GroupDisposable, _super);
         function GroupDisposable(disposable) {
+            _super.call(this, "GroupDisposable");
             this._group = wdCb.Collection.create();
             if (disposable) {
                 this._group.addChild(disposable);
@@ -272,13 +286,17 @@ var wdFrp;
             this._group.addChild(disposable);
             return this;
         };
+        GroupDisposable.prototype.remove = function (disposable) {
+            this._group.removeChild(disposable);
+            return this;
+        };
         GroupDisposable.prototype.dispose = function () {
             this._group.forEach(function (disposable) {
                 disposable.dispose();
             });
         };
         return GroupDisposable;
-    })();
+    })(wdFrp.Entity);
     wdFrp.GroupDisposable = GroupDisposable;
 })(wdFrp || (wdFrp = {}));
 
@@ -356,6 +374,64 @@ var wdFrp;
     }
 })(wdFrp || (wdFrp = {}));
 
+var wdFrp;
+(function (wdFrp) {
+    wdFrp.root.requestNextAnimationFrame = (function () {
+        var originalRequestAnimationFrame = undefined, wrapper = undefined, callback = undefined, geckoVersion = null, userAgent = wdFrp.root.navigator && wdFrp.root.navigator.userAgent, index = 0, self = this;
+        wrapper = function (time) {
+            time = wdFrp.root.performance.now();
+            self.callback(time);
+        };
+        if (wdFrp.root.requestAnimationFrame) {
+            return requestAnimationFrame;
+        }
+        if (wdFrp.root.webkitRequestAnimationFrame) {
+            originalRequestAnimationFrame = wdFrp.root.webkitRequestAnimationFrame;
+            wdFrp.root.webkitRequestAnimationFrame = function (callback, element) {
+                self.callback = callback;
+                return originalRequestAnimationFrame(wrapper, element);
+            };
+        }
+        if (wdFrp.root.msRequestAnimationFrame) {
+            originalRequestAnimationFrame = wdFrp.root.msRequestAnimationFrame;
+            wdFrp.root.msRequestAnimationFrame = function (callback) {
+                self.callback = callback;
+                return originalRequestAnimationFrame(wrapper);
+            };
+        }
+        if (wdFrp.root.mozRequestAnimationFrame) {
+            index = userAgent.indexOf('rv:');
+            if (userAgent.indexOf('Gecko') != -1) {
+                geckoVersion = userAgent.substr(index + 3, 3);
+                if (geckoVersion === '2.0') {
+                    wdFrp.root.mozRequestAnimationFrame = undefined;
+                }
+            }
+        }
+        return wdFrp.root.webkitRequestAnimationFrame ||
+            wdFrp.root.mozRequestAnimationFrame ||
+            wdFrp.root.oRequestAnimationFrame ||
+            wdFrp.root.msRequestAnimationFrame ||
+            function (callback, element) {
+                var start, finish;
+                wdFrp.root.setTimeout(function () {
+                    start = wdFrp.root.performance.now();
+                    callback(start);
+                    finish = wdFrp.root.performance.now();
+                    self.timeout = 1000 / 60 - (finish - start);
+                }, self.timeout);
+            };
+    }());
+    wdFrp.root.cancelNextRequestAnimationFrame = wdFrp.root.cancelRequestAnimationFrame
+        || wdFrp.root.webkitCancelAnimationFrame
+        || wdFrp.root.webkitCancelRequestAnimationFrame
+        || wdFrp.root.mozCancelRequestAnimationFrame
+        || wdFrp.root.oCancelRequestAnimationFrame
+        || wdFrp.root.msCancelRequestAnimationFrame
+        || clearTimeout;
+})(wdFrp || (wdFrp = {}));
+;
+
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -390,8 +466,14 @@ var wdFrp;
         Stream.prototype.flatMap = function (selector) {
             return this.map(selector).mergeAll();
         };
+        Stream.prototype.concatMap = function (selector) {
+            return this.map(selector).concatAll();
+        };
         Stream.prototype.mergeAll = function () {
             return wdFrp.MergeAllStream.create(this);
+        };
+        Stream.prototype.concatAll = function () {
+            return this.merge(1);
         };
         Stream.prototype.takeUntil = function (otherStream) {
             return wdFrp.TakeUntilStream.create(this, otherStream);
@@ -498,13 +580,20 @@ var wdFrp;
             return wdFrp.ConcatStream.create(args);
         };
         Stream.prototype.merge = function () {
-            var args = null, stream = null;
-            if (wdFrp.JudgeUtils.isArray(arguments[0])) {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
+            if (wdFrp.JudgeUtils.isNumber(args[0])) {
+                var maxConcurrent = args[0];
+                return wdFrp.MergeStream.create(this, maxConcurrent);
+            }
+            if (wdFrp.JudgeUtils.isArray(args[0])) {
                 args = arguments[0];
             }
             else {
-                args = Array.prototype.slice.call(arguments, 0);
             }
+            var stream = null;
             args.unshift(this);
             stream = wdFrp.fromArray(args).mergeAll();
             return stream;
@@ -548,59 +637,6 @@ var wdFrp;
 
 var wdFrp;
 (function (wdFrp) {
-    wdFrp.root.requestNextAnimationFrame = (function () {
-        var originalRequestAnimationFrame = undefined, wrapper = undefined, callback = undefined, geckoVersion = null, userAgent = wdFrp.root.navigator && wdFrp.root.navigator.userAgent, index = 0, self = this;
-        wrapper = function (time) {
-            time = wdFrp.root.performance.now();
-            self.callback(time);
-        };
-        if (wdFrp.root.requestAnimationFrame) {
-            return requestAnimationFrame;
-        }
-        if (wdFrp.root.webkitRequestAnimationFrame) {
-            originalRequestAnimationFrame = wdFrp.root.webkitRequestAnimationFrame;
-            wdFrp.root.webkitRequestAnimationFrame = function (callback, element) {
-                self.callback = callback;
-                return originalRequestAnimationFrame(wrapper, element);
-            };
-        }
-        if (wdFrp.root.msRequestAnimationFrame) {
-            originalRequestAnimationFrame = wdFrp.root.msRequestAnimationFrame;
-            wdFrp.root.msRequestAnimationFrame = function (callback) {
-                self.callback = callback;
-                return originalRequestAnimationFrame(wrapper);
-            };
-        }
-        if (wdFrp.root.mozRequestAnimationFrame) {
-            index = userAgent.indexOf('rv:');
-            if (userAgent.indexOf('Gecko') != -1) {
-                geckoVersion = userAgent.substr(index + 3, 3);
-                if (geckoVersion === '2.0') {
-                    wdFrp.root.mozRequestAnimationFrame = undefined;
-                }
-            }
-        }
-        return wdFrp.root.webkitRequestAnimationFrame ||
-            wdFrp.root.mozRequestAnimationFrame ||
-            wdFrp.root.oRequestAnimationFrame ||
-            wdFrp.root.msRequestAnimationFrame ||
-            function (callback, element) {
-                var start, finish;
-                wdFrp.root.setTimeout(function () {
-                    start = wdFrp.root.performance.now();
-                    callback(start);
-                    finish = wdFrp.root.performance.now();
-                    self.timeout = 1000 / 60 - (finish - start);
-                }, self.timeout);
-            };
-    }());
-    wdFrp.root.cancelNextRequestAnimationFrame = wdFrp.root.cancelRequestAnimationFrame
-        || wdFrp.root.webkitCancelAnimationFrame
-        || wdFrp.root.webkitCancelRequestAnimationFrame
-        || wdFrp.root.mozCancelRequestAnimationFrame
-        || wdFrp.root.oCancelRequestAnimationFrame
-        || wdFrp.root.msCancelRequestAnimationFrame
-        || clearTimeout;
     var Scheduler = (function () {
         function Scheduler() {
             this._requestLoopId = null;
@@ -640,6 +676,12 @@ var wdFrp;
                 self._requestLoopId = wdFrp.root.requestNextAnimationFrame(loop);
             };
             this._requestLoopId = wdFrp.root.requestNextAnimationFrame(loop);
+        };
+        Scheduler.prototype.publishTimeout = function (observer, time, action) {
+            return wdFrp.root.setTimeout(function () {
+                action(time);
+                observer.completed();
+            }, time);
         };
         return Scheduler;
     })();
@@ -1092,8 +1134,15 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 var wdFrp;
 (function (wdFrp) {
+    var Log = wdCb.Log;
     var MergeAllObserver = (function (_super) {
         __extends(MergeAllObserver, _super);
         function MergeAllObserver(currentObserver, streamGroup, groupDisposable) {
@@ -1130,7 +1179,6 @@ var wdFrp;
             configurable: true
         });
         MergeAllObserver.prototype.onNext = function (innerSource) {
-            wdCb.Log.error(!(innerSource instanceof wdFrp.Stream || wdFrp.JudgeUtils.isPromise(innerSource)), wdCb.Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
             if (wdFrp.JudgeUtils.isPromise(innerSource)) {
                 innerSource = wdFrp.fromPromise(innerSource);
             }
@@ -1146,6 +1194,11 @@ var wdFrp;
                 this._currentObserver.completed();
             }
         };
+        __decorate([
+            wdFrp.require(function (innerSource) {
+                wdFrp.assert(innerSource instanceof wdFrp.Stream || wdFrp.JudgeUtils.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
+            })
+        ], MergeAllObserver.prototype, "onNext", null);
         return MergeAllObserver;
     })(wdFrp.Observer);
     wdFrp.MergeAllObserver = MergeAllObserver;
@@ -1177,6 +1230,109 @@ var wdFrp;
             });
             if (this._isAsync() && this._streamGroup.getCount() === 0) {
                 parent.currentObserver.completed();
+            }
+        };
+        InnerObserver.prototype._isAsync = function () {
+            return this._parent.done;
+        };
+        return InnerObserver;
+    })(wdFrp.Observer);
+})(wdFrp || (wdFrp = {}));
+
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var wdFrp;
+(function (wdFrp) {
+    var Log = wdCb.Log;
+    var MergeObserver = (function (_super) {
+        __extends(MergeObserver, _super);
+        function MergeObserver(currentObserver, maxConcurrent, groupDisposable) {
+            _super.call(this, null, null, null);
+            this.done = false;
+            this.currentObserver = null;
+            this.activeCount = 0;
+            this.q = [];
+            this.groupDisposable = null;
+            this._maxConcurrent = null;
+            this.currentObserver = currentObserver;
+            this._maxConcurrent = maxConcurrent;
+            this.groupDisposable = groupDisposable;
+        }
+        MergeObserver.create = function (currentObserver, maxConcurrent, groupDisposable) {
+            return new this(currentObserver, maxConcurrent, groupDisposable);
+        };
+        MergeObserver.prototype.handleSubscribe = function (innerSource) {
+            var disposable = null, innerObserver = InnerObserver.create(this);
+            if (wdFrp.JudgeUtils.isPromise(innerSource)) {
+                innerSource = wdFrp.fromPromise(innerSource);
+            }
+            disposable = innerSource.buildStream(innerObserver);
+            this.groupDisposable.add(disposable);
+        };
+        MergeObserver.prototype.onNext = function (innerSource) {
+            if (this._isReachMaxConcurrent()) {
+                this.activeCount++;
+                this.handleSubscribe(innerSource);
+                return;
+            }
+            this.q.push(innerSource);
+        };
+        MergeObserver.prototype.onError = function (error) {
+            this.currentObserver.error(error);
+        };
+        MergeObserver.prototype.onCompleted = function () {
+            this.done = true;
+            if (this.activeCount === 0) {
+                this.currentObserver.completed();
+            }
+        };
+        MergeObserver.prototype._isReachMaxConcurrent = function () {
+            return this.activeCount < this._maxConcurrent;
+        };
+        __decorate([
+            wdFrp.require(function (innerSource) {
+                wdFrp.assert(innerSource instanceof wdFrp.Stream || wdFrp.JudgeUtils.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
+            })
+        ], MergeObserver.prototype, "onNext", null);
+        return MergeObserver;
+    })(wdFrp.Observer);
+    wdFrp.MergeObserver = MergeObserver;
+    var InnerObserver = (function (_super) {
+        __extends(InnerObserver, _super);
+        function InnerObserver(parent) {
+            _super.call(this, null, null, null);
+            this._parent = null;
+            this._parent = parent;
+        }
+        InnerObserver.create = function (parent) {
+            var obj = new this(parent);
+            return obj;
+        };
+        InnerObserver.prototype.onNext = function (value) {
+            this._parent.currentObserver.next(value);
+        };
+        InnerObserver.prototype.onError = function (error) {
+            this._parent.currentObserver.error(error);
+        };
+        InnerObserver.prototype.onCompleted = function () {
+            var parent = this._parent;
+            if (parent.q.length > 0) {
+                parent.activeCount = 0;
+                parent.handleSubscribe(parent.q.shift());
+            }
+            else {
+                if (this._isAsync() && parent.activeCount === 0) {
+                    parent.currentObserver.completed();
+                }
             }
         };
         InnerObserver.prototype._isAsync = function () {
@@ -1746,6 +1902,51 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var wdFrp;
+(function (wdFrp) {
+    var Log = wdCb.Log;
+    var TimeoutStream = (function (_super) {
+        __extends(TimeoutStream, _super);
+        function TimeoutStream(time, scheduler) {
+            _super.call(this, null);
+            this._time = null;
+            this._time = time;
+            this.scheduler = scheduler;
+        }
+        TimeoutStream.create = function (time, scheduler) {
+            var obj = new this(time, scheduler);
+            return obj;
+        };
+        TimeoutStream.prototype.subscribeCore = function (observer) {
+            var id = null;
+            id = this.scheduler.publishTimeout(observer, this._time, function (time) {
+                observer.next(time);
+            });
+            return wdFrp.SingleDisposable.create(function () {
+                wdFrp.root.clearTimeout(id);
+            });
+        };
+        __decorate([
+            wdFrp.require(function (time, scheduler) {
+                wdFrp.assert(time > 0, Log.info.FUNC_SHOULD("time", "> 0"));
+            })
+        ], TimeoutStream, "create", null);
+        return TimeoutStream;
+    })(wdFrp.BaseStream);
+    wdFrp.TimeoutStream = TimeoutStream;
+})(wdFrp || (wdFrp = {}));
+
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var wdFrp;
 (function (wdFrp) {
     var MergeAllStream = (function (_super) {
@@ -1769,6 +1970,37 @@ var wdFrp;
         return MergeAllStream;
     })(wdFrp.BaseStream);
     wdFrp.MergeAllStream = MergeAllStream;
+})(wdFrp || (wdFrp = {}));
+
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var wdFrp;
+(function (wdFrp) {
+    var MergeStream = (function (_super) {
+        __extends(MergeStream, _super);
+        function MergeStream(source, maxConcurrent) {
+            _super.call(this, null);
+            this._source = null;
+            this._maxConcurrent = null;
+            this._source = source;
+            this._maxConcurrent = maxConcurrent;
+            this.scheduler = this._source.scheduler;
+        }
+        MergeStream.create = function (source, maxConcurrent) {
+            var obj = new this(source, maxConcurrent);
+            return obj;
+        };
+        MergeStream.prototype.subscribeCore = function (observer) {
+            var groupDisposable = wdFrp.GroupDisposable.create();
+            this._source.buildStream(wdFrp.MergeObserver.create(observer, this._maxConcurrent, groupDisposable));
+            return groupDisposable;
+        };
+        return MergeStream;
+    })(wdFrp.BaseStream);
+    wdFrp.MergeStream = MergeStream;
 })(wdFrp || (wdFrp = {}));
 
 var __extends = (this && this.__extends) || function (d, b) {
@@ -2039,6 +2271,10 @@ var wdFrp;
     wdFrp.intervalRequest = function (scheduler) {
         if (scheduler === void 0) { scheduler = wdFrp.Scheduler.create(); }
         return wdFrp.IntervalRequestStream.create(scheduler);
+    };
+    wdFrp.timeout = function (time, scheduler) {
+        if (scheduler === void 0) { scheduler = wdFrp.Scheduler.create(); }
+        return wdFrp.TimeoutStream.create(time, scheduler);
     };
     wdFrp.empty = function () {
         return wdFrp.createStream(function (observer) {
@@ -2359,6 +2595,14 @@ var wdFrp;
                 num++;
                 COUNT--;
             }
+            this.setStreamMap(observer, messages);
+            return NaN;
+        };
+        TestScheduler.prototype.publishTimeout = function (observer, time, action) {
+            var messages = [];
+            this._setClock();
+            this._tick(time);
+            messages.push(TestScheduler.next(this._clock, time), TestScheduler.completed(this._clock + 1));
             this.setStreamMap(observer, messages);
             return NaN;
         };

@@ -47,7 +47,7 @@ declare module wdFrp {
 }
 
 declare module wdFrp {
-    class SingleDisposable implements IDisposable {
+    class SingleDisposable extends Entity implements IDisposable {
         static create(disposeHandler?: Function): SingleDisposable;
         private _disposeHandler;
         constructor(disposeHandler: Function);
@@ -57,11 +57,12 @@ declare module wdFrp {
 }
 
 declare module wdFrp {
-    class GroupDisposable implements IDisposable {
+    class GroupDisposable extends Entity implements IDisposable {
         static create(disposable?: IDisposable): GroupDisposable;
         private _group;
         constructor(disposable?: IDisposable);
         add(disposable: IDisposable): this;
+        remove(disposable: IDisposable): this;
         dispose(): void;
     }
 }
@@ -105,6 +106,9 @@ declare module wdFrp {
 }
 
 declare module wdFrp {
+}
+
+declare module wdFrp {
     abstract class Stream extends Entity {
         scheduler: Scheduler;
         subscribeFunc: (observer: IObserver) => Function | void;
@@ -114,7 +118,9 @@ declare module wdFrp {
         do(onNext?: Function, onError?: Function, onCompleted?: Function): DoStream;
         map(selector: Function): MapStream;
         flatMap(selector: Function): MergeAllStream;
+        concatMap(selector: Function): any;
         mergeAll(): MergeAllStream;
+        concatAll(): any;
         takeUntil(otherStream: Stream): TakeUntilStream;
         take(count?: number): AnonymousStream;
         takeLast(count?: number): AnonymousStream;
@@ -123,8 +129,9 @@ declare module wdFrp {
         filterWithState(predicate: (value: any) => boolean, thisArg?: this): any;
         concat(streamArr: Array<Stream>): any;
         concat(...otherStream: any[]): any;
+        merge(maxConcurrent: number): any;
         merge(streamArr: Array<Stream>): any;
-        merge(...otherStream: any[]): any;
+        merge(...otherStreams: any[]): any;
         repeat(count?: number): RepeatStream;
         ignoreElements(): IgnoreElementsStream;
         protected handleSubject(subject: any): boolean;
@@ -141,6 +148,7 @@ declare module wdFrp {
         publishRecursive(observer: IObserver, initial: any, action: Function): void;
         publishInterval(observer: IObserver, initial: any, interval: number, action: Function): number;
         publishIntervalRequest(observer: IObserver, action: Function): void;
+        publishTimeout(observer: IObserver, time: number, action: Function): number;
     }
 }
 
@@ -265,6 +273,24 @@ declare module wdFrp {
         protected onNext(innerSource: any): void;
         protected onError(error: any): void;
         protected onCompleted(): void;
+    }
+}
+
+declare module wdFrp {
+    class MergeObserver extends Observer {
+        static create(currentObserver: IObserver, maxConcurrent: number, groupDisposable: GroupDisposable): MergeObserver;
+        constructor(currentObserver: IObserver, maxConcurrent: number, groupDisposable: GroupDisposable);
+        done: boolean;
+        currentObserver: IObserver;
+        activeCount: number;
+        q: Array<Stream>;
+        groupDisposable: GroupDisposable;
+        private _maxConcurrent;
+        handleSubscribe(innerSource: any): void;
+        protected onNext(innerSource: any): void;
+        protected onError(error: any): void;
+        protected onCompleted(): void;
+        private _isReachMaxConcurrent();
     }
 }
 
@@ -434,11 +460,30 @@ declare module wdFrp {
 }
 
 declare module wdFrp {
+    class TimeoutStream extends BaseStream {
+        static create(time: number, scheduler: Scheduler): TimeoutStream;
+        private _time;
+        constructor(time: number, scheduler: Scheduler);
+        subscribeCore(observer: IObserver): SingleDisposable;
+    }
+}
+
+declare module wdFrp {
     class MergeAllStream extends BaseStream {
         static create(source: Stream): MergeAllStream;
+        constructor(source: Stream);
         private _source;
         private _observer;
-        constructor(source: Stream);
+        subscribeCore(observer: IObserver): GroupDisposable;
+    }
+}
+
+declare module wdFrp {
+    class MergeStream extends BaseStream {
+        static create(source: Stream, maxConcurrent: number): MergeStream;
+        constructor(source: Stream, maxConcurrent: number);
+        private _source;
+        private _maxConcurrent;
         subscribeCore(observer: IObserver): GroupDisposable;
     }
 }
@@ -519,6 +564,7 @@ declare module wdFrp {
     var fromEventPattern: (addHandler: Function, removeHandler: Function) => FromEventPatternStream;
     var interval: (interval: any, scheduler?: Scheduler) => IntervalStream;
     var intervalRequest: (scheduler?: Scheduler) => IntervalRequestStream;
+    var timeout: (time: any, scheduler?: Scheduler) => TimeoutStream;
     var empty: () => AnonymousStream;
     var callFunc: (func: Function, context?: any) => AnonymousStream;
     var judge: (condition: Function, thenSource: Function, elseSource: Function) => any;
@@ -595,6 +641,7 @@ declare module wdFrp {
         publishRecursive(observer: MockObserver, initial: any, recursiveFunc: Function): void;
         publishInterval(observer: IObserver, initial: any, interval: number, action: Function): number;
         publishIntervalRequest(observer: IObserver, action: Function): number;
+        publishTimeout(observer: IObserver, time: number, action: Function): number;
         private _setClock();
         startWithTime(create: Function, subscribedTime: number, disposedTime: number): MockObserver;
         startWithSubscribe(create: any, subscribedTime?: number): MockObserver;
