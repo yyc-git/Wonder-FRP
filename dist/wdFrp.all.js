@@ -1616,14 +1616,12 @@ var wdFrp;
 
 var wdFrp;
 (function (wdFrp) {
-    Object.defineProperty(wdFrp, "root", {
-        get: function () {
-            if (wdFrp.JudgeUtils.isNodeJs()) {
-                return global;
-            }
-            return window;
-        }
-    });
+    if (wdFrp.JudgeUtils.isNodeJs()) {
+        wdFrp.root = global;
+    }
+    else {
+        wdFrp.root = window;
+    }
 })(wdFrp || (wdFrp = {}));
 
 var wdFrp;
