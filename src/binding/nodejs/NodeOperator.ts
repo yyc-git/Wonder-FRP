@@ -25,7 +25,9 @@ module wdFrp {
     };
 
     export var fromStream = (stream:any, finishEventName:string = "end") => {
-        stream.pause();
+        if(stream.pause){
+            stream.pause();
+        }
 
         return wdFrp.createStream((observer) => {
             var dataHandler = (data) => {
@@ -42,7 +44,9 @@ module wdFrp {
             stream.addListener("error", errorHandler);
             stream.addListener(finishEventName, endHandler);
 
-            stream.resume();
+            if(stream.resume){
+                stream.resume();
+            }
 
             return () => {
                 stream.removeListener("data", dataHandler);

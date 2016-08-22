@@ -59,7 +59,9 @@ var wdFrp;
     };
     wdFrp.fromStream = function (stream, finishEventName) {
         if (finishEventName === void 0) { finishEventName = "end"; }
-        stream.pause();
+        if (stream.pause) {
+            stream.pause();
+        }
         return wdFrp.createStream(function (observer) {
             var dataHandler = function (data) {
                 observer.next(data);
@@ -71,7 +73,9 @@ var wdFrp;
             stream.addListener("data", dataHandler);
             stream.addListener("error", errorHandler);
             stream.addListener(finishEventName, endHandler);
-            stream.resume();
+            if (stream.resume) {
+                stream.resume();
+            }
             return function () {
                 stream.removeListener("data", dataHandler);
                 stream.removeListener("error", errorHandler);
