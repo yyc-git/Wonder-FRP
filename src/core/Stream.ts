@@ -2,7 +2,7 @@ module wdFrp{
     import Log = wdCb.Log;
 
     export abstract class Stream extends Entity{
-        public scheduler:Scheduler = ABSTRACT_ATTRIBUTE;
+        public scheduler:Scheduler = null;
         public subscribeFunc:(observer:IObserver) => Function|void = null;
 
         constructor(subscribeFunc){

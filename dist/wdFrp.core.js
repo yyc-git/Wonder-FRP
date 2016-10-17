@@ -22,7 +22,7 @@ var wdFrp;
             return i.next && i.error && i.completed;
         };
         return JudgeUtils;
-    })(wdCb.JudgeUtils);
+    }(wdCb.JudgeUtils));
     wdFrp.JudgeUtils = JudgeUtils;
 })(wdFrp || (wdFrp = {}));
 
@@ -113,7 +113,7 @@ var wdFrp;
         });
         Entity.UID = 1;
         return Entity;
-    })();
+    }());
     wdFrp.Entity = Entity;
 })(wdFrp || (wdFrp = {}));
 
@@ -124,7 +124,7 @@ var wdFrp;
         }
         Main.isTest = false;
         return Main;
-    })();
+    }());
     wdFrp.Main = Main;
 })(wdFrp || (wdFrp = {}));
 
@@ -235,7 +235,6 @@ var wdFrp;
 })(wdFrp || (wdFrp = {}));
 
 
-
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -262,7 +261,7 @@ var wdFrp;
             this._disposeHandler();
         };
         return SingleDisposable;
-    })(wdFrp.Entity);
+    }(wdFrp.Entity));
     wdFrp.SingleDisposable = SingleDisposable;
 })(wdFrp || (wdFrp = {}));
 
@@ -300,10 +299,9 @@ var wdFrp;
             });
         };
         return GroupDisposable;
-    })(wdFrp.Entity);
+    }(wdFrp.Entity));
     wdFrp.GroupDisposable = GroupDisposable;
 })(wdFrp || (wdFrp = {}));
-
 
 
 var wdFrp;
@@ -324,7 +322,7 @@ var wdFrp;
             this._observer.dispose();
         };
         return InnerSubscription;
-    })();
+    }());
     wdFrp.InnerSubscription = InnerSubscription;
 })(wdFrp || (wdFrp = {}));
 
@@ -347,7 +345,7 @@ var wdFrp;
             });
         };
         return InnerSubscriptionGroup;
-    })();
+    }());
     wdFrp.InnerSubscriptionGroup = InnerSubscriptionGroup;
 })(wdFrp || (wdFrp = {}));
 
@@ -361,10 +359,6 @@ var wdFrp;
     }
 })(wdFrp || (wdFrp = {}));
 
-var wdFrp;
-(function (wdFrp) {
-    wdFrp.ABSTRACT_ATTRIBUTE = null;
-})(wdFrp || (wdFrp = {}));
 
 var wdFrp;
 (function (wdFrp) {
@@ -452,7 +446,7 @@ var wdFrp;
         __extends(Stream, _super);
         function Stream(subscribeFunc) {
             _super.call(this, "Stream");
-            this.scheduler = wdFrp.ABSTRACT_ATTRIBUTE;
+            this.scheduler = null;
             this.subscribeFunc = null;
             this.subscribeFunc = subscribeFunc || function () { };
         }
@@ -658,7 +652,7 @@ var wdFrp;
             })
         ], Stream.prototype, "takeLast", null);
         return Stream;
-    })(wdFrp.Entity);
+    }(wdFrp.Entity));
     wdFrp.Stream = Stream;
 })(wdFrp || (wdFrp = {}));
 
@@ -711,7 +705,7 @@ var wdFrp;
             }, time);
         };
         return Scheduler;
-    })();
+    }());
     wdFrp.Scheduler = Scheduler;
 })(wdFrp || (wdFrp = {}));
 
@@ -737,15 +731,15 @@ var wdFrp;
             this._isStop = false;
             this._disposable = null;
             if (args.length === 1) {
-                var observer = args[0];
+                var observer_1 = args[0];
                 this.onUserNext = function (v) {
-                    observer.next(v);
+                    observer_1.next(v);
                 };
                 this.onUserError = function (e) {
-                    observer.error(e);
+                    observer_1.error(e);
                 };
                 this.onUserCompleted = function () {
-                    observer.completed();
+                    observer_1.completed();
                 };
             }
             else {
@@ -795,7 +789,7 @@ var wdFrp;
             this._disposable = disposable;
         };
         return Observer;
-    })(wdFrp.Entity);
+    }(wdFrp.Entity));
     wdFrp.Observer = Observer;
 })(wdFrp || (wdFrp = {}));
 
@@ -849,7 +843,7 @@ var wdFrp;
             this._observer.dispose();
         };
         return Subject;
-    })();
+    }());
     wdFrp.Subject = Subject;
 })(wdFrp || (wdFrp = {}));
 
@@ -959,7 +953,7 @@ var wdFrp;
             this.observer.dispose();
         };
         return GeneratorSubject;
-    })(wdFrp.Entity);
+    }(wdFrp.Entity));
     wdFrp.GeneratorSubject = GeneratorSubject;
 })(wdFrp || (wdFrp = {}));
 
@@ -988,7 +982,7 @@ var wdFrp;
             this.onUserCompleted();
         };
         return AnonymousObserver;
-    })(wdFrp.Observer);
+    }(wdFrp.Observer));
     wdFrp.AnonymousObserver = AnonymousObserver;
 })(wdFrp || (wdFrp = {}));
 
@@ -1052,7 +1046,7 @@ var wdFrp;
             }
         };
         return AutoDetachObserver;
-    })(wdFrp.Observer);
+    }(wdFrp.Observer));
     wdFrp.AutoDetachObserver = AutoDetachObserver;
 })(wdFrp || (wdFrp = {}));
 
@@ -1094,7 +1088,7 @@ var wdFrp;
             this._currentObserver.completed();
         };
         return MapObserver;
-    })(wdFrp.Observer);
+    }(wdFrp.Observer));
     wdFrp.MapObserver = MapObserver;
 })(wdFrp || (wdFrp = {}));
 
@@ -1152,7 +1146,7 @@ var wdFrp;
             }
         };
         return DoObserver;
-    })(wdFrp.Observer);
+    }(wdFrp.Observer));
     wdFrp.DoObserver = DoObserver;
 })(wdFrp || (wdFrp = {}));
 
@@ -1207,7 +1201,7 @@ var wdFrp;
             })
         ], MergeAllObserver.prototype, "onNext", null);
         return MergeAllObserver;
-    })(wdFrp.Observer);
+    }(wdFrp.Observer));
     wdFrp.MergeAllObserver = MergeAllObserver;
     var InnerObserver = (function (_super) {
         __extends(InnerObserver, _super);
@@ -1243,7 +1237,7 @@ var wdFrp;
             return this._parent.done;
         };
         return InnerObserver;
-    })(wdFrp.Observer);
+    }(wdFrp.Observer));
 })(wdFrp || (wdFrp = {}));
 
 var __extends = (this && this.__extends) || function (d, b) {
@@ -1312,7 +1306,7 @@ var wdFrp;
             })
         ], MergeObserver.prototype, "onNext", null);
         return MergeObserver;
-    })(wdFrp.Observer);
+    }(wdFrp.Observer));
     wdFrp.MergeObserver = MergeObserver;
     var InnerObserver = (function (_super) {
         __extends(InnerObserver, _super);
@@ -1352,7 +1346,7 @@ var wdFrp;
             return this._parent.done;
         };
         return InnerObserver;
-    })(wdFrp.Observer);
+    }(wdFrp.Observer));
 })(wdFrp || (wdFrp = {}));
 
 var __extends = (this && this.__extends) || function (d, b) {
@@ -1381,7 +1375,7 @@ var wdFrp;
         TakeUntilObserver.prototype.onCompleted = function () {
         };
         return TakeUntilObserver;
-    })(wdFrp.Observer);
+    }(wdFrp.Observer));
     wdFrp.TakeUntilObserver = TakeUntilObserver;
 })(wdFrp || (wdFrp = {}));
 
@@ -1414,10 +1408,9 @@ var wdFrp;
             this._startNextStream();
         };
         return ConcatObserver;
-    })(wdFrp.Observer);
+    }(wdFrp.Observer));
     wdFrp.ConcatObserver = ConcatObserver;
 })(wdFrp || (wdFrp = {}));
-
 
 
 var wdFrp;
@@ -1467,7 +1460,7 @@ var wdFrp;
             this._disposable = disposable;
         };
         return SubjectObserver;
-    })();
+    }());
     wdFrp.SubjectObserver = SubjectObserver;
 })(wdFrp || (wdFrp = {}));
 
@@ -1497,7 +1490,7 @@ var wdFrp;
             this._currentObserver.completed();
         };
         return IgnoreElementsObserver;
-    })(wdFrp.Observer);
+    }(wdFrp.Observer));
     wdFrp.IgnoreElementsObserver = IgnoreElementsObserver;
 })(wdFrp || (wdFrp = {}));
 
@@ -1540,7 +1533,7 @@ var wdFrp;
             this.prevObserver.completed();
         };
         return FilterObserver;
-    })(wdFrp.Observer);
+    }(wdFrp.Observer));
     wdFrp.FilterObserver = FilterObserver;
 })(wdFrp || (wdFrp = {}));
 
@@ -1595,7 +1588,7 @@ var wdFrp;
             }
         };
         return FilterWithStateObserver;
-    })(wdFrp.FilterObserver);
+    }(wdFrp.FilterObserver));
     wdFrp.FilterWithStateObserver = FilterWithStateObserver;
 })(wdFrp || (wdFrp = {}));
 
@@ -1627,7 +1620,7 @@ var wdFrp;
             return this.subscribeCore(observer);
         };
         return BaseStream;
-    })(wdFrp.Stream);
+    }(wdFrp.Stream));
     wdFrp.BaseStream = BaseStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -1656,7 +1649,7 @@ var wdFrp;
             return this._source.buildStream(wdFrp.DoObserver.create(observer, this._observer));
         };
         return DoStream;
-    })(wdFrp.BaseStream);
+    }(wdFrp.BaseStream));
     wdFrp.DoStream = DoStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -1685,7 +1678,7 @@ var wdFrp;
             return this._source.buildStream(wdFrp.MapObserver.create(observer, this._selector));
         };
         return MapStream;
-    })(wdFrp.BaseStream);
+    }(wdFrp.BaseStream));
     wdFrp.MapStream = MapStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -1723,7 +1716,7 @@ var wdFrp;
             return wdFrp.SingleDisposable.create();
         };
         return FromArrayStream;
-    })(wdFrp.BaseStream);
+    }(wdFrp.BaseStream));
     wdFrp.FromArrayStream = FromArrayStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -1756,7 +1749,7 @@ var wdFrp;
             return wdFrp.SingleDisposable.create();
         };
         return FromPromiseStream;
-    })(wdFrp.BaseStream);
+    }(wdFrp.BaseStream));
     wdFrp.FromPromiseStream = FromPromiseStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -1791,7 +1784,7 @@ var wdFrp;
             });
         };
         return FromEventPatternStream;
-    })(wdFrp.BaseStream);
+    }(wdFrp.BaseStream));
     wdFrp.FromEventPatternStream = FromEventPatternStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -1834,7 +1827,7 @@ var wdFrp;
             return observer;
         };
         return AnonymousStream;
-    })(wdFrp.Stream);
+    }(wdFrp.Stream));
     wdFrp.AnonymousStream = AnonymousStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -1872,7 +1865,7 @@ var wdFrp;
             });
         };
         return IntervalStream;
-    })(wdFrp.BaseStream);
+    }(wdFrp.BaseStream));
     wdFrp.IntervalStream = IntervalStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -1906,7 +1899,7 @@ var wdFrp;
             });
         };
         return IntervalRequestStream;
-    })(wdFrp.BaseStream);
+    }(wdFrp.BaseStream));
     wdFrp.IntervalRequestStream = IntervalRequestStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -1951,7 +1944,7 @@ var wdFrp;
             })
         ], TimeoutStream, "create", null);
         return TimeoutStream;
-    })(wdFrp.BaseStream);
+    }(wdFrp.BaseStream));
     wdFrp.TimeoutStream = TimeoutStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -1981,7 +1974,7 @@ var wdFrp;
             return groupDisposable;
         };
         return MergeAllStream;
-    })(wdFrp.BaseStream);
+    }(wdFrp.BaseStream));
     wdFrp.MergeAllStream = MergeAllStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -2012,7 +2005,7 @@ var wdFrp;
             return groupDisposable;
         };
         return MergeStream;
-    })(wdFrp.BaseStream);
+    }(wdFrp.BaseStream));
     wdFrp.MergeStream = MergeStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -2046,7 +2039,7 @@ var wdFrp;
             return group;
         };
         return TakeUntilStream;
-    })(wdFrp.BaseStream);
+    }(wdFrp.BaseStream));
     wdFrp.TakeUntilStream = TakeUntilStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -2092,7 +2085,7 @@ var wdFrp;
             return wdFrp.GroupDisposable.create(d);
         };
         return ConcatStream;
-    })(wdFrp.BaseStream);
+    }(wdFrp.BaseStream));
     wdFrp.ConcatStream = ConcatStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -2132,7 +2125,7 @@ var wdFrp;
             return wdFrp.GroupDisposable.create(d);
         };
         return RepeatStream;
-    })(wdFrp.BaseStream);
+    }(wdFrp.BaseStream));
     wdFrp.RepeatStream = RepeatStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -2159,7 +2152,7 @@ var wdFrp;
             return this._source.buildStream(wdFrp.IgnoreElementsObserver.create(observer));
         };
         return IgnoreElementsStream;
-    })(wdFrp.BaseStream);
+    }(wdFrp.BaseStream));
     wdFrp.IgnoreElementsStream = IgnoreElementsStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -2187,7 +2180,7 @@ var wdFrp;
             return group;
         };
         return DeferStream;
-    })(wdFrp.BaseStream);
+    }(wdFrp.BaseStream));
     wdFrp.DeferStream = DeferStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -2230,7 +2223,7 @@ var wdFrp;
             };
         };
         return FilterStream;
-    })(wdFrp.BaseStream);
+    }(wdFrp.BaseStream));
     wdFrp.FilterStream = FilterStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -2257,7 +2250,7 @@ var wdFrp;
             return FilterWithStateStream.create(source, innerPredicate, thisArg);
         };
         return FilterWithStateStream;
-    })(wdFrp.FilterStream);
+    }(wdFrp.FilterStream));
     wdFrp.FilterWithStateStream = FilterWithStateStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -2384,7 +2377,7 @@ var wdFrp;
             return this._time === other.time && this._comparer(this._value, other.value);
         };
         return Record;
-    })();
+    }());
     wdFrp.Record = Record;
 })(wdFrp || (wdFrp = {}));
 
@@ -2454,7 +2447,7 @@ var wdFrp;
             return result;
         };
         return MockObserver;
-    })(wdFrp.Observer);
+    }(wdFrp.Observer));
     wdFrp.MockObserver = MockObserver;
 })(wdFrp || (wdFrp = {}));
 
@@ -2475,7 +2468,7 @@ var wdFrp;
             this._scheduler.setStreamMap(observer, this._messages);
         };
         return MockPromise;
-    })();
+    }());
     wdFrp.MockPromise = MockPromise;
 })(wdFrp || (wdFrp = {}));
 
@@ -2703,7 +2696,7 @@ var wdFrp;
             this._clock += time;
         };
         return TestScheduler;
-    })(wdFrp.Scheduler);
+    }(wdFrp.Scheduler));
     wdFrp.TestScheduler = TestScheduler;
 })(wdFrp || (wdFrp = {}));
 
@@ -2742,6 +2735,6 @@ var wdFrp;
             return wdFrp.SingleDisposable.create();
         };
         return TestStream;
-    })(wdFrp.BaseStream);
+    }(wdFrp.BaseStream));
     wdFrp.TestStream = TestStream;
 })(wdFrp || (wdFrp = {}));

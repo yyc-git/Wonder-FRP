@@ -80,13 +80,13 @@ gulp.task("compileTsConfig", function(){
 
 gulp.task("compileTs", function() {
     var tsProject = gulpTs.createProject(path.join(process.cwd(), tsconfigFile), {
-        sortOutput: true,
         declaration: true,
+        noEmitOnError: false,
         typescript: require('typescript')
     });
 
     var tsResult = tsProject.src()
-        .pipe(gulpTs(tsProject));
+        .pipe(tsProject());
 
 
     return merge([
@@ -107,7 +107,7 @@ gulp.task("compileTsDebug", function() {
 
     var tsResult = tsProject.src()
         .pipe(gulpSourcemaps.init())
-        .pipe(gulpTs(tsProject));
+        .pipe(tsProject());
 
 
     return merge([

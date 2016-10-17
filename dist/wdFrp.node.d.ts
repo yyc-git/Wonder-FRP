@@ -100,7 +100,6 @@ declare module wdFrp {
 }
 
 declare module wdFrp {
-    const ABSTRACT_ATTRIBUTE: any;
 }
 
 declare module wdFrp {

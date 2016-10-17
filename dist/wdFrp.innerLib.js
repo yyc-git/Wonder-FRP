@@ -49,7 +49,7 @@ var wdCb;
             return true;
         };
         return JudgeUtils;
-    })();
+    }());
     wdCb.JudgeUtils = JudgeUtils;
     if (typeof /./ != 'function' && typeof Int8Array != 'object') {
         JudgeUtils.isFunction = function (func) {
@@ -65,14 +65,12 @@ var wdCb;
 
 var wdCb;
 (function (wdCb) {
-    Object.defineProperty(wdCb, "root", {
-        get: function () {
-            if (wdCb.JudgeUtils.isNodeJs()) {
-                return global;
-            }
-            return window;
-        }
-    });
+    if (wdCb.JudgeUtils.isNodeJs()) {
+        wdCb.root = global;
+    }
+    else {
+        wdCb.root = window;
+    }
 })(wdCb || (wdCb = {}));
 
 var wdCb;
@@ -158,8 +156,6 @@ var wdCb;
         };
         Log.info = {
             INVALID_PARAM: "invalid parameter",
-            ABSTRACT_ATTRIBUTE: "abstract attribute need override",
-            ABSTRACT_METHOD: "abstract method need override",
             helperFunc: function () {
                 var args = [];
                 for (var _i = 0; _i < arguments.length; _i++) {
@@ -290,6 +286,14 @@ var wdCb;
                 args.unshift("unexpect");
                 return this.assertion.apply(this, args);
             },
+            FUNC_EXIST: function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i - 0] = arguments[_i];
+                }
+                args.unshift("exist");
+                return this.assertion.apply(this, args);
+            },
             FUNC_NOT_EXIST: function () {
                 var args = [];
                 for (var _i = 0; _i < arguments.length; _i++) {
@@ -316,7 +320,7 @@ var wdCb;
             }
         };
         return Log;
-    })();
+    }());
     wdCb.Log = Log;
 })(wdCb || (wdCb = {}));
 
@@ -375,6 +379,10 @@ var wdCb;
             }
             return this;
         };
+        List.prototype.setChildren = function (children) {
+            this.children = children;
+            return this;
+        };
         List.prototype.unShiftChild = function (child) {
             this.children.unshift(child);
         };
@@ -414,7 +422,7 @@ var wdCb;
             return result;
         };
         List.prototype._forEach = function (arr, func, context) {
-            var scope = context || wdCb.root, i = 0, len = arr.length;
+            var scope = context, i = 0, len = arr.length;
             for (i = 0; i < len; i++) {
                 if (func.call(scope, arr[i], i) === wdCb.$BREAK) {
                     break;
@@ -422,7 +430,7 @@ var wdCb;
             }
         };
         List.prototype._removeChild = function (arr, func) {
-            var self = this, index = null, removedElementArr = [], remainElementArr = [];
+            var self = this, removedElementArr = [], remainElementArr = [];
             this._forEach(arr, function (e, index) {
                 if (!!func.call(self, e)) {
                     removedElementArr.push(e);
@@ -435,7 +443,7 @@ var wdCb;
             return removedElementArr;
         };
         return List;
-    })();
+    }());
     wdCb.List = List;
 })(wdCb || (wdCb = {}));
 
@@ -458,10 +466,37 @@ var wdCb;
             var obj = new this(children);
             return obj;
         };
-        Collection.prototype.clone = function (isDeep) {
-            if (isDeep === void 0) { isDeep = false; }
-            return isDeep ? Collection.create(wdCb.ExtendUtils.extendDeep(this.children))
-                : Collection.create(wdCb.ExtendUtils.extend([], this.children));
+        Collection.prototype.clone = function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
+            var target = null, isDeep = null;
+            if (args.length === 0) {
+                isDeep = false;
+                target = Collection.create();
+            }
+            else if (args.length === 1) {
+                if (wdCb.JudgeUtils.isBoolean(args[0])) {
+                    target = Collection.create();
+                    isDeep = args[0];
+                }
+                else {
+                    target = args[0];
+                    isDeep = false;
+                }
+            }
+            else {
+                target = args[0];
+                isDeep = args[1];
+            }
+            if (isDeep === true) {
+                target.setChildren(wdCb.ExtendUtils.extendDeep(this.children));
+            }
+            else {
+                target.setChildren(wdCb.ExtendUtils.extend([], this.children));
+            }
+            return target;
         };
         Collection.prototype.filter = function (func) {
             var children = this.children, result = [], value = null;
@@ -530,7 +565,7 @@ var wdCb;
             return hasRepeat;
         };
         return Collection;
-    })(wdCb.List);
+    }(wdCb.List));
     wdCb.Collection = Collection;
 })(wdCb || (wdCb = {}));
 
@@ -601,6 +636,7 @@ var wdCb;
                     this.addChild(i, children[i]);
                 }
             }
+            return this;
         };
         Hash.prototype.appendChild = function (key, value) {
             if (this._children[key] instanceof wdCb.Collection) {
@@ -612,6 +648,9 @@ var wdCb;
             }
             return this;
         };
+        Hash.prototype.setChildren = function (children) {
+            this._children = children;
+        };
         Hash.prototype.removeChild = function (arg) {
             var result = [];
             if (wdCb.JudgeUtils.isString(arg)) {
@@ -621,9 +660,9 @@ var wdCb;
                 delete this._children[key];
             }
             else if (wdCb.JudgeUtils.isFunction(arg)) {
-                var func = arg, self_1 = this;
+                var func_1 = arg, self_1 = this;
                 this.forEach(function (val, key) {
-                    if (func(val, key)) {
+                    if (func_1(val, key)) {
                         result.push(self_1._children[key]);
                         self_1._children[key] = void 0;
                         delete self_1._children[key];
@@ -717,8 +756,40 @@ var wdCb;
             });
             return result;
         };
+        Hash.prototype.clone = function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
+            var target = null, isDeep = null;
+            if (args.length === 0) {
+                isDeep = false;
+                target = Hash.create();
+            }
+            else if (args.length === 1) {
+                if (wdCb.JudgeUtils.isBoolean(args[0])) {
+                    target = Hash.create();
+                    isDeep = args[0];
+                }
+                else {
+                    target = args[0];
+                    isDeep = false;
+                }
+            }
+            else {
+                target = args[0];
+                isDeep = args[1];
+            }
+            if (isDeep === true) {
+                target.setChildren(wdCb.ExtendUtils.extendDeep(this._children));
+            }
+            else {
+                target.setChildren(wdCb.ExtendUtils.extend({}, this._children));
+            }
+            return target;
+        };
         return Hash;
-    })();
+    }());
     wdCb.Hash = Hash;
 })(wdCb || (wdCb = {}));
 
@@ -765,7 +836,7 @@ var wdCb;
             this.removeAllChildren();
         };
         return Queue;
-    })(wdCb.List);
+    }(wdCb.List));
     wdCb.Queue = Queue;
 })(wdCb || (wdCb = {}));
 
@@ -804,8 +875,106 @@ var wdCb;
         Stack.prototype.clear = function () {
             this.removeAllChildren();
         };
+        Stack.prototype.clone = function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i - 0] = arguments[_i];
+            }
+            var target = null, isDeep = null;
+            if (args.length === 0) {
+                isDeep = false;
+                target = Stack.create();
+            }
+            else if (args.length === 1) {
+                if (wdCb.JudgeUtils.isBoolean(args[0])) {
+                    target = Stack.create();
+                    isDeep = args[0];
+                }
+                else {
+                    target = args[0];
+                    isDeep = false;
+                }
+            }
+            else {
+                target = args[0];
+                isDeep = args[1];
+            }
+            if (isDeep === true) {
+                target.setChildren(wdCb.ExtendUtils.extendDeep(this.children));
+            }
+            else {
+                target.setChildren(wdCb.ExtendUtils.extend([], this.children));
+            }
+            return target;
+        };
+        Stack.prototype.filter = function (func) {
+            var children = this.children, result = [], value = null;
+            for (var i = 0, len = children.length; i < len; i++) {
+                value = children[i];
+                if (func.call(children, value, i)) {
+                    result.push(value);
+                }
+            }
+            return wdCb.Collection.create(result);
+        };
+        Stack.prototype.findOne = function (func) {
+            var scope = this.children, result = null;
+            this.forEach(function (value, index) {
+                if (!func.call(scope, value, index)) {
+                    return;
+                }
+                result = value;
+                return wdCb.$BREAK;
+            });
+            return result;
+        };
+        Stack.prototype.reverse = function () {
+            return wdCb.Collection.create(this.copyChildren().reverse());
+        };
+        Stack.prototype.removeChild = function (arg) {
+            return wdCb.Collection.create(this.removeChildHelper(arg));
+        };
+        Stack.prototype.sort = function (func, isSortSelf) {
+            if (isSortSelf === void 0) { isSortSelf = false; }
+            if (isSortSelf) {
+                this.children.sort(func);
+                return this;
+            }
+            return wdCb.Collection.create(this.copyChildren().sort(func));
+        };
+        Stack.prototype.map = function (func) {
+            var resultArr = [];
+            this.forEach(function (e, index) {
+                var result = func(e, index);
+                if (result !== wdCb.$REMOVE) {
+                    resultArr.push(result);
+                }
+            });
+            return wdCb.Collection.create(resultArr);
+        };
+        Stack.prototype.removeRepeatItems = function () {
+            var noRepeatList = wdCb.Collection.create();
+            this.forEach(function (item) {
+                if (noRepeatList.hasChild(item)) {
+                    return;
+                }
+                noRepeatList.addChild(item);
+            });
+            return noRepeatList;
+        };
+        Stack.prototype.hasRepeatItems = function () {
+            var noRepeatList = wdCb.Collection.create(), hasRepeat = false;
+            this.forEach(function (item) {
+                if (noRepeatList.hasChild(item)) {
+                    hasRepeat = true;
+                    return wdCb.$BREAK;
+                }
+                noRepeatList.addChild(item);
+            });
+            return hasRepeat;
+        };
         return Stack;
-    })(wdCb.List);
+    }(wdCb.List));
     wdCb.Stack = Stack;
 })(wdCb || (wdCb = {}));
 
@@ -898,7 +1067,7 @@ var wdCb;
             return dataType === "arraybuffer";
         };
         return AjaxUtils;
-    })();
+    }());
     wdCb.AjaxUtils = AjaxUtils;
 })(wdCb || (wdCb = {}));
 
@@ -944,7 +1113,7 @@ var wdCb;
         };
         ;
         return ArrayUtils;
-    })();
+    }());
     wdCb.ArrayUtils = ArrayUtils;
 })(wdCb || (wdCb = {}));
 
@@ -969,7 +1138,7 @@ var wdCb;
             return fn.toString().split('\n').slice(1, -1).join('\n') + '\n';
         };
         return ConvertUtils;
-    })();
+    }());
     wdCb.ConvertUtils = ConvertUtils;
 })(wdCb || (wdCb = {}));
 
@@ -1006,7 +1175,7 @@ var wdCb;
             }
         };
         return EventUtils;
-    })();
+    }());
     wdCb.EventUtils = EventUtils;
 })(wdCb || (wdCb = {}));
 
@@ -1021,32 +1190,42 @@ var wdCb;
             if (toStr.call(parent) === sArr) {
                 _child = child || [];
                 for (i = 0, len = parent.length; i < len; i++) {
-                    if (!filter(parent[i], i)) {
+                    var member = parent[i];
+                    if (!filter(member, i)) {
                         continue;
                     }
-                    type = toStr.call(parent[i]);
+                    if (member.clone) {
+                        _child[i] = member.clone();
+                        continue;
+                    }
+                    type = toStr.call(member);
                     if (type === sArr || type === sOb) {
                         _child[i] = type === sArr ? [] : {};
-                        arguments.callee(parent[i], _child[i]);
+                        arguments.callee(member, _child[i]);
                     }
                     else {
-                        _child[i] = parent[i];
+                        _child[i] = member;
                     }
                 }
             }
             else if (toStr.call(parent) === sOb) {
                 _child = child || {};
                 for (i in parent) {
-                    if (!filter(parent[i], i)) {
+                    var member = parent[i];
+                    if (!filter(member, i)) {
                         continue;
                     }
-                    type = toStr.call(parent[i]);
+                    if (member.clone) {
+                        _child[i] = member.clone();
+                        continue;
+                    }
+                    type = toStr.call(member);
                     if (type === sArr || type === sOb) {
                         _child[i] = type === sArr ? [] : {};
-                        arguments.callee(parent[i], _child[i]);
+                        arguments.callee(member, _child[i]);
                     }
                     else {
-                        _child[i] = parent[i];
+                        _child[i] = member;
                     }
                 }
             }
@@ -1071,7 +1250,7 @@ var wdCb;
             return destination;
         };
         return ExtendUtils;
-    })();
+    }());
     wdCb.ExtendUtils = ExtendUtils;
 })(wdCb || (wdCb = {}));
 
@@ -1134,7 +1313,7 @@ var wdCb;
             return SPLITPATH_REGEX.exec(fileName).slice(1);
         };
         return PathUtils;
-    })();
+    }());
     wdCb.PathUtils = PathUtils;
 })(wdCb || (wdCb = {}));
 
@@ -1149,7 +1328,7 @@ var wdCb;
             };
         };
         return FunctionUtils;
-    })();
+    }());
     wdCb.FunctionUtils = FunctionUtils;
 })(wdCb || (wdCb = {}));
 
@@ -1261,7 +1440,7 @@ var wdCb;
             return document.createElement(eleStr);
         };
         return DomQuery;
-    })();
+    }());
     wdCb.DomQuery = DomQuery;
 })(wdCb || (wdCb = {}));
 

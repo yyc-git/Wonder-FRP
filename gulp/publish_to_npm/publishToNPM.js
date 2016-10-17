@@ -18,7 +18,7 @@ gulp.task('publishToNPM', function() {
             target: 'ES5',
             //module: "commonjs",
             //moduleResolution: "node",
-            sortOutput:true,
+            noEmitOnError: false,
             experimentalDecorators: true,
             typescript: require('typescript')
         }));
