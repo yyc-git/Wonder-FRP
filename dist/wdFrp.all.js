@@ -1201,7 +1201,7 @@ var wdCb;
                     type = toStr.call(member);
                     if (type === sArr || type === sOb) {
                         _child[i] = type === sArr ? [] : {};
-                        arguments.callee(member, _child[i]);
+                        ExtendUtils.extendDeep(member, _child[i]);
                     }
                     else {
                         _child[i] = member;
@@ -1222,7 +1222,7 @@ var wdCb;
                     type = toStr.call(member);
                     if (type === sArr || type === sOb) {
                         _child[i] = type === sArr ? [] : {};
-                        arguments.callee(member, _child[i]);
+                        ExtendUtils.extendDeep(member, _child[i]);
                     }
                     else {
                         _child[i] = member;
@@ -2437,6 +2437,12 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 var wdFrp;
 (function (wdFrp) {
     var AutoDetachObserver = (function (_super) {
@@ -2458,7 +2464,6 @@ var wdFrp;
         };
         AutoDetachObserver.prototype.dispose = function () {
             if (this.isDisposed) {
-                wdCb.Log.log("only can dispose once");
                 return;
             }
             _super.prototype.dispose.call(this);
@@ -2491,6 +2496,13 @@ var wdFrp;
                 throw e;
             }
         };
+        __decorate([
+            wdFrp.require(function () {
+                if (this.isDisposed) {
+                    wdCb.Log.warn("only can dispose once");
+                }
+            })
+        ], AutoDetachObserver.prototype, "dispose", null);
         return AutoDetachObserver;
     }(wdFrp.Observer));
     wdFrp.AutoDetachObserver = AutoDetachObserver;

@@ -12,9 +12,13 @@ module wdFrp{
             }
         }
 
+        @require(function(){
+            if(this.isDisposed){
+                wdCb.Log.warn("only can dispose once");
+            }
+        })
         public dispose(){
             if(this.isDisposed){
-                wdCb.Log.log("only can dispose once");
                 return;
             }
 

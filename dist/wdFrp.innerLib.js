@@ -1201,7 +1201,7 @@ var wdCb;
                     type = toStr.call(member);
                     if (type === sArr || type === sOb) {
                         _child[i] = type === sArr ? [] : {};
-                        arguments.callee(member, _child[i]);
+                        ExtendUtils.extendDeep(member, _child[i]);
                     }
                     else {
                         _child[i] = member;
@@ -1222,7 +1222,7 @@ var wdCb;
                     type = toStr.call(member);
                     if (type === sArr || type === sOb) {
                         _child[i] = type === sArr ? [] : {};
-                        arguments.callee(member, _child[i]);
+                        ExtendUtils.extendDeep(member, _child[i]);
                     }
                     else {
                         _child[i] = member;

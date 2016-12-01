@@ -16,9 +16,8 @@ module.exports = function(config) {
     files: [
         'bower_components/jquery/dist/jquery.js',
         'bower_components/yyctoolbox/tool/yTool.js',
+        'bower_components/rsvp.js/rsvp.js',
 
-        //'reference/RxJS/dist/rx.all.js',
-        'reference/rsvp.js/dist/rsvp.js',
 
         'dist/wdFrp.innerLib.js',
         'dist/wdFrp.debug.js',
@@ -32,8 +31,11 @@ module.exports = function(config) {
         'test/unit/**/*Tool.js',
 
 
-        'test/unit/**'
+        // 'test/unit/**'
+
         //'test/unit/**/takeUntilSpec.js',
+
+        'test/unit/**/filterSpec.js',
 
         //{pattern: 'dist/wdFrp.all.d.ts', watched: false, included: false, served: true},
         //{pattern: 'dist/wdFrp.all.js.map', watched: false, included: false, served: true}
