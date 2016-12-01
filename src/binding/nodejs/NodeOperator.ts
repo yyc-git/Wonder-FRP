@@ -24,6 +24,11 @@ module wdFrp {
         }
     };
 
+    /*!
+    //todo has bug! need fix
+    refer to rx-node:(need add .publish(), .refCount() methods!)
+     https://github.com/Reactive-Extensions/rx-node/blob/master/index.js
+     */
     export var fromStream = (stream:any, finishEventName:string = "end") => {
         if(stream.pause){
             stream.pause();
