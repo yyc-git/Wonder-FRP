@@ -7,21 +7,32 @@ var path = require("path");
 var addModuleExports = require("./addModuleExports");
 var config = require("../common/config");
 
-var tsFilePaths = config.tsFilePaths;
+// var tsFilePaths = config.tsFilePaths;
 var distPath = config.distPath;
+var tsconfigFile = config.tsconfigFile;
 
 gulp.task('publishToNPM', function() {
-    var tsResult = gulp.src(tsFilePaths)
+    // var tsResult = gulp.src(tsFilePaths)
+    //     .pipe(gulpSourcemaps.init())
+    //     .pipe(gulpTs({
+    //         declarationFiles: false,
+    //         target: 'ES5',
+    //         //module: "commonjs",
+    //         //moduleResolution: "node",
+    //         noEmitOnError: false,
+    //         experimentalDecorators: true,
+    //         typescript: require('typescript')
+    //     }));
+
+
+    var tsProject = gulpTs.createProject(path.join(process.cwd(), tsconfigFile), {
+        // out: "wdFrp.debug.js",
+        typescript: require('typescript')
+    });
+
+    var tsResult = tsProject.src()
         .pipe(gulpSourcemaps.init())
-        .pipe(gulpTs({
-            declarationFiles: false,
-            target: 'ES5',
-            //module: "commonjs",
-            //moduleResolution: "node",
-            noEmitOnError: false,
-            experimentalDecorators: true,
-            typescript: require('typescript')
-        }));
+        .pipe(tsProject());
 
 
     return  merge([

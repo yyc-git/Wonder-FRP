@@ -31,11 +31,11 @@ module.exports = function(config) {
         'test/unit/**/*Tool.js',
 
 
-        // 'test/unit/**'
+        'test/unit/**'
 
         //'test/unit/**/takeUntilSpec.js',
 
-        'test/unit/**/filterSpec.js',
+        // 'test/unit/**/filterSpec.js',
 
         //{pattern: 'dist/wdFrp.all.d.ts', watched: false, included: false, served: true},
         //{pattern: 'dist/wdFrp.all.js.map', watched: false, included: false, served: true}
