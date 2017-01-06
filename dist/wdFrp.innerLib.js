@@ -65,7 +65,7 @@ var wdCb;
 
 var wdCb;
 (function (wdCb) {
-    if (wdCb.JudgeUtils.isNodeJs()) {
+    if (wdCb.JudgeUtils.isNodeJs() && typeof global != "undefined") {
         wdCb.root = global;
     }
     else {

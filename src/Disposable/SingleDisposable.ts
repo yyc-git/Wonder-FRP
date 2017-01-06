@@ -7,6 +7,7 @@ module wdFrp{
         }
 
         private _disposeHandler:Function = null;
+        private _isDisposed:boolean = false;
 
         constructor(disposeHandler:Function){
             super("SingleDisposable");
@@ -19,6 +20,12 @@ module wdFrp{
         }
 
         public dispose(){
+            if(this._isDisposed){
+                return;
+            }
+
+            this._isDisposed = true;
+
             this._disposeHandler();
         }
     }

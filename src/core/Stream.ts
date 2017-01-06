@@ -41,6 +41,10 @@ module wdFrp{
             return this.merge(1);
         }
 
+        public skipUntil(otherStream:Stream){
+            return SkipUntilStream.create(this, otherStream);
+        }
+
         public takeUntil(otherStream:Stream){
             return TakeUntilStream.create(this, otherStream);
         }

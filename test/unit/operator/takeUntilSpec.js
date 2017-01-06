@@ -128,13 +128,19 @@ describe("takeUntil", function () {
 
 
 
+        expect(dom.on.withArgs("mousemove")).not.toCalled();
+        expect(dom.on.withArgs("mouseup")).toCalledOnce();
+
+
         dom.trigger("mousedown");
+
         expect(dom.on.withArgs("mousemove")).toCalledOnce();
-        expect(dom.on.withArgs("mouseup")).toCalled();
+        expect(dom.on.withArgs("mouseup")).toCalledTwice();
+
 
         dom.trigger("mousemove");
         expect(dom.on.withArgs("mousemove")).toCalledOnce();
-        expect(dom.on.withArgs("mouseup")).toCalled();
+        expect(dom.on.withArgs("mouseup")).toCalledTwice();
         expect(dom.off).not.toCalled();
 
         dom.trigger("mouseup");

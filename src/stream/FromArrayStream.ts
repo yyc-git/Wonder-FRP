@@ -23,7 +23,7 @@ module wdFrp{
                 if (i < len) {
                     observer.next(array[i]);
 
-                    arguments.callee(i + 1);
+                    loopRecursive(i + 1);
                 } else {
                     observer.completed();
                 }

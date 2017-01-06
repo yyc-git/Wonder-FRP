@@ -65,7 +65,7 @@ var wdCb;
 
 var wdCb;
 (function (wdCb) {
-    if (wdCb.JudgeUtils.isNodeJs()) {
+    if (wdCb.JudgeUtils.isNodeJs() && typeof global != "undefined") {
         wdCb.root = global;
     }
     else {
@@ -1693,6 +1693,7 @@ var wdFrp;
         function SingleDisposable(disposeHandler) {
             _super.call(this, "SingleDisposable");
             this._disposeHandler = null;
+            this._isDisposed = false;
             this._disposeHandler = disposeHandler;
         }
         SingleDisposable.create = function (disposeHandler) {
@@ -1704,6 +1705,10 @@ var wdFrp;
             this._disposeHandler = handler;
         };
         SingleDisposable.prototype.dispose = function () {
+            if (this._isDisposed) {
+                return;
+            }
+            this._isDisposed = true;
             this._disposeHandler();
         };
         return SingleDisposable;
@@ -1723,6 +1728,7 @@ var wdFrp;
         function GroupDisposable(disposable) {
             _super.call(this, "GroupDisposable");
             this._group = wdCb.Collection.create();
+            this._isDisposed = false;
             if (disposable) {
                 this._group.addChild(disposable);
             }
@@ -1740,6 +1746,10 @@ var wdFrp;
             return this;
         };
         GroupDisposable.prototype.dispose = function () {
+            if (this._isDisposed) {
+                return;
+            }
+            this._isDisposed = true;
             this._group.forEach(function (disposable) {
                 disposable.dispose();
             });
@@ -1797,7 +1807,7 @@ var wdFrp;
 
 var wdFrp;
 (function (wdFrp) {
-    if (wdFrp.JudgeUtils.isNodeJs()) {
+    if (wdFrp.JudgeUtils.isNodeJs() && typeof global != "undefined") {
         wdFrp.root = global;
     }
     else {
@@ -1916,6 +1926,9 @@ var wdFrp;
         };
         Stream.prototype.concatAll = function () {
             return this.merge(1);
+        };
+        Stream.prototype.skipUntil = function (otherStream) {
+            return wdFrp.SkipUntilStream.create(this, otherStream);
         };
         Stream.prototype.takeUntil = function (otherStream) {
             return wdFrp.TakeUntilStream.create(this, otherStream);
@@ -2844,6 +2857,78 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var wdFrp;
 (function (wdFrp) {
+    var SkipUntilSourceObserver = (function (_super) {
+        __extends(SkipUntilSourceObserver, _super);
+        function SkipUntilSourceObserver(prevObserver, skipUntilStream) {
+            _super.call(this, null, null, null);
+            this._prevObserver = null;
+            this._skipUntilStream = null;
+            this._prevObserver = prevObserver;
+            this._skipUntilStream = skipUntilStream;
+        }
+        SkipUntilSourceObserver.create = function (prevObserver, skipUntilStream) {
+            return new this(prevObserver, skipUntilStream);
+        };
+        SkipUntilSourceObserver.prototype.onNext = function (value) {
+            if (this._skipUntilStream.isOpen) {
+                this._prevObserver.next(value);
+            }
+        };
+        SkipUntilSourceObserver.prototype.onError = function (error) {
+            this._prevObserver.error(error);
+        };
+        SkipUntilSourceObserver.prototype.onCompleted = function () {
+            if (this._skipUntilStream.isOpen) {
+                this._prevObserver.completed();
+            }
+        };
+        return SkipUntilSourceObserver;
+    }(wdFrp.Observer));
+    wdFrp.SkipUntilSourceObserver = SkipUntilSourceObserver;
+})(wdFrp || (wdFrp = {}));
+
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var wdFrp;
+(function (wdFrp) {
+    var SkipUntilOtherObserver = (function (_super) {
+        __extends(SkipUntilOtherObserver, _super);
+        function SkipUntilOtherObserver(prevObserver, skipUntilStream) {
+            _super.call(this, null, null, null);
+            this.otherDisposable = null;
+            this._prevObserver = null;
+            this._skipUntilStream = null;
+            this._prevObserver = prevObserver;
+            this._skipUntilStream = skipUntilStream;
+        }
+        SkipUntilOtherObserver.create = function (prevObserver, skipUntilStream) {
+            return new this(prevObserver, skipUntilStream);
+        };
+        SkipUntilOtherObserver.prototype.onNext = function (value) {
+            this._skipUntilStream.isOpen = true;
+            this.otherDisposable.dispose();
+        };
+        SkipUntilOtherObserver.prototype.onError = function (error) {
+            this._prevObserver.error(error);
+        };
+        SkipUntilOtherObserver.prototype.onCompleted = function () {
+            this.otherDisposable.dispose();
+        };
+        return SkipUntilOtherObserver;
+    }(wdFrp.Observer));
+    wdFrp.SkipUntilOtherObserver = SkipUntilOtherObserver;
+})(wdFrp || (wdFrp = {}));
+
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var wdFrp;
+(function (wdFrp) {
     var ConcatObserver = (function (_super) {
         __extends(ConcatObserver, _super);
         function ConcatObserver(currentObserver, startNextStream) {
@@ -3164,7 +3249,7 @@ var wdFrp;
             function loopRecursive(i) {
                 if (i < len) {
                     observer.next(array[i]);
-                    arguments.callee(i + 1);
+                    loopRecursive(i + 1);
                 }
                 else {
                     observer.completed();
@@ -3499,6 +3584,42 @@ var wdFrp;
         return TakeUntilStream;
     }(wdFrp.BaseStream));
     wdFrp.TakeUntilStream = TakeUntilStream;
+})(wdFrp || (wdFrp = {}));
+
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var wdFrp;
+(function (wdFrp) {
+    var SkipUntilStream = (function (_super) {
+        __extends(SkipUntilStream, _super);
+        function SkipUntilStream(source, otherStream) {
+            _super.call(this, null);
+            this.isOpen = false;
+            this._source = null;
+            this._otherStream = null;
+            this._source = source;
+            this._otherStream = wdFrp.JudgeUtils.isPromise(otherStream) ? wdFrp.fromPromise(otherStream) : otherStream;
+            this.scheduler = this._source.scheduler;
+        }
+        SkipUntilStream.create = function (source, otherSteam) {
+            var obj = new this(source, otherSteam);
+            return obj;
+        };
+        SkipUntilStream.prototype.subscribeCore = function (observer) {
+            var group = wdFrp.GroupDisposable.create(), otherDisposable = null, skipUntilOtherObserver = null;
+            group.add(this._source.buildStream(wdFrp.SkipUntilSourceObserver.create(observer, this)));
+            skipUntilOtherObserver = wdFrp.SkipUntilOtherObserver.create(observer, this);
+            otherDisposable = this._otherStream.buildStream(skipUntilOtherObserver);
+            skipUntilOtherObserver.otherDisposable = otherDisposable;
+            group.add(otherDisposable);
+            return group;
+        };
+        return SkipUntilStream;
+    }(wdFrp.BaseStream));
+    wdFrp.SkipUntilStream = SkipUntilStream;
 })(wdFrp || (wdFrp = {}));
 
 var __extends = (this && this.__extends) || function (d, b) {

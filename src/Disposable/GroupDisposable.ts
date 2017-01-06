@@ -7,6 +7,7 @@ module wdFrp{
         }
 
         private _group:wdCb.Collection<IDisposable> = wdCb.Collection.create<IDisposable>();
+        private _isDisposed:boolean = false;
 
         constructor(disposable?:IDisposable){
             super("GroupDisposable");
@@ -29,9 +30,15 @@ module wdFrp{
         }
 
         public dispose(){
+            if(this._isDisposed){
+                return;
+            }
+
+            this._isDisposed = true;
+
             this._group.forEach((disposable:IDisposable) => {
                 disposable.dispose();
-            })
+            });
         }
     }
 }

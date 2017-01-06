@@ -33,6 +33,9 @@ module.exports = function(config) {
 
         'test/unit/**'
 
+        // 'test/unit/**/skipUntilSpec.js',
+        // 'test/unit/**/dispose*.js',
+
         //'test/unit/**/takeUntilSpec.js',
 
         // 'test/unit/**/filterSpec.js',

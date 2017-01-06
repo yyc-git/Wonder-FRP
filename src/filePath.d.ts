@@ -44,6 +44,8 @@
 /// <reference path="observer/MergeAllObserver"/>
 /// <reference path="observer/MergeObserver"/>
 /// <reference path="observer/TakeUntilObserver"/>
+/// <reference path="observer/SkipUntilSourceObserver"/>
+/// <reference path="observer/SkipUntilOtherObserver"/>
 /// <reference path="observer/ConcatObserver"/>
 /// <reference path="observer/ISubjectObserver"/>
 /// <reference path="observer/SubjectObserver"/>
@@ -64,6 +66,7 @@
 /// <reference path="stream/MergeAllStream"/>
 /// <reference path="stream/MergeStream"/>
 /// <reference path="stream/TakeUntilStream"/>
+/// <reference path="stream/SkipUntilStream"/>
 /// <reference path="stream/ConcatStream"/>
 /// <reference path="stream/RepeatStream"/>
 /// <reference path="stream/IgnoreElementsStream"/>

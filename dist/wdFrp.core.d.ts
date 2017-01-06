@@ -42,7 +42,7 @@ declare module wdFrp {
 
 declare module wdFrp {
     interface IDisposable {
-        dispose(): any;
+        dispose(): void;
     }
 }
 
@@ -50,6 +50,7 @@ declare module wdFrp {
     class SingleDisposable extends Entity implements IDisposable {
         static create(disposeHandler?: Function): SingleDisposable;
         private _disposeHandler;
+        private _isDisposed;
         constructor(disposeHandler: Function);
         setDisposeHandler(handler: Function): void;
         dispose(): void;
@@ -60,6 +61,7 @@ declare module wdFrp {
     class GroupDisposable extends Entity implements IDisposable {
         static create(disposable?: IDisposable): GroupDisposable;
         private _group;
+        private _isDisposed;
         constructor(disposable?: IDisposable);
         add(disposable: IDisposable): this;
         remove(disposable: IDisposable): this;
@@ -121,6 +123,7 @@ declare module wdFrp {
         concatMap(selector: Function): any;
         mergeAll(): MergeAllStream;
         concatAll(): any;
+        skipUntil(otherStream: Stream): SkipUntilStream;
         takeUntil(otherStream: Stream): TakeUntilStream;
         take(count?: number): AnonymousStream;
         takeLast(count?: number): AnonymousStream;
@@ -299,6 +302,31 @@ declare module wdFrp {
         static create(prevObserver: IObserver): TakeUntilObserver;
         private _prevObserver;
         constructor(prevObserver: IObserver);
+        protected onNext(value: any): void;
+        protected onError(error: any): void;
+        protected onCompleted(): void;
+    }
+}
+
+declare module wdFrp {
+    class SkipUntilSourceObserver extends Observer {
+        static create(prevObserver: IObserver, skipUntilStream: SkipUntilStream): SkipUntilSourceObserver;
+        private _prevObserver;
+        private _skipUntilStream;
+        constructor(prevObserver: IObserver, skipUntilStream: SkipUntilStream);
+        protected onNext(value: any): void;
+        protected onError(error: any): void;
+        protected onCompleted(): void;
+    }
+}
+
+declare module wdFrp {
+    class SkipUntilOtherObserver extends Observer {
+        static create(prevObserver: IObserver, skipUntilStream: SkipUntilStream): SkipUntilOtherObserver;
+        otherDisposable: IDisposable;
+        private _prevObserver;
+        private _skipUntilStream;
+        constructor(prevObserver: IObserver, skipUntilStream: SkipUntilStream);
         protected onNext(value: any): void;
         protected onError(error: any): void;
         protected onCompleted(): void;
@@ -491,6 +519,17 @@ declare module wdFrp {
 declare module wdFrp {
     class TakeUntilStream extends BaseStream {
         static create(source: Stream, otherSteam: Stream): TakeUntilStream;
+        private _source;
+        private _otherStream;
+        constructor(source: Stream, otherStream: Stream);
+        subscribeCore(observer: IObserver): GroupDisposable;
+    }
+}
+
+declare module wdFrp {
+    class SkipUntilStream extends BaseStream {
+        static create(source: Stream, otherSteam: Stream): SkipUntilStream;
+        isOpen: boolean;
         private _source;
         private _otherStream;
         constructor(source: Stream, otherStream: Stream);

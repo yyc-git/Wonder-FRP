@@ -1,6 +1,6 @@
 module wdFrp{
     export interface IDisposable{
-        dispose();
+        dispose():void;
     }
 }
 

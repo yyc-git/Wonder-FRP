@@ -237,7 +237,8 @@ describe("dispose", function () {
                 expect(result2.messages).toStreamEqual(
                     next(450, 1)
                 );
-                expect(rt.root.cancelNextRequestAnimationFrame).toCalledTwice();
+                // expect(rt.root.cancelNextRequestAnimationFrame).toCalledTwice();
+                expect(rt.root.cancelNextRequestAnimationFrame).toCalledOnce();
             });
         });
     });
@@ -450,31 +451,48 @@ describe("dispose", function () {
 
             describe("takeUntil", function(){
                 it("test1", function(){
-                    var promise = scheduler.createResolvedPromise(300, 1);
                     var stream1 = scheduler.createStream(
                         next(200, 1),
                         next(300, 2),
                         next(400, 3),
                         completed(401)
                     );
-                    //var stream = rt.interval(100, scheduler)
-                    var stream = stream1
-                        .takeUntil(rt.interval(120, scheduler));
 
                     var results = scheduler.startWithTime(function () {
-                        return stream;
+                        return stream1.takeUntil(rt.interval(120, scheduler));
                     }, 150, 500);
 
-                    expect(rt.root.clearInterval        ).toCalledOnce();
-
+                    expect(rt.root.clearInterval).toCalledOnce();
                     expect(results.messages).toStreamEqual(
                         next(200, 1), completed(270)
                     );
                 })
             });
 
-            it("repeat", function(){
+            describe("skipUntil", function(){
+                it("test1", function(){
+                    var stream1 = scheduler.createStream(
+                        next(200, 1),
+                        next(300, 2),
+                        next(400, 3),
+                        completed(401)
+                    );
 
+                    var results = scheduler.startWithTime(function () {
+                        return stream1.skipUntil(rt.interval(120, scheduler));
+                    }, 150, 500);
+
+                    expect(rt.root.clearInterval).toCalledOnce();
+                    expect(results.messages).toStreamEqual(
+                        next(300, 2),
+                        next(400, 3),
+                        completed(401)
+                    );
+                })
+            });
+
+            it("repeat", function(){
+                //todo finish
             });
         });
         
