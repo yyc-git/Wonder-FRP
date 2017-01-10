@@ -65,7 +65,7 @@ var wdCb;
 
 var wdCb;
 (function (wdCb) {
-    if (wdCb.JudgeUtils.isNodeJs() && typeof global != "undefined") {
+    if (wdCb.JudgeUtils.isNodeJs()) {
         wdCb.root = global;
     }
     else {
@@ -1201,7 +1201,7 @@ var wdCb;
                     type = toStr.call(member);
                     if (type === sArr || type === sOb) {
                         _child[i] = type === sArr ? [] : {};
-                        ExtendUtils.extendDeep(member, _child[i]);
+                        arguments.callee(member, _child[i]);
                     }
                     else {
                         _child[i] = member;
@@ -1222,7 +1222,7 @@ var wdCb;
                     type = toStr.call(member);
                     if (type === sArr || type === sOb) {
                         _child[i] = type === sArr ? [] : {};
-                        ExtendUtils.extendDeep(member, _child[i]);
+                        arguments.callee(member, _child[i]);
                     }
                     else {
                         _child[i] = member;
