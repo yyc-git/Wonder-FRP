@@ -15,7 +15,7 @@ module.exports = function buildPublishFile() {
 
     combineInnerLib(
         path.join(distPath, "wdFrp.node.js"),
-        path.join(process.cwd(), "src/filePath.d.ts")
+        path.join(process.cwd(), "src/tsconfig.json")
     );
 }
 

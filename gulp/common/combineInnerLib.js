@@ -1,30 +1,68 @@
 var fs = require("fs-extra");
 var path = require("path");
+var glob = require("glob");
 
-function getInnerLibDTsPathArr(definitionDTsPath){
-    var regex = /"[^"]+\.d\.ts"/g,
-        content = null,
-        result = null,
+//todo extract
+function getInnerLibDTsPathArr(tsconfigPath){
+    var regex = /\.d\.ts$/,
+        files = null,
         resultArr = [];
 
-    content = fs.readFileSync(definitionDTsPath, "utf8");
+    var tsconfigJson = JSON.parse(fs.readFileSync(tsconfigPath, "utf8").replace(/\/\/.+/g, "")),
+        files = [];
 
-    while((result = regex.exec(content)) !== null){
-        resultArr.push(
-            parseInnerLibDTsPath(result[0].slice(1, -1))
-        );
+
+
+    // var tsconfigFilePath = require("./pathData.js");
+    var folderPath = path.dirname(tsconfigPath);
+
+    // console.log(tsconfigJson.include);
+
+    var allFileGlobs = null;
+
+    if(tsconfigJson.include){
+        allFileGlobs = tsconfigJson.include.concat(tsconfigJson.files);
+    }
+    else{
+        allFileGlobs = tsconfigJson.files;
     }
 
-    //to make finial file is build based on filePath.d.ts's sequence
+
+
+    // console.log(allFileGlobs)
+
+    allFileGlobs.forEach(function(globPattern) {
+        files = files.concat(glob.sync(globPattern, {
+            cwd: folderPath
+        }));
+    });
+
+    // console.log(files);
+
+
+
+
+
+    for(var i = 0, len = files.length; i < len; i++){
+        var file = files[i];
+
+        if(file.match(regex) !== null){
+            resultArr.push(
+                _parseInnerLibDTsPath(file)
+            );
+        }
+    }
+
     return resultArr.reverse();
 }
 
-function parseInnerLibDTsPath(pathInDefinitionFile){
+function _parseInnerLibDTsPath(pathInDefinitionFile){
     return path.join(process.cwd(), pathInDefinitionFile.slice(3));
 }
 
-module.exports = function combineInnerLib(mainFilePath, definitionDTsPath){
-    getInnerLibDTsPathArr(definitionDTsPath).forEach(function(innerLibDtsPath){
+
+module.exports = function combineInnerLib(mainFilePath, tsconfigPath){
+    getInnerLibDTsPathArr(tsconfigPath).forEach(function(innerLibDtsPath){
         fs.writeFileSync(
             mainFilePath,
             fs.readFileSync(innerLibDtsPath.replace("d.ts", "js"), "utf8")

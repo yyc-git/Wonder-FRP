@@ -9,6 +9,7 @@
   "devDependencies": {
     "del": "^1.2.0",
     "fs-extra": "^0.22.1",
+    "glob": "^7.0.4",
     "gulp": "^3.8.11",
     "gulp-concat": "^2.6.0",
     "gulp-sourcemaps": "^1.5.2",

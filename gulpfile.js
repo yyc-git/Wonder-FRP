@@ -29,55 +29,6 @@ gulp.task('clean', function() {
 
 
 
-
-gulp.task("compileTsConfig", function(){
-    var mapFilePath = function(item){
-        var result = /"([^"]+)"/g.exec(item)[1];
-
-        if(result.indexOf(".d.ts") > -1){
-            return result;
-        }
-
-        return result + ".ts";
-    }
-
-    var filterFilePath = function(item){
-        return item !== "";
-    }
-
-    return gulp.src(tsconfigFile)
-        .pipe(through(function (file, encoding, callback) {
-            var arr = null,
-                tsconfig = null,
-                outputConfigStr = null;
-
-            if (file.isNull()) {
-                this.emit("error", new gutil.PluginError(PLUGIN_NAME, 'Streaming not supported'));
-                return callback();
-            }
-            if (file.isBuffer()) {
-                arr = fs.readFileSync(path.join(process.cwd(), definitionsPath), "utf8").split('\n').filter(filterFilePath).map(mapFilePath);
-
-                tsconfig = JSON.parse(file.contents);
-                tsconfig.files = arr;
-
-                outputConfigStr = JSON.stringify(tsconfig,null,"\t");
-
-                fs.writeFileSync(file.path,outputConfigStr);
-
-                this.push(file);
-
-                callback();
-            }
-            if (file.isStream()) {
-                this.emit("error", new gutil.PluginError(PLUGIN_NAME, 'Streaming not supported'));
-                return callback();
-            }
-        }, function (callback) {
-            callback();
-        }));
-});
-
 gulp.task("compileTs", function() {
     var tsProject = gulpTs.createProject(path.join(process.cwd(), tsconfigFile), {
         declaration: true,
@@ -187,7 +138,7 @@ function buildAllFile(){
 
     combineInnerLib(
         path.join(distPath, "wdFrp.all.js"),
-        path.join(process.cwd(), "src/filePath.d.ts")
+        path.join(process.cwd(), "src/tsconfig.json")
     );
 }
 
@@ -196,7 +147,7 @@ function createInnerLibJs(){
 
     combineInnerLib(
         path.join(distPath, "wdFrp.innerLib.js"),
-        path.join(process.cwd(), "src/filePath.d.ts")
+        path.join(process.cwd(), "src/tsconfig.json")
     );
 }
 
@@ -210,7 +161,7 @@ function removeOriginFile(){
 
 
 //todo removeReference
-gulp.task("build", gulpSync.sync(["clean", "compileTsConfig", "compileTs",  "compileTsDebug", "publishToNPM", "buildMultiDistFiles", "removeReference"]));
+gulp.task("build", gulpSync.sync(["clean", "compileTs",  "compileTsDebug", "publishToNPM", "buildMultiDistFiles", "removeReference"]));
 
 
 
@@ -278,7 +229,7 @@ gulp.task("test", function (done) {
 //    //})
 //});
 gulp.task("watch", function(){
-    gulp.watch(tsFilePaths, ["compileTsConfig", "compileTsDebug"]);
+    gulp.watch(tsFilePaths, ["compileTsDebug"]);
 });
 
 //
