@@ -9,17 +9,27 @@ var merge = require("merge2");
 var path = require("path");
 var fs = require("fs-extra");
 var combineInnerLib = require("./gulp/common/combineInnerLib");
-var buildPublishFile = require("./gulp/publish_to_npm/buildPublishFile");
 var config = require("./gulp/common/config");
-
-require("./gulp/publish_to_npm/publishToNPM");
 
 var tsFilePaths = config.tsFilePaths;
 var distPath = config.distPath;
-var definitionsPath = config.definitionsPath;
 var tsconfigFile = config.tsconfigFile;
+var filePath = path.join(distPath, "wdFrp.js");
 
 var PLUGIN_NAME = "gulp file";
+
+
+var addModuleExports = require("./lib/inner/Wonder-Package/build/gulp_task/package/addModuleExports").addModuleExports;
+var browserify = require("./lib/inner/Wonder-Package/build/gulp_task/package/browserify").browserify;
+
+var requireInnerLibToContent = require("./lib/inner/Wonder-Package/build/gulp_task/package/requireInnerLibToContent").requireInnerLibToContent;
+
+
+
+
+
+
+
 
 gulp.task('clean', function() {
     return del.sync([distPath], {
@@ -71,76 +81,22 @@ gulp.task("compileTsDebug", function() {
 
 
 
-var distFilePaths = [
-    'dist/*.ts',
-    'dist/*.js'
-];
 
-gulp.task("removeReference", function(){
-    return gulp.src(distFilePaths)
-        .pipe(through(function (file, encoding, callback) {
-            var map = null;
-
-            if (file.isNull()) {
-                this.emit("error", new gutil.PluginError(PLUGIN_NAME, 'Streaming not supported'));
-                return callback();
+gulp.task("combineInnerLib", function(done){
+    requireInnerLibToContent(
+        filePath,
+        [
+            {
+                variableName:"wdCb",
+                path:"../lib/inner/Wonder-CommonLib/dist/wdCb.node.js"
             }
-            if (file.isBuffer()) {
-                file.contents = new Buffer(file.contents.toString().replace(
-                    /\/\/\/\s*<reference[^>]+>/mg, ""
-                ));
-                this.push(file);
+        ]
+    );
 
-                fs.writeFileSync(file.path, file.contents.toString(), "utf8");
-
-                callback();
-            }
-            if (file.isStream()) {
-                this.emit("error", new gutil.PluginError(PLUGIN_NAME, 'Streaming not supported'));
-                return callback();
-            }
-        }, function (callback) {
-            callback();
-        }));
-
-});
-
-
-
-//var gulp = require("gulp");
-//var gulpSync = require("gulp-sync")(gulp);
-//var path = require("path");
-
-//gulp.task("combineInnerLib", function(done){
-//
-//    done();
-//});
-
-
-gulp.task("buildMultiDistFiles", function(done){
-    buildCoreFile();
-    buildAllFile();
-    buildPublishFile();
     createInnerLibJs();
-    removeOriginFile();
 
     done();
 });
-
-function buildCoreFile(){
-    fs.copySync(path.join(distPath, "wdFrp.d.ts"),path.join(distPath, "wdFrp.core.d.ts"));
-    fs.copySync(path.join(distPath, "wdFrp.js"),path.join(distPath, "wdFrp.core.js"));
-}
-
-function buildAllFile(){
-    fs.copySync(path.join(distPath, "wdFrp.d.ts"),path.join(distPath, "wdFrp.all.d.ts"));
-    fs.copySync(path.join(distPath, "wdFrp.js"),path.join(distPath, "wdFrp.all.js"));
-
-    combineInnerLib(
-        path.join(distPath, "wdFrp.all.js"),
-        path.join(process.cwd(), "src/tsconfig.json")
-    );
-}
 
 function createInnerLibJs(){
     fs.createFileSync( path.join(distPath, "wdFrp.innerLib.js") );
@@ -152,25 +108,28 @@ function createInnerLibJs(){
 }
 
 
+gulp.task("addNodejsVersion", function(done){
+    fs.copySync(filePath, path.join(distPath, "wdFrp.node.js"));
 
-function removeOriginFile(){
-    fs.removeSync(path.join(distPath, "wdFrp.d.ts"));
-    fs.removeSync(path.join(distPath, "wdFrp.js"));
-}
-
-
-
-//todo removeReference
-gulp.task("build", gulpSync.sync(["clean", "compileTs",  "compileTsDebug", "publishToNPM", "buildMultiDistFiles", "removeReference"]));
+    done();
+});
 
 
 
 
+gulp.task("addModuleExports", function(done){
+    addModuleExports(filePath, "wdFrp");
+
+    done();
+});
 
 
+gulp.task("browserify", function() {
+    return browserify(filePath, distPath, "wdFrp");
+});
 
 
-
+gulp.task("build", gulpSync.sync(["clean", "compileTs",  "compileTsDebug", "combineInnerLib", "addModuleExports", "addNodejsVersion", "browserify"]));
 
 
 
@@ -211,67 +170,7 @@ gulp.task("test", function (done) {
 });
 
 
-//var testFilePaths = ["test/unit/*Spec.js", "test/unit/**/*Spec.js"];
-
-//gulp.task("watch", function(){
-//    var watcher = gulp.watch(tsFilePaths.concat(testFilePaths), ["singleTest"]);
-//    //var watcher = gulp.watch(tsFilePaths, function(){
-//    //    try{
-//    //        gulp.run("test");
-//    //    }
-//    //    catch(e){
-//    //
-//    //    }
-//    //});
-//    //
-//    //watcher.on("error", function(e){
-//    //    //console.log(e);
-//    //})
-//});
 gulp.task("watch", function(){
     gulp.watch(tsFilePaths, ["compileTsDebug"]);
 });
-
-//
-//
-//var karma = require('gulp-karma')({
-//    configFile: karmaConfPath
-//});
-//
-////// Run tests once
-//gulp.task('test', gulpSync.sync(["build"]), function(done) {
-//    console.log(karma);
-//    // Override configuration for CI, etc
-//    //return karma.once({
-//    //    // reporters: ['coverage']
-//    //});
-//    karma.stop();
-//    return karma.start({
-//        //autoWatch: true
-//    }, done);
-//
-//
-//
-//    //karma.run();
-//    //done();
-//    //karma.start({
-//    //    configFile: karmaConfPath
-//    //}, done);
-//});
-//
-//// WATCH OPTION 1: gulp.watch style
-//var watcher = gulp.task('watch', function() {
-//    // Start a server, then, once it's ready, run tests
-//    //karma.start().then(karma.run);
-//
-//    // Watch for changes with gulp and run tests accordingly
-//    gulp.watch(tsFilePaths, function() {
-//        //karma.run();
-//        gulp.run("test")
-//    });
-//});
-//
-//watcher.on("error", function(){
-//
-//});
 

@@ -22,7 +22,6 @@ module.exports = function(config) {
         'dist/wdFrp.innerLib.js',
         'dist/wdFrp.debug.js',
 
-        'test/unit/lib/Engine.debug.js',
 
         'test/helper/jasmine/**',
         'test/helper/sinonJs/*.js',
@@ -40,8 +39,8 @@ module.exports = function(config) {
 
         // 'test/unit/**/filterSpec.js',
 
-        //{pattern: 'dist/wdFrp.all.d.ts', watched: false, included: false, served: true},
-        //{pattern: 'dist/wdFrp.all.js.map', watched: false, included: false, served: true}
+        //{pattern: 'dist/wdFrp.d.ts', watched: false, included: false, served: true},
+        //{pattern: 'dist/wdFrp.js.map', watched: false, included: false, served: true}
         //{pattern: 'src/**', watched: false, included: false, served: true}
     ],
 
