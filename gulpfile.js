@@ -90,7 +90,7 @@ gulp.task("combineInnerLib", function(done){
         [
             {
                 variableName:"wdCb",
-                path:"wdcb"
+                path:"wonder-commonlib"
             }
         ]
     );

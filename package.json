@@ -7,9 +7,11 @@
     "Wonder-FRP"
   ],
   "dependencies": {
-    "wdcb": "^0.1.8"
+    "wonder-commonlib": "^0.1.0"
   },
-  "bundledDependencies":["wdcb"],
+  "bundledDependencies": [
+    "wonder-commonlib"
+  ],
   "devDependencies": {
     "del": "^1.2.0",
     "fs-extra": "^0.22.1",

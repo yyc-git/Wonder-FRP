@@ -1,6 +1,6 @@
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.wdFrp=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
-var wdCb = _dereq_("wdcb");
+var wdCb = _dereq_("wonder-commonlib");
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11,7 +11,7 @@ var wdFrp;
     var JudgeUtils = (function (_super) {
         __extends(JudgeUtils, _super);
         function JudgeUtils() {
-            _super.apply(this, arguments);
+            return _super !== null && _super.apply(this, arguments) || this;
         }
         JudgeUtils.isPromise = function (obj) {
             return !!obj
@@ -35,7 +35,7 @@ var wdFrp;
         return function () {
             var funcArgs = [];
             for (var _i = 0; _i < arguments.length; _i++) {
-                funcArgs[_i - 0] = arguments[_i];
+                funcArgs[_i] = arguments[_i];
             }
             return wdFrp.createStream(function (observer) {
                 var hander = function (err) {
@@ -114,9 +114,9 @@ var wdFrp;
             enumerable: true,
             configurable: true
         });
-        Entity.UID = 1;
         return Entity;
     }());
+    Entity.UID = 1;
     wdFrp.Entity = Entity;
 })(wdFrp || (wdFrp = {}));
 
@@ -125,9 +125,9 @@ var wdFrp;
     var Main = (function () {
         function Main() {
         }
-        Main.isTest = false;
         return Main;
     }());
+    Main.isTest = false;
     wdFrp.Main = Main;
 })(wdFrp || (wdFrp = {}));
 
@@ -145,7 +145,7 @@ var wdFrp;
             descriptor.value = function () {
                 var args = [];
                 for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i - 0] = arguments[_i];
+                    args[_i] = arguments[_i];
                 }
                 if (wdFrp.Main.isTest) {
                     InFunc.apply(this, args);
@@ -162,7 +162,7 @@ var wdFrp;
             descriptor.value = function () {
                 var args = [];
                 for (var _i = 0; _i < arguments.length; _i++) {
-                    args[_i - 0] = arguments[_i];
+                    args[_i] = arguments[_i];
                 }
                 var result = value.apply(this, args), params = [result].concat(args);
                 if (wdFrp.Main.isTest) {
@@ -248,10 +248,11 @@ var wdFrp;
     var SingleDisposable = (function (_super) {
         __extends(SingleDisposable, _super);
         function SingleDisposable(disposeHandler) {
-            _super.call(this, "SingleDisposable");
-            this._disposeHandler = null;
-            this._isDisposed = false;
-            this._disposeHandler = disposeHandler;
+            var _this = _super.call(this, "SingleDisposable") || this;
+            _this._disposeHandler = null;
+            _this._isDisposed = false;
+            _this._disposeHandler = disposeHandler;
+            return _this;
         }
         SingleDisposable.create = function (disposeHandler) {
             if (disposeHandler === void 0) { disposeHandler = function () { }; }
@@ -283,12 +284,13 @@ var wdFrp;
     var GroupDisposable = (function (_super) {
         __extends(GroupDisposable, _super);
         function GroupDisposable(disposable) {
-            _super.call(this, "GroupDisposable");
-            this._group = wdCb.Collection.create();
-            this._isDisposed = false;
+            var _this = _super.call(this, "GroupDisposable") || this;
+            _this._group = wdCb.Collection.create();
+            _this._isDisposed = false;
             if (disposable) {
-                this._group.addChild(disposable);
+                _this._group.addChild(disposable);
             }
+            return _this;
         }
         GroupDisposable.create = function (disposable) {
             var obj = new this(disposable);
@@ -458,10 +460,11 @@ var wdFrp;
     var Stream = (function (_super) {
         __extends(Stream, _super);
         function Stream(subscribeFunc) {
-            _super.call(this, "Stream");
-            this.scheduler = null;
-            this.subscribeFunc = null;
-            this.subscribeFunc = subscribeFunc || function () { };
+            var _this = _super.call(this, "Stream") || this;
+            _this.scheduler = null;
+            _this.subscribeFunc = null;
+            _this.subscribeFunc = subscribeFunc || function () { };
+            return _this;
         }
         Stream.prototype.buildStream = function (observer) {
             return wdFrp.SingleDisposable.create((this.subscribeFunc(observer) || function () { }));
@@ -619,7 +622,7 @@ var wdFrp;
         Stream.prototype.merge = function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i - 0] = arguments[_i];
+                args[_i] = arguments[_i];
             }
             if (wdFrp.JudgeUtils.isNumber(args[0])) {
                 var maxConcurrent = args[0];
@@ -655,20 +658,20 @@ var wdFrp;
         Stream.prototype._setSubject = function (subject) {
             subject.source = this;
         };
-        __decorate([
-            wdFrp.require(function (count) {
-                if (count === void 0) { count = 1; }
-                wdFrp.assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
-            })
-        ], Stream.prototype, "take", null);
-        __decorate([
-            wdFrp.require(function (count) {
-                if (count === void 0) { count = 1; }
-                wdFrp.assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
-            })
-        ], Stream.prototype, "takeLast", null);
         return Stream;
     }(wdFrp.Entity));
+    __decorate([
+        wdFrp.require(function (count) {
+            if (count === void 0) { count = 1; }
+            wdFrp.assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
+        })
+    ], Stream.prototype, "take", null);
+    __decorate([
+        wdFrp.require(function (count) {
+            if (count === void 0) { count = 1; }
+            wdFrp.assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
+        })
+    ], Stream.prototype, "takeLast", null);
     wdFrp.Stream = Stream;
 })(wdFrp || (wdFrp = {}));
 
@@ -681,7 +684,7 @@ var wdFrp;
         Scheduler.create = function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i - 0] = arguments[_i];
+                args[_i] = arguments[_i];
             }
             var obj = new this();
             return obj;
@@ -737,35 +740,36 @@ var wdFrp;
         function Observer() {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i - 0] = arguments[_i];
+                args[_i] = arguments[_i];
             }
-            _super.call(this, "Observer");
-            this._isDisposed = null;
-            this.onUserNext = null;
-            this.onUserError = null;
-            this.onUserCompleted = null;
-            this._isStop = false;
-            this._disposable = null;
+            var _this = _super.call(this, "Observer") || this;
+            _this._isDisposed = null;
+            _this.onUserNext = null;
+            _this.onUserError = null;
+            _this.onUserCompleted = null;
+            _this._isStop = false;
+            _this._disposable = null;
             if (args.length === 1) {
                 var observer_1 = args[0];
-                this.onUserNext = function (v) {
+                _this.onUserNext = function (v) {
                     observer_1.next(v);
                 };
-                this.onUserError = function (e) {
+                _this.onUserError = function (e) {
                     observer_1.error(e);
                 };
-                this.onUserCompleted = function () {
+                _this.onUserCompleted = function () {
                     observer_1.completed();
                 };
             }
             else {
                 var onNext = args[0], onError = args[1], onCompleted = args[2];
-                this.onUserNext = onNext || function (v) { };
-                this.onUserError = onError || function (e) {
+                _this.onUserNext = onNext || function (v) { };
+                _this.onUserError = onError || function (e) {
                     throw e;
                 };
-                this.onUserCompleted = onCompleted || function () { };
+                _this.onUserCompleted = onCompleted || function () { };
             }
+            return _this;
         }
         Object.defineProperty(Observer.prototype, "isDisposed", {
             get: function () {
@@ -873,9 +877,10 @@ var wdFrp;
     var GeneratorSubject = (function (_super) {
         __extends(GeneratorSubject, _super);
         function GeneratorSubject() {
-            _super.call(this, "GeneratorSubject");
-            this._isStart = false;
-            this.observer = new wdFrp.SubjectObserver();
+            var _this = _super.call(this, "GeneratorSubject") || this;
+            _this._isStart = false;
+            _this.observer = new wdFrp.SubjectObserver();
+            return _this;
         }
         GeneratorSubject.create = function () {
             var obj = new this();
@@ -983,7 +988,7 @@ var wdFrp;
     var AnonymousObserver = (function (_super) {
         __extends(AnonymousObserver, _super);
         function AnonymousObserver() {
-            _super.apply(this, arguments);
+            return _super !== null && _super.apply(this, arguments) || this;
         }
         AnonymousObserver.create = function (onNext, onError, onCompleted) {
             return new this(onNext, onError, onCompleted);
@@ -1018,12 +1023,12 @@ var wdFrp;
     var AutoDetachObserver = (function (_super) {
         __extends(AutoDetachObserver, _super);
         function AutoDetachObserver() {
-            _super.apply(this, arguments);
+            return _super !== null && _super.apply(this, arguments) || this;
         }
         AutoDetachObserver.create = function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i - 0] = arguments[_i];
+                args[_i] = arguments[_i];
             }
             if (args.length === 1) {
                 return new this(args[0]);
@@ -1066,15 +1071,15 @@ var wdFrp;
                 throw e;
             }
         };
-        __decorate([
-            wdFrp.require(function () {
-                if (this.isDisposed) {
-                    wdCb.Log.warn("only can dispose once");
-                }
-            })
-        ], AutoDetachObserver.prototype, "dispose", null);
         return AutoDetachObserver;
     }(wdFrp.Observer));
+    __decorate([
+        wdFrp.require(function () {
+            if (this.isDisposed) {
+                wdCb.Log.warn("only can dispose once");
+            }
+        })
+    ], AutoDetachObserver.prototype, "dispose", null);
     wdFrp.AutoDetachObserver = AutoDetachObserver;
 })(wdFrp || (wdFrp = {}));
 
@@ -1088,11 +1093,12 @@ var wdFrp;
     var MapObserver = (function (_super) {
         __extends(MapObserver, _super);
         function MapObserver(currentObserver, selector) {
-            _super.call(this, null, null, null);
-            this._currentObserver = null;
-            this._selector = null;
-            this._currentObserver = currentObserver;
-            this._selector = selector;
+            var _this = _super.call(this, null, null, null) || this;
+            _this._currentObserver = null;
+            _this._selector = null;
+            _this._currentObserver = currentObserver;
+            _this._selector = selector;
+            return _this;
         }
         MapObserver.create = function (currentObserver, selector) {
             return new this(currentObserver, selector);
@@ -1130,11 +1136,12 @@ var wdFrp;
     var DoObserver = (function (_super) {
         __extends(DoObserver, _super);
         function DoObserver(currentObserver, prevObserver) {
-            _super.call(this, null, null, null);
-            this._currentObserver = null;
-            this._prevObserver = null;
-            this._currentObserver = currentObserver;
-            this._prevObserver = prevObserver;
+            var _this = _super.call(this, null, null, null) || this;
+            _this._currentObserver = null;
+            _this._prevObserver = null;
+            _this._currentObserver = currentObserver;
+            _this._prevObserver = prevObserver;
+            return _this;
         }
         DoObserver.create = function (currentObserver, prevObserver) {
             return new this(currentObserver, prevObserver);
@@ -1195,14 +1202,15 @@ var wdFrp;
     var MergeAllObserver = (function (_super) {
         __extends(MergeAllObserver, _super);
         function MergeAllObserver(currentObserver, streamGroup, groupDisposable) {
-            _super.call(this, null, null, null);
-            this.done = false;
-            this.currentObserver = null;
-            this._streamGroup = null;
-            this._groupDisposable = null;
-            this.currentObserver = currentObserver;
-            this._streamGroup = streamGroup;
-            this._groupDisposable = groupDisposable;
+            var _this = _super.call(this, null, null, null) || this;
+            _this.done = false;
+            _this.currentObserver = null;
+            _this._streamGroup = null;
+            _this._groupDisposable = null;
+            _this.currentObserver = currentObserver;
+            _this._streamGroup = streamGroup;
+            _this._groupDisposable = groupDisposable;
+            return _this;
         }
         MergeAllObserver.create = function (currentObserver, streamGroup, groupDisposable) {
             return new this(currentObserver, streamGroup, groupDisposable);
@@ -1223,24 +1231,25 @@ var wdFrp;
                 this.currentObserver.completed();
             }
         };
-        __decorate([
-            wdFrp.require(function (innerSource) {
-                wdFrp.assert(innerSource instanceof wdFrp.Stream || wdFrp.JudgeUtils.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
-            })
-        ], MergeAllObserver.prototype, "onNext", null);
         return MergeAllObserver;
     }(wdFrp.Observer));
+    __decorate([
+        wdFrp.require(function (innerSource) {
+            wdFrp.assert(innerSource instanceof wdFrp.Stream || wdFrp.JudgeUtils.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
+        })
+    ], MergeAllObserver.prototype, "onNext", null);
     wdFrp.MergeAllObserver = MergeAllObserver;
     var InnerObserver = (function (_super) {
         __extends(InnerObserver, _super);
         function InnerObserver(parent, streamGroup, currentStream) {
-            _super.call(this, null, null, null);
-            this._parent = null;
-            this._streamGroup = null;
-            this._currentStream = null;
-            this._parent = parent;
-            this._streamGroup = streamGroup;
-            this._currentStream = currentStream;
+            var _this = _super.call(this, null, null, null) || this;
+            _this._parent = null;
+            _this._streamGroup = null;
+            _this._currentStream = null;
+            _this._parent = parent;
+            _this._streamGroup = streamGroup;
+            _this._currentStream = currentStream;
+            return _this;
         }
         InnerObserver.create = function (parent, streamGroup, currentStream) {
             var obj = new this(parent, streamGroup, currentStream);
@@ -1285,18 +1294,19 @@ var wdFrp;
     var MergeObserver = (function (_super) {
         __extends(MergeObserver, _super);
         function MergeObserver(currentObserver, maxConcurrent, streamGroup, groupDisposable) {
-            _super.call(this, null, null, null);
-            this.done = false;
-            this.currentObserver = null;
-            this.activeCount = 0;
-            this.q = [];
-            this._maxConcurrent = null;
-            this._groupDisposable = null;
-            this._streamGroup = null;
-            this.currentObserver = currentObserver;
-            this._maxConcurrent = maxConcurrent;
-            this._streamGroup = streamGroup;
-            this._groupDisposable = groupDisposable;
+            var _this = _super.call(this, null, null, null) || this;
+            _this.done = false;
+            _this.currentObserver = null;
+            _this.activeCount = 0;
+            _this.q = [];
+            _this._maxConcurrent = null;
+            _this._groupDisposable = null;
+            _this._streamGroup = null;
+            _this.currentObserver = currentObserver;
+            _this._maxConcurrent = maxConcurrent;
+            _this._streamGroup = streamGroup;
+            _this._groupDisposable = groupDisposable;
+            return _this;
         }
         MergeObserver.create = function (currentObserver, maxConcurrent, streamGroup, groupDisposable) {
             return new this(currentObserver, maxConcurrent, streamGroup, groupDisposable);
@@ -1328,24 +1338,25 @@ var wdFrp;
         MergeObserver.prototype._isReachMaxConcurrent = function () {
             return this.activeCount < this._maxConcurrent;
         };
-        __decorate([
-            wdFrp.require(function (innerSource) {
-                wdFrp.assert(innerSource instanceof wdFrp.Stream || wdFrp.JudgeUtils.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
-            })
-        ], MergeObserver.prototype, "onNext", null);
         return MergeObserver;
     }(wdFrp.Observer));
+    __decorate([
+        wdFrp.require(function (innerSource) {
+            wdFrp.assert(innerSource instanceof wdFrp.Stream || wdFrp.JudgeUtils.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
+        })
+    ], MergeObserver.prototype, "onNext", null);
     wdFrp.MergeObserver = MergeObserver;
     var InnerObserver = (function (_super) {
         __extends(InnerObserver, _super);
         function InnerObserver(parent, streamGroup, currentStream) {
-            _super.call(this, null, null, null);
-            this._parent = null;
-            this._streamGroup = null;
-            this._currentStream = null;
-            this._parent = parent;
-            this._streamGroup = streamGroup;
-            this._currentStream = currentStream;
+            var _this = _super.call(this, null, null, null) || this;
+            _this._parent = null;
+            _this._streamGroup = null;
+            _this._currentStream = null;
+            _this._parent = parent;
+            _this._streamGroup = streamGroup;
+            _this._currentStream = currentStream;
+            return _this;
         }
         InnerObserver.create = function (parent, streamGroup, currentStream) {
             var obj = new this(parent, streamGroup, currentStream);
@@ -1387,9 +1398,10 @@ var wdFrp;
     var TakeUntilObserver = (function (_super) {
         __extends(TakeUntilObserver, _super);
         function TakeUntilObserver(prevObserver) {
-            _super.call(this, null, null, null);
-            this._prevObserver = null;
-            this._prevObserver = prevObserver;
+            var _this = _super.call(this, null, null, null) || this;
+            _this._prevObserver = null;
+            _this._prevObserver = prevObserver;
+            return _this;
         }
         TakeUntilObserver.create = function (prevObserver) {
             return new this(prevObserver);
@@ -1417,11 +1429,12 @@ var wdFrp;
     var SkipUntilSourceObserver = (function (_super) {
         __extends(SkipUntilSourceObserver, _super);
         function SkipUntilSourceObserver(prevObserver, skipUntilStream) {
-            _super.call(this, null, null, null);
-            this._prevObserver = null;
-            this._skipUntilStream = null;
-            this._prevObserver = prevObserver;
-            this._skipUntilStream = skipUntilStream;
+            var _this = _super.call(this, null, null, null) || this;
+            _this._prevObserver = null;
+            _this._skipUntilStream = null;
+            _this._prevObserver = prevObserver;
+            _this._skipUntilStream = skipUntilStream;
+            return _this;
         }
         SkipUntilSourceObserver.create = function (prevObserver, skipUntilStream) {
             return new this(prevObserver, skipUntilStream);
@@ -1454,12 +1467,13 @@ var wdFrp;
     var SkipUntilOtherObserver = (function (_super) {
         __extends(SkipUntilOtherObserver, _super);
         function SkipUntilOtherObserver(prevObserver, skipUntilStream) {
-            _super.call(this, null, null, null);
-            this.otherDisposable = null;
-            this._prevObserver = null;
-            this._skipUntilStream = null;
-            this._prevObserver = prevObserver;
-            this._skipUntilStream = skipUntilStream;
+            var _this = _super.call(this, null, null, null) || this;
+            _this.otherDisposable = null;
+            _this._prevObserver = null;
+            _this._skipUntilStream = null;
+            _this._prevObserver = prevObserver;
+            _this._skipUntilStream = skipUntilStream;
+            return _this;
         }
         SkipUntilOtherObserver.create = function (prevObserver, skipUntilStream) {
             return new this(prevObserver, skipUntilStream);
@@ -1489,11 +1503,12 @@ var wdFrp;
     var ConcatObserver = (function (_super) {
         __extends(ConcatObserver, _super);
         function ConcatObserver(currentObserver, startNextStream) {
-            _super.call(this, null, null, null);
-            this.currentObserver = null;
-            this._startNextStream = null;
-            this.currentObserver = currentObserver;
-            this._startNextStream = startNextStream;
+            var _this = _super.call(this, null, null, null) || this;
+            _this.currentObserver = null;
+            _this._startNextStream = null;
+            _this.currentObserver = currentObserver;
+            _this._startNextStream = startNextStream;
+            return _this;
         }
         ConcatObserver.create = function (currentObserver, startNextStream) {
             return new this(currentObserver, startNextStream);
@@ -1574,9 +1589,10 @@ var wdFrp;
     var IgnoreElementsObserver = (function (_super) {
         __extends(IgnoreElementsObserver, _super);
         function IgnoreElementsObserver(currentObserver) {
-            _super.call(this, null, null, null);
-            this._currentObserver = null;
-            this._currentObserver = currentObserver;
+            var _this = _super.call(this, null, null, null) || this;
+            _this._currentObserver = null;
+            _this._currentObserver = currentObserver;
+            return _this;
         }
         IgnoreElementsObserver.create = function (currentObserver) {
             return new this(currentObserver);
@@ -1604,14 +1620,15 @@ var wdFrp;
     var FilterObserver = (function (_super) {
         __extends(FilterObserver, _super);
         function FilterObserver(prevObserver, predicate, source) {
-            _super.call(this, null, null, null);
-            this.prevObserver = null;
-            this.source = null;
-            this.i = 0;
-            this.predicate = null;
-            this.prevObserver = prevObserver;
-            this.predicate = predicate;
-            this.source = source;
+            var _this = _super.call(this, null, null, null) || this;
+            _this.prevObserver = null;
+            _this.source = null;
+            _this.i = 0;
+            _this.predicate = null;
+            _this.prevObserver = prevObserver;
+            _this.predicate = predicate;
+            _this.source = source;
+            return _this;
         }
         FilterObserver.create = function (prevObserver, predicate, source) {
             return new this(prevObserver, predicate, source);
@@ -1647,8 +1664,9 @@ var wdFrp;
     var FilterWithStateObserver = (function (_super) {
         __extends(FilterWithStateObserver, _super);
         function FilterWithStateObserver() {
-            _super.apply(this, arguments);
-            this._isTrigger = false;
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this._isTrigger = false;
+            return _this;
         }
         FilterWithStateObserver.create = function (prevObserver, predicate, source) {
             return new this(prevObserver, predicate, source);
@@ -1702,7 +1720,7 @@ var wdFrp;
     var BaseStream = (function (_super) {
         __extends(BaseStream, _super);
         function BaseStream() {
-            _super.apply(this, arguments);
+            return _super !== null && _super.apply(this, arguments) || this;
         }
         BaseStream.prototype.subscribe = function (arg1, onError, onCompleted) {
             var observer = null;
@@ -1734,12 +1752,13 @@ var wdFrp;
     var DoStream = (function (_super) {
         __extends(DoStream, _super);
         function DoStream(source, onNext, onError, onCompleted) {
-            _super.call(this, null);
-            this._source = null;
-            this._observer = null;
-            this._source = source;
-            this._observer = wdFrp.AnonymousObserver.create(onNext, onError, onCompleted);
-            this.scheduler = this._source.scheduler;
+            var _this = _super.call(this, null) || this;
+            _this._source = null;
+            _this._observer = null;
+            _this._source = source;
+            _this._observer = wdFrp.AnonymousObserver.create(onNext, onError, onCompleted);
+            _this.scheduler = _this._source.scheduler;
+            return _this;
         }
         DoStream.create = function (source, onNext, onError, onCompleted) {
             var obj = new this(source, onNext, onError, onCompleted);
@@ -1763,12 +1782,13 @@ var wdFrp;
     var MapStream = (function (_super) {
         __extends(MapStream, _super);
         function MapStream(source, selector) {
-            _super.call(this, null);
-            this._source = null;
-            this._selector = null;
-            this._source = source;
-            this.scheduler = this._source.scheduler;
-            this._selector = selector;
+            var _this = _super.call(this, null) || this;
+            _this._source = null;
+            _this._selector = null;
+            _this._source = source;
+            _this.scheduler = _this._source.scheduler;
+            _this._selector = selector;
+            return _this;
         }
         MapStream.create = function (source, selector) {
             var obj = new this(source, selector);
@@ -1792,10 +1812,11 @@ var wdFrp;
     var FromArrayStream = (function (_super) {
         __extends(FromArrayStream, _super);
         function FromArrayStream(array, scheduler) {
-            _super.call(this, null);
-            this._array = null;
-            this._array = array;
-            this.scheduler = scheduler;
+            var _this = _super.call(this, null) || this;
+            _this._array = null;
+            _this._array = array;
+            _this.scheduler = scheduler;
+            return _this;
         }
         FromArrayStream.create = function (array, scheduler) {
             var obj = new this(array, scheduler);
@@ -1830,10 +1851,11 @@ var wdFrp;
     var FromPromiseStream = (function (_super) {
         __extends(FromPromiseStream, _super);
         function FromPromiseStream(promise, scheduler) {
-            _super.call(this, null);
-            this._promise = null;
-            this._promise = promise;
-            this.scheduler = scheduler;
+            var _this = _super.call(this, null) || this;
+            _this._promise = null;
+            _this._promise = promise;
+            _this.scheduler = scheduler;
+            return _this;
         }
         FromPromiseStream.create = function (promise, scheduler) {
             var obj = new this(promise, scheduler);
@@ -1863,11 +1885,12 @@ var wdFrp;
     var FromEventPatternStream = (function (_super) {
         __extends(FromEventPatternStream, _super);
         function FromEventPatternStream(addHandler, removeHandler) {
-            _super.call(this, null);
-            this._addHandler = null;
-            this._removeHandler = null;
-            this._addHandler = addHandler;
-            this._removeHandler = removeHandler;
+            var _this = _super.call(this, null) || this;
+            _this._addHandler = null;
+            _this._removeHandler = null;
+            _this._addHandler = addHandler;
+            _this._removeHandler = removeHandler;
+            return _this;
         }
         FromEventPatternStream.create = function (addHandler, removeHandler) {
             var obj = new this(addHandler, removeHandler);
@@ -1898,8 +1921,9 @@ var wdFrp;
     var AnonymousStream = (function (_super) {
         __extends(AnonymousStream, _super);
         function AnonymousStream(subscribeFunc) {
-            _super.call(this, subscribeFunc);
-            this.scheduler = wdFrp.Scheduler.create();
+            var _this = _super.call(this, subscribeFunc) || this;
+            _this.scheduler = wdFrp.Scheduler.create();
+            return _this;
         }
         AnonymousStream.create = function (subscribeFunc) {
             var obj = new this(subscribeFunc);
@@ -1908,7 +1932,7 @@ var wdFrp;
         AnonymousStream.prototype.subscribe = function () {
             var args = [];
             for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i - 0] = arguments[_i];
+                args[_i] = arguments[_i];
             }
             var observer = null;
             if (args[0] instanceof wdFrp.Subject) {
@@ -1941,10 +1965,11 @@ var wdFrp;
     var IntervalStream = (function (_super) {
         __extends(IntervalStream, _super);
         function IntervalStream(interval, scheduler) {
-            _super.call(this, null);
-            this._interval = null;
-            this._interval = interval;
-            this.scheduler = scheduler;
+            var _this = _super.call(this, null) || this;
+            _this._interval = null;
+            _this._interval = interval;
+            _this.scheduler = scheduler;
+            return _this;
         }
         IntervalStream.create = function (interval, scheduler) {
             var obj = new this(interval, scheduler);
@@ -1979,9 +2004,10 @@ var wdFrp;
     var IntervalRequestStream = (function (_super) {
         __extends(IntervalRequestStream, _super);
         function IntervalRequestStream(scheduler) {
-            _super.call(this, null);
-            this._isEnd = false;
-            this.scheduler = scheduler;
+            var _this = _super.call(this, null) || this;
+            _this._isEnd = false;
+            _this.scheduler = scheduler;
+            return _this;
         }
         IntervalRequestStream.create = function (scheduler) {
             var obj = new this(scheduler);
@@ -2020,10 +2046,11 @@ var wdFrp;
     var TimeoutStream = (function (_super) {
         __extends(TimeoutStream, _super);
         function TimeoutStream(time, scheduler) {
-            _super.call(this, null);
-            this._time = null;
-            this._time = time;
-            this.scheduler = scheduler;
+            var _this = _super.call(this, null) || this;
+            _this._time = null;
+            _this._time = time;
+            _this.scheduler = scheduler;
+            return _this;
         }
         TimeoutStream.create = function (time, scheduler) {
             var obj = new this(time, scheduler);
@@ -2038,13 +2065,13 @@ var wdFrp;
                 wdFrp.root.clearTimeout(id);
             });
         };
-        __decorate([
-            wdFrp.require(function (time, scheduler) {
-                wdFrp.assert(time > 0, Log.info.FUNC_SHOULD("time", "> 0"));
-            })
-        ], TimeoutStream, "create", null);
         return TimeoutStream;
     }(wdFrp.BaseStream));
+    __decorate([
+        wdFrp.require(function (time, scheduler) {
+            wdFrp.assert(time > 0, Log.info.FUNC_SHOULD("time", "> 0"));
+        })
+    ], TimeoutStream, "create", null);
     wdFrp.TimeoutStream = TimeoutStream;
 })(wdFrp || (wdFrp = {}));
 
@@ -2058,11 +2085,12 @@ var wdFrp;
     var MergeAllStream = (function (_super) {
         __extends(MergeAllStream, _super);
         function MergeAllStream(source) {
-            _super.call(this, null);
-            this._source = null;
-            this._observer = null;
-            this._source = source;
-            this.scheduler = this._source.scheduler;
+            var _this = _super.call(this, null) || this;
+            _this._source = null;
+            _this._observer = null;
+            _this._source = source;
+            _this.scheduler = _this._source.scheduler;
+            return _this;
         }
         MergeAllStream.create = function (source) {
             var obj = new this(source);
@@ -2088,12 +2116,13 @@ var wdFrp;
     var MergeStream = (function (_super) {
         __extends(MergeStream, _super);
         function MergeStream(source, maxConcurrent) {
-            _super.call(this, null);
-            this._source = null;
-            this._maxConcurrent = null;
-            this._source = source;
-            this._maxConcurrent = maxConcurrent;
-            this.scheduler = this._source.scheduler;
+            var _this = _super.call(this, null) || this;
+            _this._source = null;
+            _this._maxConcurrent = null;
+            _this._source = source;
+            _this._maxConcurrent = maxConcurrent;
+            _this.scheduler = _this._source.scheduler;
+            return _this;
         }
         MergeStream.create = function (source, maxConcurrent) {
             var obj = new this(source, maxConcurrent);
@@ -2119,12 +2148,13 @@ var wdFrp;
     var TakeUntilStream = (function (_super) {
         __extends(TakeUntilStream, _super);
         function TakeUntilStream(source, otherStream) {
-            _super.call(this, null);
-            this._source = null;
-            this._otherStream = null;
-            this._source = source;
-            this._otherStream = wdFrp.JudgeUtils.isPromise(otherStream) ? wdFrp.fromPromise(otherStream) : otherStream;
-            this.scheduler = this._source.scheduler;
+            var _this = _super.call(this, null) || this;
+            _this._source = null;
+            _this._otherStream = null;
+            _this._source = source;
+            _this._otherStream = wdFrp.JudgeUtils.isPromise(otherStream) ? wdFrp.fromPromise(otherStream) : otherStream;
+            _this.scheduler = _this._source.scheduler;
+            return _this;
         }
         TakeUntilStream.create = function (source, otherSteam) {
             var obj = new this(source, otherSteam);
@@ -2153,13 +2183,14 @@ var wdFrp;
     var SkipUntilStream = (function (_super) {
         __extends(SkipUntilStream, _super);
         function SkipUntilStream(source, otherStream) {
-            _super.call(this, null);
-            this.isOpen = false;
-            this._source = null;
-            this._otherStream = null;
-            this._source = source;
-            this._otherStream = wdFrp.JudgeUtils.isPromise(otherStream) ? wdFrp.fromPromise(otherStream) : otherStream;
-            this.scheduler = this._source.scheduler;
+            var _this = _super.call(this, null) || this;
+            _this.isOpen = false;
+            _this._source = null;
+            _this._otherStream = null;
+            _this._source = source;
+            _this._otherStream = wdFrp.JudgeUtils.isPromise(otherStream) ? wdFrp.fromPromise(otherStream) : otherStream;
+            _this.scheduler = _this._source.scheduler;
+            return _this;
         }
         SkipUntilStream.create = function (source, otherSteam) {
             var obj = new this(source, otherSteam);
@@ -2189,10 +2220,10 @@ var wdFrp;
     var ConcatStream = (function (_super) {
         __extends(ConcatStream, _super);
         function ConcatStream(sources) {
-            _super.call(this, null);
-            this._sources = wdCb.Collection.create();
-            var self = this;
-            this.scheduler = sources[0].scheduler;
+            var _this = _super.call(this, null) || this;
+            _this._sources = wdCb.Collection.create();
+            var self = _this;
+            _this.scheduler = sources[0].scheduler;
             sources.forEach(function (source) {
                 if (wdFrp.JudgeUtils.isPromise(source)) {
                     self._sources.addChild(wdFrp.fromPromise(source));
@@ -2201,6 +2232,7 @@ var wdFrp;
                     self._sources.addChild(source);
                 }
             });
+            return _this;
         }
         ConcatStream.create = function (sources) {
             var obj = new this(sources);
@@ -2235,12 +2267,13 @@ var wdFrp;
     var RepeatStream = (function (_super) {
         __extends(RepeatStream, _super);
         function RepeatStream(source, count) {
-            _super.call(this, null);
-            this._source = null;
-            this._count = null;
-            this._source = source;
-            this._count = count;
-            this.scheduler = this._source.scheduler;
+            var _this = _super.call(this, null) || this;
+            _this._source = null;
+            _this._count = null;
+            _this._source = source;
+            _this._count = count;
+            _this.scheduler = _this._source.scheduler;
+            return _this;
         }
         RepeatStream.create = function (source, count) {
             var obj = new this(source, count);
@@ -2275,10 +2308,11 @@ var wdFrp;
     var IgnoreElementsStream = (function (_super) {
         __extends(IgnoreElementsStream, _super);
         function IgnoreElementsStream(source) {
-            _super.call(this, null);
-            this._source = null;
-            this._source = source;
-            this.scheduler = this._source.scheduler;
+            var _this = _super.call(this, null) || this;
+            _this._source = null;
+            _this._source = source;
+            _this.scheduler = _this._source.scheduler;
+            return _this;
         }
         IgnoreElementsStream.create = function (source) {
             var obj = new this(source);
@@ -2302,9 +2336,10 @@ var wdFrp;
     var DeferStream = (function (_super) {
         __extends(DeferStream, _super);
         function DeferStream(buildStreamFunc) {
-            _super.call(this, null);
-            this._buildStreamFunc = null;
-            this._buildStreamFunc = buildStreamFunc;
+            var _this = _super.call(this, null) || this;
+            _this._buildStreamFunc = null;
+            _this._buildStreamFunc = buildStreamFunc;
+            return _this;
         }
         DeferStream.create = function (buildStreamFunc) {
             var obj = new this(buildStreamFunc);
@@ -2330,11 +2365,12 @@ var wdFrp;
     var FilterStream = (function (_super) {
         __extends(FilterStream, _super);
         function FilterStream(source, predicate, thisArg) {
-            _super.call(this, null);
-            this.predicate = null;
-            this._source = null;
-            this._source = source;
-            this.predicate = wdCb.FunctionUtils.bind(thisArg, predicate);
+            var _this = _super.call(this, null) || this;
+            _this.predicate = null;
+            _this._source = null;
+            _this._source = source;
+            _this.predicate = wdCb.FunctionUtils.bind(thisArg, predicate);
+            return _this;
         }
         FilterStream.create = function (source, predicate, thisArg) {
             var obj = new this(source, predicate, thisArg);
@@ -2373,7 +2409,7 @@ var wdFrp;
     var FilterWithStateStream = (function (_super) {
         __extends(FilterWithStateStream, _super);
         function FilterWithStateStream() {
-            _super.apply(this, arguments);
+            return _super !== null && _super.apply(this, arguments) || this;
         }
         FilterWithStateStream.create = function (source, predicate, thisArg) {
             var obj = new this(source, predicate, thisArg);
@@ -2451,12 +2487,12 @@ var wdFrp;
 
 var wdFrp;
 (function (wdFrp) {
+    var FilterState;
     (function (FilterState) {
         FilterState[FilterState["TRIGGER"] = 0] = "TRIGGER";
         FilterState[FilterState["ENTER"] = 1] = "ENTER";
         FilterState[FilterState["LEAVE"] = 2] = "LEAVE";
-    })(wdFrp.FilterState || (wdFrp.FilterState = {}));
-    var FilterState = wdFrp.FilterState;
+    })(FilterState = wdFrp.FilterState || (wdFrp.FilterState = {}));
 })(wdFrp || (wdFrp = {}));
 
 var wdFrp;
@@ -2527,10 +2563,11 @@ var wdFrp;
     var MockObserver = (function (_super) {
         __extends(MockObserver, _super);
         function MockObserver(scheduler) {
-            _super.call(this, null, null, null);
-            this._messages = [];
-            this._scheduler = null;
-            this._scheduler = scheduler;
+            var _this = _super.call(this, null, null, null) || this;
+            _this._messages = [];
+            _this._scheduler = null;
+            _this._scheduler = scheduler;
+            return _this;
         }
         MockObserver.create = function (scheduler) {
             var obj = new this(scheduler);
@@ -2620,16 +2657,17 @@ var wdFrp;
     var TestScheduler = (function (_super) {
         __extends(TestScheduler, _super);
         function TestScheduler(isReset) {
-            _super.call(this);
-            this._clock = null;
-            this._isReset = false;
-            this._isDisposed = false;
-            this._timerMap = wdCb.Hash.create();
-            this._streamMap = wdCb.Hash.create();
-            this._subscribedTime = null;
-            this._disposedTime = null;
-            this._observer = null;
-            this._isReset = isReset;
+            var _this = _super.call(this) || this;
+            _this._clock = null;
+            _this._isReset = false;
+            _this._isDisposed = false;
+            _this._timerMap = wdCb.Hash.create();
+            _this._streamMap = wdCb.Hash.create();
+            _this._subscribedTime = null;
+            _this._disposedTime = null;
+            _this._observer = null;
+            _this._isReset = isReset;
+            return _this;
         }
         TestScheduler.next = function (tick, value) {
             if (wdFrp.JudgeUtils.isDirectObject(value)) {
@@ -2838,12 +2876,12 @@ var wdFrp;
 
 var wdFrp;
 (function (wdFrp) {
+    var ActionType;
     (function (ActionType) {
         ActionType[ActionType["NEXT"] = 0] = "NEXT";
         ActionType[ActionType["ERROR"] = 1] = "ERROR";
         ActionType[ActionType["COMPLETED"] = 2] = "COMPLETED";
-    })(wdFrp.ActionType || (wdFrp.ActionType = {}));
-    var ActionType = wdFrp.ActionType;
+    })(ActionType = wdFrp.ActionType || (wdFrp.ActionType = {}));
 })(wdFrp || (wdFrp = {}));
 
 var __extends = (this && this.__extends) || function (d, b) {
@@ -2856,11 +2894,12 @@ var wdFrp;
     var TestStream = (function (_super) {
         __extends(TestStream, _super);
         function TestStream(messages, scheduler) {
-            _super.call(this, null);
-            this.scheduler = null;
-            this._messages = null;
-            this._messages = messages;
-            this.scheduler = scheduler;
+            var _this = _super.call(this, null) || this;
+            _this.scheduler = null;
+            _this._messages = null;
+            _this._messages = messages;
+            _this.scheduler = scheduler;
+            return _this;
         }
         TestStream.create = function (messages, scheduler) {
             var obj = new this(messages, scheduler);
@@ -2879,8 +2918,136 @@ if (((typeof window != "undefined" && window.module) || (typeof module != "undef
     module.exports = wdFrp;
 };
 
-}).call(this,_dereq_("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},_dereq_("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_11b530ed.js","/")
-},{"1YiZ5S":5,"buffer":2,"wdcb":6}],2:[function(_dereq_,module,exports){
+}).call(this,_dereq_("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},_dereq_("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_6ea0ce37.js","/")
+},{"buffer":3,"pBGvAp":5,"wonder-commonlib":6}],2:[function(_dereq_,module,exports){
+(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
+var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+;(function (exports) {
+	'use strict';
+
+  var Arr = (typeof Uint8Array !== 'undefined')
+    ? Uint8Array
+    : Array
+
+	var PLUS   = '+'.charCodeAt(0)
+	var SLASH  = '/'.charCodeAt(0)
+	var NUMBER = '0'.charCodeAt(0)
+	var LOWER  = 'a'.charCodeAt(0)
+	var UPPER  = 'A'.charCodeAt(0)
+	var PLUS_URL_SAFE = '-'.charCodeAt(0)
+	var SLASH_URL_SAFE = '_'.charCodeAt(0)
+
+	function decode (elt) {
+		var code = elt.charCodeAt(0)
+		if (code === PLUS ||
+		    code === PLUS_URL_SAFE)
+			return 62 // '+'
+		if (code === SLASH ||
+		    code === SLASH_URL_SAFE)
+			return 63 // '/'
+		if (code < NUMBER)
+			return -1 //no match
+		if (code < NUMBER + 10)
+			return code - NUMBER + 26 + 26
+		if (code < UPPER + 26)
+			return code - UPPER
+		if (code < LOWER + 26)
+			return code - LOWER + 26
+	}
+
+	function b64ToByteArray (b64) {
+		var i, j, l, tmp, placeHolders, arr
+
+		if (b64.length % 4 > 0) {
+			throw new Error('Invalid string. Length must be a multiple of 4')
+		}
+
+		// the number of equal signs (place holders)
+		// if there are two placeholders, than the two characters before it
+		// represent one byte
+		// if there is only one, then the three characters before it represent 2 bytes
+		// this is just a cheap hack to not do indexOf twice
+		var len = b64.length
+		placeHolders = '=' === b64.charAt(len - 2) ? 2 : '=' === b64.charAt(len - 1) ? 1 : 0
+
+		// base64 is 4/3 + up to two characters of the original data
+		arr = new Arr(b64.length * 3 / 4 - placeHolders)
+
+		// if there are placeholders, only get up to the last complete 4 chars
+		l = placeHolders > 0 ? b64.length - 4 : b64.length
+
+		var L = 0
+
+		function push (v) {
+			arr[L++] = v
+		}
+
+		for (i = 0, j = 0; i < l; i += 4, j += 3) {
+			tmp = (decode(b64.charAt(i)) << 18) | (decode(b64.charAt(i + 1)) << 12) | (decode(b64.charAt(i + 2)) << 6) | decode(b64.charAt(i + 3))
+			push((tmp & 0xFF0000) >> 16)
+			push((tmp & 0xFF00) >> 8)
+			push(tmp & 0xFF)
+		}
+
+		if (placeHolders === 2) {
+			tmp = (decode(b64.charAt(i)) << 2) | (decode(b64.charAt(i + 1)) >> 4)
+			push(tmp & 0xFF)
+		} else if (placeHolders === 1) {
+			tmp = (decode(b64.charAt(i)) << 10) | (decode(b64.charAt(i + 1)) << 4) | (decode(b64.charAt(i + 2)) >> 2)
+			push((tmp >> 8) & 0xFF)
+			push(tmp & 0xFF)
+		}
+
+		return arr
+	}
+
+	function uint8ToBase64 (uint8) {
+		var i,
+			extraBytes = uint8.length % 3, // if we have 1 byte left, pad 2 bytes
+			output = "",
+			temp, length
+
+		function encode (num) {
+			return lookup.charAt(num)
+		}
+
+		function tripletToBase64 (num) {
+			return encode(num >> 18 & 0x3F) + encode(num >> 12 & 0x3F) + encode(num >> 6 & 0x3F) + encode(num & 0x3F)
+		}
+
+		// go through the array every three bytes, we'll deal with trailing stuff later
+		for (i = 0, length = uint8.length - extraBytes; i < length; i += 3) {
+			temp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+			output += tripletToBase64(temp)
+		}
+
+		// pad the end with zeros, but make sure to not forget the extra bytes
+		switch (extraBytes) {
+			case 1:
+				temp = uint8[uint8.length - 1]
+				output += encode(temp >> 2)
+				output += encode((temp << 4) & 0x3F)
+				output += '=='
+				break
+			case 2:
+				temp = (uint8[uint8.length - 2] << 8) + (uint8[uint8.length - 1])
+				output += encode(temp >> 10)
+				output += encode((temp >> 4) & 0x3F)
+				output += encode((temp << 2) & 0x3F)
+				output += '='
+				break
+		}
+
+		return output
+	}
+
+	exports.toByteArray = b64ToByteArray
+	exports.fromByteArray = uint8ToBase64
+}(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
+
+}).call(this,_dereq_("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},_dereq_("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/base64-js/lib/b64.js","/../node_modules/base64-js/lib")
+},{"buffer":3,"pBGvAp":5}],3:[function(_dereq_,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 /*!
  * The buffer module from node.js, for the browser.
@@ -3992,136 +4159,8 @@ function assert (test, message) {
   if (!test) throw new Error(message || 'Failed assertion')
 }
 
-}).call(this,_dereq_("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},_dereq_("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/gulp-browserify/node_modules/browserify/node_modules/buffer/index.js","/../node_modules/gulp-browserify/node_modules/browserify/node_modules/buffer")
-},{"1YiZ5S":5,"base64-js":3,"buffer":2,"ieee754":4}],3:[function(_dereq_,module,exports){
-(function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
-var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-
-;(function (exports) {
-	'use strict';
-
-  var Arr = (typeof Uint8Array !== 'undefined')
-    ? Uint8Array
-    : Array
-
-	var PLUS   = '+'.charCodeAt(0)
-	var SLASH  = '/'.charCodeAt(0)
-	var NUMBER = '0'.charCodeAt(0)
-	var LOWER  = 'a'.charCodeAt(0)
-	var UPPER  = 'A'.charCodeAt(0)
-	var PLUS_URL_SAFE = '-'.charCodeAt(0)
-	var SLASH_URL_SAFE = '_'.charCodeAt(0)
-
-	function decode (elt) {
-		var code = elt.charCodeAt(0)
-		if (code === PLUS ||
-		    code === PLUS_URL_SAFE)
-			return 62 // '+'
-		if (code === SLASH ||
-		    code === SLASH_URL_SAFE)
-			return 63 // '/'
-		if (code < NUMBER)
-			return -1 //no match
-		if (code < NUMBER + 10)
-			return code - NUMBER + 26 + 26
-		if (code < UPPER + 26)
-			return code - UPPER
-		if (code < LOWER + 26)
-			return code - LOWER + 26
-	}
-
-	function b64ToByteArray (b64) {
-		var i, j, l, tmp, placeHolders, arr
-
-		if (b64.length % 4 > 0) {
-			throw new Error('Invalid string. Length must be a multiple of 4')
-		}
-
-		// the number of equal signs (place holders)
-		// if there are two placeholders, than the two characters before it
-		// represent one byte
-		// if there is only one, then the three characters before it represent 2 bytes
-		// this is just a cheap hack to not do indexOf twice
-		var len = b64.length
-		placeHolders = '=' === b64.charAt(len - 2) ? 2 : '=' === b64.charAt(len - 1) ? 1 : 0
-
-		// base64 is 4/3 + up to two characters of the original data
-		arr = new Arr(b64.length * 3 / 4 - placeHolders)
-
-		// if there are placeholders, only get up to the last complete 4 chars
-		l = placeHolders > 0 ? b64.length - 4 : b64.length
-
-		var L = 0
-
-		function push (v) {
-			arr[L++] = v
-		}
-
-		for (i = 0, j = 0; i < l; i += 4, j += 3) {
-			tmp = (decode(b64.charAt(i)) << 18) | (decode(b64.charAt(i + 1)) << 12) | (decode(b64.charAt(i + 2)) << 6) | decode(b64.charAt(i + 3))
-			push((tmp & 0xFF0000) >> 16)
-			push((tmp & 0xFF00) >> 8)
-			push(tmp & 0xFF)
-		}
-
-		if (placeHolders === 2) {
-			tmp = (decode(b64.charAt(i)) << 2) | (decode(b64.charAt(i + 1)) >> 4)
-			push(tmp & 0xFF)
-		} else if (placeHolders === 1) {
-			tmp = (decode(b64.charAt(i)) << 10) | (decode(b64.charAt(i + 1)) << 4) | (decode(b64.charAt(i + 2)) >> 2)
-			push((tmp >> 8) & 0xFF)
-			push(tmp & 0xFF)
-		}
-
-		return arr
-	}
-
-	function uint8ToBase64 (uint8) {
-		var i,
-			extraBytes = uint8.length % 3, // if we have 1 byte left, pad 2 bytes
-			output = "",
-			temp, length
-
-		function encode (num) {
-			return lookup.charAt(num)
-		}
-
-		function tripletToBase64 (num) {
-			return encode(num >> 18 & 0x3F) + encode(num >> 12 & 0x3F) + encode(num >> 6 & 0x3F) + encode(num & 0x3F)
-		}
-
-		// go through the array every three bytes, we'll deal with trailing stuff later
-		for (i = 0, length = uint8.length - extraBytes; i < length; i += 3) {
-			temp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
-			output += tripletToBase64(temp)
-		}
-
-		// pad the end with zeros, but make sure to not forget the extra bytes
-		switch (extraBytes) {
-			case 1:
-				temp = uint8[uint8.length - 1]
-				output += encode(temp >> 2)
-				output += encode((temp << 4) & 0x3F)
-				output += '=='
-				break
-			case 2:
-				temp = (uint8[uint8.length - 2] << 8) + (uint8[uint8.length - 1])
-				output += encode(temp >> 10)
-				output += encode((temp >> 4) & 0x3F)
-				output += encode((temp << 2) & 0x3F)
-				output += '='
-				break
-		}
-
-		return output
-	}
-
-	exports.toByteArray = b64ToByteArray
-	exports.fromByteArray = uint8ToBase64
-}(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
-
-}).call(this,_dereq_("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},_dereq_("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/gulp-browserify/node_modules/browserify/node_modules/buffer/node_modules/base64-js/lib/b64.js","/../node_modules/gulp-browserify/node_modules/browserify/node_modules/buffer/node_modules/base64-js/lib")
-},{"1YiZ5S":5,"buffer":2}],4:[function(_dereq_,module,exports){
+}).call(this,_dereq_("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},_dereq_("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/buffer/index.js","/../node_modules/buffer")
+},{"base64-js":2,"buffer":3,"ieee754":4,"pBGvAp":5}],4:[function(_dereq_,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
@@ -4208,8 +4247,8 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-}).call(this,_dereq_("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},_dereq_("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/gulp-browserify/node_modules/browserify/node_modules/buffer/node_modules/ieee754/index.js","/../node_modules/gulp-browserify/node_modules/browserify/node_modules/buffer/node_modules/ieee754")
-},{"1YiZ5S":5,"buffer":2}],5:[function(_dereq_,module,exports){
+}).call(this,_dereq_("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},_dereq_("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/ieee754/index.js","/../node_modules/ieee754")
+},{"buffer":3,"pBGvAp":5}],5:[function(_dereq_,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 // shim for using process in browser
 
@@ -4275,8 +4314,8 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-}).call(this,_dereq_("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},_dereq_("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/gulp-browserify/node_modules/browserify/node_modules/process/browser.js","/../node_modules/gulp-browserify/node_modules/browserify/node_modules/process")
-},{"1YiZ5S":5,"buffer":2}],6:[function(_dereq_,module,exports){
+}).call(this,_dereq_("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},_dereq_("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/process/browser.js","/../node_modules/process")
+},{"buffer":3,"pBGvAp":5}],6:[function(_dereq_,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 var wdCb;
 (function (wdCb) {
@@ -5742,7 +5781,7 @@ if (((typeof window != "undefined" && window.module) || (typeof module != "undef
     module.exports = wdCb;
 };
 
-}).call(this,_dereq_("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},_dereq_("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/wdcb/dist/wdCb.node.js","/../node_modules/wdcb/dist")
-},{"1YiZ5S":5,"buffer":2}]},{},[1])
+}).call(this,_dereq_("pBGvAp"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},_dereq_("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../node_modules/wonder-commonlib/dist/wdCb.node.js","/../node_modules/wonder-commonlib/dist")
+},{"buffer":3,"pBGvAp":5}]},{},[1])
 (1)
 });
