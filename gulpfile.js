@@ -15,7 +15,7 @@ var tsFilePaths = config.tsFilePaths;
 var distPath = config.distPath;
 var tsconfigFile = config.tsconfigFile;
 var filePath = path.join(distPath, "wdFrp.js");
-var fileDtsPath = path.join(distPath, "wdFrp.d.ts");
+var dtsFilePath = path.join(distPath, "wdFrp.d.ts");
 
 
 
@@ -115,7 +115,7 @@ gulp.task("addNodejsVersion", function(done){
 
     var nodeDtsFilePath = path.join(distPath, "wdFrp.node.d.ts");
 
-    fs.copySync(fileDtsPath, nodeDtsFilePath);
+    fs.copySync(dtsFilePath, nodeDtsFilePath);
 
     addModuleNameConverter(nodeDtsFilePath, "wdFrp", "wdfrp");
 
