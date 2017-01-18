@@ -7,10 +7,12 @@
     "Wonder-FRP"
   ],
   "dependencies": {
-    "wonder-commonlib": "^0.1.0"
+    "wonder-commonlib": "^0.1.0",
+    "wonder-package": "^0.1.0"
   },
   "bundledDependencies": [
-    "wonder-commonlib"
+    "wonder-commonlib",
+    "wonder-package"
   ],
   "devDependencies": {
     "del": "^1.2.0",

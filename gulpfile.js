@@ -18,13 +18,12 @@ var filePath = path.join(distPath, "wdFrp.js");
 var dtsFilePath = path.join(distPath, "wdFrp.d.ts");
 
 
+var wonderPackage = require("wonder-package");
 
-var addModuleExports = require("./lib/inner/Wonder-Package/build/gulp_task/package/addModuleExports").addModuleExports;
-var browserify = require("./lib/inner/Wonder-Package/build/gulp_task/package/browserify").browserify;
-
-var requireInnerLibToContent = require("./lib/inner/Wonder-Package/build/gulp_task/package/requireInnerLibToContent").requireInnerLibToContent;
-
-var addModuleNameConverter = require("./lib/inner/Wonder-Package/build/gulp_task/package/addModuleNameConverter").addModuleNameConverter;
+var addModuleExports = wonderPackage.addModuleExports;
+var browserify = wonderPackage.browserify;
+var addModuleNameConverter = wonderPackage.addModuleNameConverter;
+var requireInnerLibToContent = wonderPackage.requireInnerLibToContent;
 
 
 
