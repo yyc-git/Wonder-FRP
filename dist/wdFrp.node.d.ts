@@ -717,6 +717,6 @@ declare module wdFrp {
     }
 }
 
-declare module "wdfrp" {
+declare module "wonder-frp" {
 export = wdFrp;
 }

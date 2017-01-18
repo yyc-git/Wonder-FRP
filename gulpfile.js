@@ -117,7 +117,7 @@ gulp.task("addNodejsVersion", function(done){
 
     fs.copySync(dtsFilePath, nodeDtsFilePath);
 
-    addModuleNameConverter(nodeDtsFilePath, "wdFrp", "wdfrp");
+    addModuleNameConverter(nodeDtsFilePath, "wdFrp", "wonder-frp");
 
     done();
 });

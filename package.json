@@ -1,6 +1,6 @@
 {
-  "name": "wdfrp",
-  "version": "0.1.20",
+  "name": "wonder-frp",
+  "version": "0.1.0",
   "main": "dist/wdFrp.node.js",
   "keywords": [
     "FRP",
