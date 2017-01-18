@@ -90,10 +90,7 @@ gulp.task("combineInnerLib", function(done){
         [
             {
                 variableName:"wdCb",
-                /*!
-                the path is related to project in submodule dir(e.g. lib/inner/Wonder-Frp/dist/)
-                 */
-                path:"../../Wonder-CommonLib/dist/wdCb.node.js"
+                path:"wdcb"
             }
         ]
     );
