@@ -24,7 +24,8 @@
     "karma-jasmine": "^0.2.2",
     "merge2": "^0.3.5",
     "through-gulp": "^0.3.8",
-    "typescript": "^2.0.3"
+    "typescript": "^2.0.3",
+    "wdcb": "^0.1.8"
   },
   "dependencies": {}
 }

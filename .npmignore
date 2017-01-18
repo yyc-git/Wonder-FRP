@@ -1,6 +1,7 @@
 .idea/
 .DS_Store
 node_modules/
+!node_modules/wdcb/
 bower_components/
 test/bower_components/
 reference/
