@@ -1,18 +1,16 @@
 {
   "name": "wonder-frp",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "main": "dist/wdFrp.node.js",
   "keywords": [
     "FRP",
     "Wonder-FRP"
   ],
   "dependencies": {
-    "wonder-commonlib": "^0.1.0",
-    "wonder-package": "^0.1.0"
+    "wonder-commonlib": "^0.1.0"
   },
   "bundledDependencies": [
-    "wonder-commonlib",
-    "wonder-package"
+    "wonder-commonlib"
   ],
   "devDependencies": {
     "del": "^1.2.0",
@@ -32,6 +30,7 @@
     "karma-jasmine": "^0.2.2",
     "merge2": "^0.3.5",
     "through-gulp": "^0.3.8",
-    "typescript": "^2.0.3"
+    "typescript": "^2.0.3",
+    "wonder-package": "^0.1.2"
   }
 }

@@ -1,4 +1,6 @@
+if (typeof require === "function") {
 var wdCb = require("wonder-commonlib");
+};
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -2912,6 +2914,6 @@ var wdFrp;
     wdFrp.TestStream = TestStream;
 })(wdFrp || (wdFrp = {}));
 
-if (((typeof window != "undefined" && window.module) || (typeof module != "undefined")) && typeof module.exports != "undefined") {
+if ((typeof module != "undefined") && typeof module.exports != "undefined") {
     module.exports = wdFrp;
 };
