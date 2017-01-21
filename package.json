@@ -1,6 +1,6 @@
 {
   "name": "wonder-frp",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "main": "dist/wdFrp.node.js",
   "keywords": [
     "FRP",
@@ -31,6 +31,6 @@
     "merge2": "^0.3.5",
     "through-gulp": "^0.3.8",
     "typescript": "^2.0.3",
-    "wonder-package": "^0.1.2"
+    "wonder-package": "^0.1.4"
   }
 }

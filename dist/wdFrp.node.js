@@ -1,5 +1,6 @@
+var wdCb = wdCb|| null;
 if (typeof require === "function") {
-var wdCb = require("wonder-commonlib");
+wdCb = require("wonder-commonlib");
 };
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
