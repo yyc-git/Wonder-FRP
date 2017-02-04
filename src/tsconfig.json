@@ -9,7 +9,6 @@
 		"experimentalDecorators": true
 	},
 	"files": [
-		"../lib/inner/Wonder-CommonLib/dist/wdCb.d.ts",
 		"JudgeUtils.ts",
 		"binding/nodejs/NodeOperator.ts",
 		"core/Entity.ts",

@@ -7,7 +7,9 @@
     "Wonder-FRP"
   ],
   "dependencies": {
-    "wonder-commonlib": "^0.1.0"
+    "@types/node": "^7.0.5",
+    "@types/wonder-commonlib": "^0.1.1",
+    "wonder-commonlib": "^0.1.1"
   },
   "bundledDependencies": [
     "wonder-commonlib"

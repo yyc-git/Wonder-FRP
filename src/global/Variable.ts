@@ -1,4 +1,4 @@
-declare var global:any,window:Window;
+declare var global:NodeJS.Global,window:Window;
 
 module wdFrp{
     export var root:any;
