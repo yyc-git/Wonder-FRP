@@ -1,37 +1,40 @@
-module wdFrp{
-    export class FromArrayStream extends BaseStream{
-        public static create(array:Array<any>, scheduler:Scheduler) {
-            var obj = new this(array, scheduler);
+import { BaseStream } from "./BaseStream";
+import { Scheduler } from "../core/Scheduler";
+import { IObserver } from "../observer/IObserver";
+import { SingleDisposable } from "../Disposable/SingleDisposable";
 
-            return obj;
-        }
+export class FromArrayStream extends BaseStream {
+    public static create(array: Array<any>, scheduler: Scheduler) {
+        var obj = new this(array, scheduler);
 
-        private _array:Array<any> = null;
+        return obj;
+    }
 
-        constructor(array:Array<any>, scheduler:Scheduler){
-            super(null);
+    private _array: Array<any> = null;
 
-            this._array = array;
-            this.scheduler = scheduler;
-        }
+    constructor(array: Array<any>, scheduler: Scheduler) {
+        super(null);
 
-        public subscribeCore(observer:IObserver){
-            var array = this._array,
-                len = array.length;
+        this._array = array;
+        this.scheduler = scheduler;
+    }
 
-            function loopRecursive(i) {
-                if (i < len) {
-                    observer.next(array[i]);
+    public subscribeCore(observer: IObserver) {
+        var array = this._array,
+            len = array.length;
 
-                    loopRecursive(i + 1);
-                } else {
-                    observer.completed();
-                }
+        function loopRecursive(i) {
+            if (i < len) {
+                observer.next(array[i]);
+
+                loopRecursive(i + 1);
+            } else {
+                observer.completed();
             }
-
-            this.scheduler.publishRecursive(observer, 0, loopRecursive);
-
-            return SingleDisposable.create();
         }
+
+        this.scheduler.publishRecursive(observer, 0, loopRecursive);
+
+        return SingleDisposable.create();
     }
 }

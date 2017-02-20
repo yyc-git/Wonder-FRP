@@ -1,23 +1,26 @@
-module wdFrp{
-	export class InnerSubscription implements IDisposable{
-		public static create(subject:Subject|GeneratorSubject, observer:Observer) {
-			var obj = new this(subject, observer);
+import { IDisposable } from "./IDisposable";
+import { Subject } from "../subject/Subject";
+import { GeneratorSubject } from "../subject/GeneratorSubject";
+import { Observer } from "../core/Observer";
 
-			return obj;
-		}
+export class InnerSubscription implements IDisposable {
+    public static create(subject: Subject | GeneratorSubject, observer: Observer) {
+        var obj = new this(subject, observer);
 
-		private _subject:Subject|GeneratorSubject = null;
-		private _observer:Observer = null;
+        return obj;
+    }
 
-		constructor(subject:Subject|GeneratorSubject, observer:Observer){
-			this._subject = subject;
-			this._observer = observer;
-		}
+    private _subject: Subject | GeneratorSubject = null;
+    private _observer: Observer = null;
 
-		public dispose(){
-			this._subject.remove(this._observer);
+    constructor(subject: Subject | GeneratorSubject, observer: Observer) {
+        this._subject = subject;
+        this._observer = observer;
+    }
 
-			this._observer.dispose();
-		}
-	}
+    public dispose() {
+        this._subject.remove(this._observer);
+
+        this._observer.dispose();
+    }
 }

@@ -1,30 +1,32 @@
-module wdFrp{
-    export class MockPromise{
-        public static create(scheduler:TestScheduler, messages:[Record]) {
-            var obj = new this(scheduler, messages);
+import { TestScheduler } from "./TestScheduler";
+import { Record } from "./Record";
+import { IObserver } from "../observer/IObserver";
 
-            return obj;
-        }
+export class MockPromise {
+    public static create(scheduler: TestScheduler, messages: [Record]) {
+        var obj = new this(scheduler, messages);
 
-        private _messages:[Record] = <[Record]>[];
-        //get messages(){
-        //    return this._messages;
-        //}
-        //set messages(messages:[Record]){
-        //    this._messages = messages;
-        //}
+        return obj;
+    }
 
-        private _scheduler:TestScheduler = null;
+    private _messages: [Record] = <[Record]>[];
+    //get messages(){
+    //    return this._messages;
+    //}
+    //set messages(messages:[Record]){
+    //    this._messages = messages;
+    //}
 
-        constructor(scheduler:TestScheduler, messages:[Record]){
-            this._scheduler = scheduler;
-            this._messages = messages;
-        }
+    private _scheduler: TestScheduler = null;
 
-        public then(successCb:Function, errorCb:Function, observer:IObserver){
-            //var scheduler = <TestScheduler>(this.scheduler);
+    constructor(scheduler: TestScheduler, messages: [Record]) {
+        this._scheduler = scheduler;
+        this._messages = messages;
+    }
 
-            this._scheduler.setStreamMap(observer, this._messages);
-        }
+    public then(successCb: Function, errorCb: Function, observer: IObserver) {
+        //var scheduler = <TestScheduler>(this.scheduler);
+
+        this._scheduler.setStreamMap(observer, this._messages);
     }
 }

@@ -1,21 +1,22 @@
-module wdFrp{
-	export class InnerSubscriptionGroup implements IDisposable{
-		public static create() {
-			var obj = new this();
+import { IDisposable } from "./IDisposable";
+import { Collection } from "wonder-commonlib/dist/es2015/Collection";
 
-			return obj;
-		}
+export class InnerSubscriptionGroup implements IDisposable {
+    public static create() {
+        var obj = new this();
 
-		private _container:wdCb.Collection<IDisposable> = wdCb.Collection.create<IDisposable>();
+        return obj;
+    }
 
-		public addChild(child:IDisposable){
-			this._container.addChild(child);
-		}
+    private _container: Collection<IDisposable> = Collection.create<IDisposable>();
 
-		public dispose(){
-			this._container.forEach((child:IDisposable) => {
-				child.dispose();
-			});
-		}
-	}
+    public addChild(child: IDisposable) {
+        this._container.addChild(child);
+    }
+
+    public dispose() {
+        this._container.forEach((child: IDisposable) => {
+            child.dispose();
+        });
+    }
 }

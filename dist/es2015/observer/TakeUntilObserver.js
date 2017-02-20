@@ -1,0 +1,29 @@
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+import { Observer } from "../core/Observer";
+var TakeUntilObserver = (function (_super) {
+    __extends(TakeUntilObserver, _super);
+    function TakeUntilObserver(prevObserver) {
+        var _this = _super.call(this, null, null, null) || this;
+        _this._prevObserver = null;
+        _this._prevObserver = prevObserver;
+        return _this;
+    }
+    TakeUntilObserver.create = function (prevObserver) {
+        return new this(prevObserver);
+    };
+    TakeUntilObserver.prototype.onNext = function (value) {
+        this._prevObserver.completed();
+    };
+    TakeUntilObserver.prototype.onError = function (error) {
+        this._prevObserver.error(error);
+    };
+    TakeUntilObserver.prototype.onCompleted = function () {
+    };
+    return TakeUntilObserver;
+}(Observer));
+export { TakeUntilObserver };
+//# sourceMappingURL=TakeUntilObserver.js.map

@@ -1,52 +1,54 @@
-module wdFrp {
-    export class Scheduler{
-        //todo remove "...args"
-        public static create(...args) {
-            var obj = new this();
+import { IObserver } from "../observer/IObserver";
+import { interval } from "../global/Operator";
+import { root } from "../global/Variable";
 
-            return obj;
-        }
+export class Scheduler {
+    //todo remove "...args"
+    public static create(...args) {
+        var obj = new this();
 
-        private _requestLoopId:any = null;
-        get requestLoopId(){
-            return this._requestLoopId;
-        }
-        set requestLoopId(requestLoopId:any){
-            this._requestLoopId = requestLoopId;
-        }
+        return obj;
+    }
 
-        //param observer is used by TestScheduler to rewrite
+    private _requestLoopId: any = null;
+    get requestLoopId() {
+        return this._requestLoopId;
+    }
+    set requestLoopId(requestLoopId: any) {
+        this._requestLoopId = requestLoopId;
+    }
 
-        public publishRecursive(observer:IObserver, initial:any, action:Function){
-            action(initial);
-        }
+    //param observer is used by TestScheduler to rewrite
 
-        public publishInterval(observer:IObserver, initial:any, interval:number, action:Function):number{
-            return root.setInterval(() => {
-                initial = action(initial);
-            }, interval);
-        }
+    public publishRecursive(observer: IObserver, initial: any, action: Function) {
+        action(initial);
+    }
 
-        public publishIntervalRequest(observer:IObserver, action:Function){
-            var self = this,
-                loop = (time) => {
-                    var isEnd = action(time);
+    public publishInterval(observer: IObserver, initial: any, interval: number, action: Function): number {
+        return root.setInterval(() => {
+            initial = action(initial);
+        }, interval);
+    }
 
-                    if(isEnd){
-                        return;
-                    }
+    public publishIntervalRequest(observer: IObserver, action: Function) {
+        var self = this,
+            loop = (time) => {
+                var isEnd = action(time);
 
-                    self._requestLoopId = root.requestNextAnimationFrame(loop);
-                };
+                if (isEnd) {
+                    return;
+                }
 
-            this._requestLoopId = root.requestNextAnimationFrame(loop);
-        }
+                self._requestLoopId = root.requestNextAnimationFrame(loop);
+            };
 
-        public publishTimeout(observer:IObserver, time:number, action:Function):number{
-            return root.setTimeout(() => {
-                action(time);
-                observer.completed();
-            }, time);
-        }
+        this._requestLoopId = root.requestNextAnimationFrame(loop);
+    }
+
+    public publishTimeout(observer: IObserver, time: number, action: Function): number {
+        return root.setTimeout(() => {
+            action(time);
+            observer.completed();
+        }, time);
     }
 }

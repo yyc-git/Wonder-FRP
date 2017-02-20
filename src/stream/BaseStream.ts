@@ -1,35 +1,39 @@
-module wdFrp{
-    export abstract class BaseStream extends Stream{
-        public abstract subscribeCore(observer:IObserver):IDisposable;
+import { Stream } from "../core/Stream";
+import { IObserver } from "../observer/IObserver";
+import { IDisposable } from "../Disposable/IDisposable";
+import { Observer } from "../core/Observer";
+import { Subject } from "../subject/Subject";
+import { AutoDetachObserver } from "../observer/AutoDetachObserver";
 
-        public subscribe(arg1:Function|Observer|Subject, onError?, onCompleted?):IDisposable {
-            var observer:Observer = null;
+export abstract class BaseStream extends Stream {
+    public abstract subscribeCore(observer: IObserver): IDisposable;
 
-            if(this.handleSubject(arg1)){
-                return;
-            }
+    public subscribe(arg1: Function | Observer | Subject, onError?, onCompleted?): IDisposable {
+        var observer: Observer = null;
 
-            observer = arg1 instanceof Observer
-                ? AutoDetachObserver.create(<IObserver>arg1)
-                : AutoDetachObserver.create(<Function>arg1, onError, onCompleted);
-
-            //observer.setDisposeHandler(this.disposeHandler);
-
-
-            observer.setDisposable(this.buildStream(observer));
-
-            return observer;
+        if (this.handleSubject(arg1)) {
+            return;
         }
 
-        public buildStream(observer:IObserver):IDisposable{
-            super.buildStream(observer);
+        observer = arg1 instanceof Observer
+            ? AutoDetachObserver.create(<IObserver>arg1)
+            : AutoDetachObserver.create(<Function>arg1, onError, onCompleted);
 
-            return this.subscribeCore(observer);
-        }
+        //observer.setDisposeHandler(this.disposeHandler);
 
-        //private _hasMultiObservers(){
-        //    return this.scheduler.getObservers() > 1;
-        //}
+
+        observer.setDisposable(this.buildStream(observer));
+
+        return observer;
     }
-}
 
+    public buildStream(observer: IObserver): IDisposable {
+        super.buildStream(observer);
+
+        return this.subscribeCore(observer);
+    }
+
+    //private _hasMultiObservers(){
+    //    return this.scheduler.getObservers() > 1;
+    //}
+}

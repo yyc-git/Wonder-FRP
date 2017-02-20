@@ -1,50 +1,50 @@
-module wdFrp {
-    var defaultIsEqual = (a, b) => {
-        return a === b;
-    };
+import { ActionType } from "./ActionType";
 
-    export class Record {
-        public static create(time:number, value:any, actionType?:ActionType, comparer?:Function) {
-            var obj = new this(time, value, actionType, comparer);
+var defaultIsEqual = (a, b) => {
+    return a === b;
+};
 
-            return obj;
-        }
+export class Record {
+    public static create(time: number, value: any, actionType?: ActionType, comparer?: Function) {
+        var obj = new this(time, value, actionType, comparer);
 
-        private _time:number = null;
-        get time(){
-            return this._time;
-        }
-        set time(time:number){
-            this._time = time;
-        }
+        return obj;
+    }
 
-        private _value:number = null;
-        get value(){
-            return this._value;
-        }
-        set value(value:number){
-            this._value = value;
-        }
+    private _time: number = null;
+    get time() {
+        return this._time;
+    }
+    set time(time: number) {
+        this._time = time;
+    }
 
-        private _actionType:ActionType = null;
-        get actionType(){
-            return this._actionType;
-        }
-        set actionType(actionType:ActionType){
-            this._actionType = actionType;
-        }
+    private _value: number = null;
+    get value() {
+        return this._value;
+    }
+    set value(value: number) {
+        this._value = value;
+    }
 
-        private _comparer:Function = null;
+    private _actionType: ActionType = null;
+    get actionType() {
+        return this._actionType;
+    }
+    set actionType(actionType: ActionType) {
+        this._actionType = actionType;
+    }
 
-        constructor(time, value, actionType:ActionType, comparer:Function) {
-            this._time = time;
-            this._value = value;
-            this._actionType = actionType;
-            this._comparer = comparer || defaultIsEqual;
-        }
+    private _comparer: Function = null;
 
-        equals(other) {
-            return this._time === other.time && this._comparer(this._value, other.value);
-        }
+    constructor(time, value, actionType: ActionType, comparer: Function) {
+        this._time = time;
+        this._value = value;
+        this._actionType = actionType;
+        this._comparer = comparer || defaultIsEqual;
+    }
+
+    equals(other) {
+        return this._time === other.time && this._comparer(this._value, other.value);
     }
 }

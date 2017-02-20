@@ -1,73 +1,77 @@
-module wdFrp{
-    export class MockObserver extends Observer{
-        public static create(scheduler:TestScheduler) {
-            var obj = new this(scheduler);
+import { Observer } from "../core/Observer";
+import { TestScheduler } from "./TestScheduler";
+import { Record } from "./Record";
+import { JudgeUtils } from "../JudgeUtils";
+import { ActionType } from "./ActionType";
 
-            return obj;
-        }
+export class MockObserver extends Observer {
+    public static create(scheduler: TestScheduler) {
+        var obj = new this(scheduler);
 
-        private _messages:[Record] = <[Record]>[];
-        get messages(){
-            return this._messages;
-        }
-        set messages(messages:[Record]){
-            this._messages = messages;
-        }
+        return obj;
+    }
 
-        private _scheduler:TestScheduler = null;
+    private _messages: [Record] = <[Record]>[];
+    get messages() {
+        return this._messages;
+    }
+    set messages(messages: [Record]) {
+        this._messages = messages;
+    }
 
-        constructor(scheduler:TestScheduler){
-            super(null, null, null);
+    private _scheduler: TestScheduler = null;
 
-            this._scheduler = scheduler;
-        }
+    constructor(scheduler: TestScheduler) {
+        super(null, null, null);
 
-        protected onNext(value){
-            var record = null;
+        this._scheduler = scheduler;
+    }
 
-            if(JudgeUtils.isDirectObject(value)){
-                record = Record.create(this._scheduler.clock, value, ActionType.NEXT, (a, b) => {
-                    var result = true;
+    protected onNext(value) {
+        var record = null;
 
-                    for(let i in a){
-                        if(a.hasOwnProperty(i)){
-                            if(a[i] !== b[i]){
-                                result = false;
-                                break;
-                            }
+        if (JudgeUtils.isDirectObject(value)) {
+            record = Record.create(this._scheduler.clock, value, ActionType.NEXT, (a, b) => {
+                var result = true;
+
+                for (let i in a) {
+                    if (a.hasOwnProperty(i)) {
+                        if (a[i] !== b[i]) {
+                            result = false;
+                            break;
                         }
                     }
+                }
 
-                    return result;
-                });
-            }
-            else{
-                record = Record.create(this._scheduler.clock, value, ActionType.NEXT);
-            }
-
-            this._messages.push(record);
+                return result;
+            });
+        }
+        else {
+            record = Record.create(this._scheduler.clock, value, ActionType.NEXT);
         }
 
-        protected onError(error){
-            this._messages.push(Record.create(this._scheduler.clock, error, ActionType.ERROR));
-        }
+        this._messages.push(record);
+    }
 
-        protected onCompleted(){
-            this._messages.push(Record.create(this._scheduler.clock, null, ActionType.COMPLETED));
-        }
+    protected onError(error) {
+        this._messages.push(Record.create(this._scheduler.clock, error, ActionType.ERROR));
+    }
 
-        public dispose(){
-            super.dispose();
+    protected onCompleted() {
+        this._messages.push(Record.create(this._scheduler.clock, null, ActionType.COMPLETED));
+    }
 
-            this._scheduler.remove(this);
-        }
+    public dispose() {
+        super.dispose();
 
-        public clone(){
-            var result = MockObserver.create(this._scheduler);
+        this._scheduler.remove(this);
+    }
 
-            result.messages = this._messages;
+    public clone() {
+        var result = MockObserver.create(this._scheduler);
 
-            return result;
-        }
+        result.messages = this._messages;
+
+        return result;
     }
 }

@@ -1,26 +1,27 @@
-module wdFrp{
-    export class TakeUntilObserver extends Observer{
-        public static create(prevObserver:IObserver) {
-            return new this(prevObserver);
-        }
+import { Observer } from "../core/Observer";
+import { IObserver } from "./IObserver";
 
-        private _prevObserver:IObserver = null;
+export class TakeUntilObserver extends Observer {
+    public static create(prevObserver: IObserver) {
+        return new this(prevObserver);
+    }
 
-        constructor(prevObserver:IObserver){
-            super(null, null, null);
+    private _prevObserver: IObserver = null;
 
-            this._prevObserver = prevObserver;
-        }
+    constructor(prevObserver: IObserver) {
+        super(null, null, null);
 
-        protected onNext(value){
-            this._prevObserver.completed();
-        }
+        this._prevObserver = prevObserver;
+    }
 
-        protected onError(error){
-            this._prevObserver.error(error);
-        }
+    protected onNext(value) {
+        this._prevObserver.completed();
+    }
 
-        protected onCompleted(){
-        }
+    protected onError(error) {
+        this._prevObserver.error(error);
+    }
+
+    protected onCompleted() {
     }
 }

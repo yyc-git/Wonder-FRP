@@ -1,25 +1,29 @@
-module wdFrp{
-    export class MapStream extends BaseStream{
-        public static create(source:Stream, selector:Function) {
-            var obj = new this(source, selector);
+import { BaseStream } from "./BaseStream";
+import { Stream } from "../core/Stream";
+import { IObserver } from "../observer/IObserver";
+import { MapObserver } from "../observer/MapObserver";
+import {IDisposable} from "../Disposable/IDisposable";
 
-            return obj;
-        }
+export class MapStream extends BaseStream {
+    public static create(source: Stream, selector: Function) {
+        var obj = new this(source, selector);
 
-        private _source:Stream = null;
-        private _selector:Function = null;
+        return obj;
+    }
 
-        constructor(source:Stream, selector:Function){
-            super(null);
+    private _source: Stream = null;
+    private _selector: Function = null;
 
-            this._source = source;
+    constructor(source: Stream, selector: Function) {
+        super(null);
 
-            this.scheduler = this._source.scheduler;
-            this._selector = selector;
-        }
+        this._source = source;
 
-        public subscribeCore(observer:IObserver){
-            return this._source.buildStream(MapObserver.create(observer, this._selector));
-        }
+        this.scheduler = this._source.scheduler;
+        this._selector = selector;
+    }
+
+    public subscribeCore(observer: IObserver) {
+        return this._source.buildStream(MapObserver.create(observer, this._selector));
     }
 }

@@ -1,25 +1,27 @@
-module wdFrp{
-    export class DeferStream extends BaseStream{
-        public static create(buildStreamFunc:Function) {
-            var obj = new this(buildStreamFunc);
+import { BaseStream } from "./BaseStream";
+import { IObserver } from "../observer/IObserver";
+import { GroupDisposable } from "../Disposable/GroupDisposable";
 
-            return obj;
-        }
+export class DeferStream extends BaseStream {
+    public static create(buildStreamFunc: Function) {
+        var obj = new this(buildStreamFunc);
 
-        private _buildStreamFunc:Function = null;
+        return obj;
+    }
 
-        constructor(buildStreamFunc:Function){
-            super(null);
+    private _buildStreamFunc: Function = null;
 
-            this._buildStreamFunc = buildStreamFunc;
-        }
+    constructor(buildStreamFunc: Function) {
+        super(null);
 
-        public subscribeCore(observer:IObserver){
-            var group = GroupDisposable.create();
+        this._buildStreamFunc = buildStreamFunc;
+    }
 
-            group.add(this._buildStreamFunc().buildStream(observer));
+    public subscribeCore(observer: IObserver) {
+        var group = GroupDisposable.create();
 
-            return group;
-        }
+        group.add(this._buildStreamFunc().buildStream(observer));
+
+        return group;
     }
 }

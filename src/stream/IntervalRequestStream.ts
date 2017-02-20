@@ -1,32 +1,36 @@
-module wdFrp{
-    export class IntervalRequestStream extends BaseStream{
-        public static create(scheduler:Scheduler) {
-            var obj = new this(scheduler);
+import { BaseStream } from "./BaseStream";
+import { Scheduler } from "../core/Scheduler";
+import { IObserver } from "../observer/IObserver";
+import { SingleDisposable } from "../Disposable/SingleDisposable";
+import { root } from "../global/Variable";
 
-            return obj;
-        }
+export class IntervalRequestStream extends BaseStream {
+    public static create(scheduler: Scheduler) {
+        var obj = new this(scheduler);
 
-        private _isEnd:boolean = false;
+        return obj;
+    }
 
-        constructor(scheduler:Scheduler){
-            super(null);
+    private _isEnd: boolean = false;
 
-            this.scheduler = scheduler;
-        }
+    constructor(scheduler: Scheduler) {
+        super(null);
 
-        public subscribeCore(observer:IObserver){
-            var self = this;
+        this.scheduler = scheduler;
+    }
 
-            this.scheduler.publishIntervalRequest(observer, (time) => {
-                observer.next(time);
+    public subscribeCore(observer: IObserver) {
+        var self = this;
 
-                return self._isEnd;
-            });
+        this.scheduler.publishIntervalRequest(observer, (time) => {
+            observer.next(time);
 
-            return SingleDisposable.create(() => {
-                root.cancelNextRequestAnimationFrame(self.scheduler.requestLoopId);
-                self._isEnd = true;
-            });
-        }
+            return self._isEnd;
+        });
+
+        return SingleDisposable.create(() => {
+            root.cancelNextRequestAnimationFrame(self.scheduler.requestLoopId);
+            self._isEnd = true;
+        });
     }
 }

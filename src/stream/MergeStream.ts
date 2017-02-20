@@ -1,33 +1,38 @@
-module wdFrp {
-    export class MergeStream extends BaseStream {
-        public static create(source:Stream, maxConcurrent:number) {
-            var obj = new this(source, maxConcurrent);
+import { BaseStream } from "./BaseStream";
+import { Stream } from "../core/Stream";
+import { IObserver } from "../observer/IObserver";
+import { Collection } from "wonder-commonlib/dist/es2015/Collection";
+import { GroupDisposable } from "../Disposable/GroupDisposable";
+import { MergeObserver } from "../observer/MergeObserver";
 
-            return obj;
-        }
+export class MergeStream extends BaseStream {
+    public static create(source: Stream, maxConcurrent: number) {
+        var obj = new this(source, maxConcurrent);
 
-        constructor(source:Stream, maxConcurrent:number){
-            super(null);
+        return obj;
+    }
 
-            this._source = source;
-            this._maxConcurrent = maxConcurrent;
+    constructor(source: Stream, maxConcurrent: number) {
+        super(null);
 
-            this.scheduler = this._source.scheduler;
-        }
+        this._source = source;
+        this._maxConcurrent = maxConcurrent;
 
-        private _source:Stream = null;
-        private _maxConcurrent:number = null;
+        this.scheduler = this._source.scheduler;
+    }
 
-        public subscribeCore(observer:IObserver){
-            //var groupDisposable = GroupDisposable.create();
-            //
-            //this._source.buildStream(MergeObserver.create(observer, this._maxConcurrent, groupDisposable));
-            var streamGroup = wdCb.Collection.create<Stream>(),
-                groupDisposable = GroupDisposable.create();
+    private _source: Stream = null;
+    private _maxConcurrent: number = null;
 
-            this._source.buildStream(MergeObserver.create(observer, this._maxConcurrent, streamGroup, groupDisposable));
+    public subscribeCore(observer: IObserver) {
+        //var groupDisposable = GroupDisposable.create();
+        //
+        //this._source.buildStream(MergeObserver.create(observer, this._maxConcurrent, groupDisposable));
+        var streamGroup = Collection.create<Stream>(),
+            groupDisposable = GroupDisposable.create();
 
-            return groupDisposable;
-        }
+        this._source.buildStream(MergeObserver.create(observer, this._maxConcurrent, streamGroup, groupDisposable));
+
+        return groupDisposable;
     }
 }

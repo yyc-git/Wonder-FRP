@@ -1,45 +1,46 @@
-module wdFrp{
-    export class GroupDisposable extends Entity implements IDisposable{
-        public static create(disposable?:IDisposable) {
-            var obj = new this(disposable);
+import { Entity } from "../core/Entity";
+import { IDisposable } from "./IDisposable";
+import { Collection } from "wonder-commonlib/dist/es2015/Collection";
 
-            return obj;
-        }
+export class GroupDisposable extends Entity implements IDisposable {
+    public static create(disposable?: IDisposable) {
+        var obj = new this(disposable);
 
-        private _group:wdCb.Collection<IDisposable> = wdCb.Collection.create<IDisposable>();
-        private _isDisposed:boolean = false;
+        return obj;
+    }
 
-        constructor(disposable?:IDisposable){
-            super("GroupDisposable");
+    private _group: Collection<IDisposable> = Collection.create<IDisposable>();
+    private _isDisposed: boolean = false;
 
-            if(disposable){
-                this._group.addChild(disposable);
-            }
-        }
+    constructor(disposable?: IDisposable) {
+        super("GroupDisposable");
 
-        public add(disposable:IDisposable){
+        if (disposable) {
             this._group.addChild(disposable);
-
-            return this;
-        }
-
-        public remove(disposable:IDisposable){
-            this._group.removeChild(disposable);
-
-            return this;
-        }
-
-        public dispose(){
-            if(this._isDisposed){
-                return;
-            }
-
-            this._isDisposed = true;
-
-            this._group.forEach((disposable:IDisposable) => {
-                disposable.dispose();
-            });
         }
     }
-}
 
+    public add(disposable: IDisposable) {
+        this._group.addChild(disposable);
+
+        return this;
+    }
+
+    public remove(disposable: IDisposable) {
+        this._group.removeChild(disposable);
+
+        return this;
+    }
+
+    public dispose() {
+        if (this._isDisposed) {
+            return;
+        }
+
+        this._isDisposed = true;
+
+        this._group.forEach((disposable: IDisposable) => {
+            disposable.dispose();
+        });
+    }
+}

@@ -1,39 +1,40 @@
-module wdFrp {
-    export class MapObserver extends Observer {
-        public static create(currentObserver:IObserver, selector:Function) {
-            return new this(currentObserver, selector);
+import { Observer } from "../core/Observer";
+import { IObserver } from "./IObserver";
+
+export class MapObserver extends Observer {
+    public static create(currentObserver: IObserver, selector: Function) {
+        return new this(currentObserver, selector);
+    }
+
+    private _currentObserver: IObserver = null;
+    private _selector: Function = null;
+
+    constructor(currentObserver: IObserver, selector: Function) {
+        super(null, null, null);
+
+        this._currentObserver = currentObserver;
+        this._selector = selector;
+    }
+
+    protected onNext(value) {
+        var result = null;
+
+        try {
+            result = this._selector(value);
         }
-
-        private _currentObserver:IObserver = null;
-        private _selector:Function = null;
-
-        constructor(currentObserver:IObserver, selector:Function) {
-            super(null, null, null);
-
-            this._currentObserver = currentObserver;
-            this._selector = selector;
+        catch (e) {
+            this._currentObserver.error(e);
         }
-
-        protected onNext(value) {
-            var result = null;
-
-            try {
-                result = this._selector(value);
-            }
-            catch (e) {
-                this._currentObserver.error(e);
-            }
-            finally {
-                this._currentObserver.next(result);
-            }
+        finally {
+            this._currentObserver.next(result);
         }
+    }
 
-        protected onError(error) {
-            this._currentObserver.error(error);
-        }
+    protected onError(error) {
+        this._currentObserver.error(error);
+    }
 
-        protected onCompleted() {
-            this._currentObserver.completed();
-        }
+    protected onCompleted() {
+        this._currentObserver.completed();
     }
 }

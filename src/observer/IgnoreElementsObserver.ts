@@ -1,26 +1,27 @@
-module wdFrp {
-    export class IgnoreElementsObserver extends Observer {
-        public static create(currentObserver:IObserver) {
-            return new this(currentObserver);
-        }
+import { Observer } from "../core/Observer";
+import { IObserver } from "./IObserver";
 
-        private _currentObserver:IObserver = null;
+export class IgnoreElementsObserver extends Observer {
+    public static create(currentObserver: IObserver) {
+        return new this(currentObserver);
+    }
 
-        constructor(currentObserver:IObserver) {
-            super(null, null, null);
+    private _currentObserver: IObserver = null;
 
-            this._currentObserver = currentObserver;
-        }
+    constructor(currentObserver: IObserver) {
+        super(null, null, null);
 
-        protected onNext(value){
-        }
+        this._currentObserver = currentObserver;
+    }
 
-        protected onError(error) {
-            this._currentObserver.error(error);
-        }
+    protected onNext(value) {
+    }
 
-        protected onCompleted() {
-            this._currentObserver.completed();
-        }
+    protected onError(error) {
+        this._currentObserver.error(error);
+    }
+
+    protected onCompleted() {
+        this._currentObserver.completed();
     }
 }

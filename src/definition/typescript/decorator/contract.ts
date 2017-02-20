@@ -1,5 +1,5 @@
-module wdFrp{
-    import Log = wdCb.Log;
+import {Log} from "wonder-commonlib/dist/es2015/Log";
+import {Main} from "../../../core/Main";
 
     export function assert(cond:boolean, message:string="contract error"){
         Log.error(!cond, message);
@@ -114,4 +114,3 @@ module wdFrp{
             }
         }
     }
-}

@@ -1,47 +1,55 @@
-module wdFrp{
-    export class SkipUntilStream extends BaseStream{
-        public static create(source:Stream, otherSteam:Stream) {
-            var obj = new this(source, otherSteam);
+import { BaseStream } from "./BaseStream";
+import { Stream } from "../core/Stream";
+import { JudgeUtils } from "../JudgeUtils";
+import { fromPromise } from "../global/Operator";
+import { IObserver } from "../observer/IObserver";
+import { GroupDisposable } from "../Disposable/GroupDisposable";
+import { IDisposable } from "../Disposable/IDisposable";
+import { SkipUntilOtherObserver } from "../observer/SkipUntilOtherObserver";
+import { SkipUntilSourceObserver } from "../observer/SkipUntilSourceObserver";
 
-            return obj;
-        }
+export class SkipUntilStream extends BaseStream {
+    public static create(source: Stream, otherSteam: Stream) {
+        var obj = new this(source, otherSteam);
 
-        public isOpen:boolean = false;
+        return obj;
+    }
 
-        private _source:Stream = null;
-        private _otherStream:Stream = null;
+    public isOpen: boolean = false;
 
-        constructor(source:Stream, otherStream:Stream){
-            super(null);
+    private _source: Stream = null;
+    private _otherStream: Stream = null;
 
-            this._source = source;
-            this._otherStream = JudgeUtils.isPromise(otherStream) ? fromPromise(otherStream) : otherStream;
+    constructor(source: Stream, otherStream: Stream) {
+        super(null);
 
-            this.scheduler = this._source.scheduler;
-        }
+        this._source = source;
+        this._otherStream = JudgeUtils.isPromise(otherStream) ? fromPromise(otherStream) : otherStream;
 
-        public subscribeCore(observer:IObserver){
-            var group = GroupDisposable.create(),
-                otherDisposable:IDisposable = null,
-                skipUntilOtherObserver:SkipUntilOtherObserver = null;
-                // autoDetachObserver = AutoDetachObserver.create(observer),
-                // sourceDisposable = null;
+        this.scheduler = this._source.scheduler;
+    }
 
-            // sourceDisposable = this._source.buildStream(observer);
+    public subscribeCore(observer: IObserver) {
+        var group = GroupDisposable.create(),
+            otherDisposable: IDisposable = null,
+            skipUntilOtherObserver: SkipUntilOtherObserver = null;
+        // autoDetachObserver = AutoDetachObserver.create(observer),
+        // sourceDisposable = null;
 
-            group.add(this._source.buildStream(SkipUntilSourceObserver.create(observer, this)));
+        // sourceDisposable = this._source.buildStream(observer);
 
-            // autoDetachObserver.setDisposable(sourceDisposable);
+        group.add(this._source.buildStream(SkipUntilSourceObserver.create(observer, this)));
 
-            skipUntilOtherObserver = SkipUntilOtherObserver.create(observer, this);
+        // autoDetachObserver.setDisposable(sourceDisposable);
 
-            otherDisposable = this._otherStream.buildStream(skipUntilOtherObserver);
+        skipUntilOtherObserver = SkipUntilOtherObserver.create(observer, this);
 
-            skipUntilOtherObserver.otherDisposable = otherDisposable;
+        otherDisposable = this._otherStream.buildStream(skipUntilOtherObserver);
 
-            group.add(otherDisposable);
+        skipUntilOtherObserver.otherDisposable = otherDisposable;
 
-            return group;
-        }
+        group.add(otherDisposable);
+
+        return group;
     }
 }

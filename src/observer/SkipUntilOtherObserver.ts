@@ -1,35 +1,37 @@
-module wdFrp{
-    export class SkipUntilOtherObserver extends Observer{
-        public static create(prevObserver:IObserver, skipUntilStream:SkipUntilStream) {
-            return new this(prevObserver, skipUntilStream);
-        }
+import { Observer } from "../core/Observer";
+import { IObserver } from "./IObserver";
+import { SkipUntilStream } from "../stream/SkipUntilStream";
+import { IDisposable } from "../Disposable/IDisposable";
 
-        public otherDisposable:IDisposable = null;
+export class SkipUntilOtherObserver extends Observer {
+    public static create(prevObserver: IObserver, skipUntilStream: SkipUntilStream) {
+        return new this(prevObserver, skipUntilStream);
+    }
 
-        private _prevObserver:IObserver = null;
-        private _skipUntilStream:SkipUntilStream = null;
+    public otherDisposable: IDisposable = null;
 
-        constructor(prevObserver:IObserver, skipUntilStream:SkipUntilStream){
-            super(null, null, null);
+    private _prevObserver: IObserver = null;
+    private _skipUntilStream: SkipUntilStream = null;
 
-            this._prevObserver = prevObserver;
-            this._skipUntilStream = skipUntilStream;
-        }
+    constructor(prevObserver: IObserver, skipUntilStream: SkipUntilStream) {
+        super(null, null, null);
 
-        protected onNext(value){
-            this._skipUntilStream.isOpen = true;
+        this._prevObserver = prevObserver;
+        this._skipUntilStream = skipUntilStream;
+    }
 
-            // if(this.otherDisposable.dispose())
-            this.otherDisposable.dispose();
-        }
+    protected onNext(value) {
+        this._skipUntilStream.isOpen = true;
 
-        protected onError(error){
-            this._prevObserver.error(error);
-        }
+        // if(this.otherDisposable.dispose())
+        this.otherDisposable.dispose();
+    }
 
-        protected onCompleted(){
-            this.otherDisposable.dispose();
-        }
+    protected onError(error) {
+        this._prevObserver.error(error);
+    }
+
+    protected onCompleted() {
+        this.otherDisposable.dispose();
     }
 }
-

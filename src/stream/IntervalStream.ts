@@ -1,43 +1,48 @@
-module wdFrp{
-    export class IntervalStream extends BaseStream{
-        public static create(interval:number, scheduler:Scheduler) {
-            var obj = new this(interval, scheduler);
+import { BaseStream } from "./BaseStream";
+import { interval } from "../global/Operator";
+import { Scheduler } from "../core/Scheduler";
+import { IObserver } from "../observer/IObserver";
+import { SingleDisposable } from "../Disposable/SingleDisposable";
+import { root } from "../global/Variable";
 
-            obj.initWhenCreate();
+export class IntervalStream extends BaseStream {
+    public static create(interval: number, scheduler: Scheduler) {
+        var obj = new this(interval, scheduler);
 
-            return obj;
-        }
+        obj.initWhenCreate();
 
-        private _interval:number = null;
+        return obj;
+    }
 
-        constructor(interval:number, scheduler:Scheduler){
-            super(null);
+    private _interval: number = null;
 
-            this._interval = interval;
-            this.scheduler = scheduler;
-        }
+    constructor(interval: number, scheduler: Scheduler) {
+        super(null);
 
-        public initWhenCreate(){
-            this._interval = this._interval <= 0 ? 1 : this._interval;
-        }
+        this._interval = interval;
+        this.scheduler = scheduler;
+    }
 
-        public subscribeCore(observer:IObserver){
-            var self = this,
-                id = null;
+    public initWhenCreate() {
+        this._interval = this._interval <= 0 ? 1 : this._interval;
+    }
 
-            id = this.scheduler.publishInterval(observer, 0, this._interval, (count) => {
-                //self.scheduler.next(count);
-                observer.next(count);
+    public subscribeCore(observer: IObserver) {
+        var self = this,
+            id = null;
 
-                return count + 1;
-            });
+        id = this.scheduler.publishInterval(observer, 0, this._interval, (count) => {
+            //self.scheduler.next(count);
+            observer.next(count);
 
-            //Disposer.addDisposeHandler(() => {
-            //});
+            return count + 1;
+        });
 
-            return SingleDisposable.create(() => {
-                root.clearInterval(id);
-            });
-        }
+        //Disposer.addDisposeHandler(() => {
+        //});
+
+        return SingleDisposable.create(() => {
+            root.clearInterval(id);
+        });
     }
 }

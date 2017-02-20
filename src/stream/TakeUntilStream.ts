@@ -1,37 +1,44 @@
-module wdFrp{
-    export class TakeUntilStream extends BaseStream{
-        public static create(source:Stream, otherSteam:Stream) {
-            var obj = new this(source, otherSteam);
+import { BaseStream } from "./BaseStream";
+import { Stream } from "../core/Stream";
+import { JudgeUtils } from "../JudgeUtils";
+import { fromPromise } from "../global/Operator";
+import { IObserver } from "../observer/IObserver";
+import { GroupDisposable } from "../Disposable/GroupDisposable";
+import { AutoDetachObserver } from "../observer/AutoDetachObserver";
+import { TakeUntilObserver } from "../observer/TakeUntilObserver";
 
-            return obj;
-        }
+export class TakeUntilStream extends BaseStream {
+    public static create(source: Stream, otherSteam: Stream) {
+        var obj = new this(source, otherSteam);
 
-        private _source:Stream = null;
-        private _otherStream:Stream = null;
+        return obj;
+    }
 
-        constructor(source:Stream, otherStream:Stream){
-            super(null);
+    private _source: Stream = null;
+    private _otherStream: Stream = null;
 
-            this._source = source;
-            this._otherStream = JudgeUtils.isPromise(otherStream) ? fromPromise(otherStream) : otherStream;
+    constructor(source: Stream, otherStream: Stream) {
+        super(null);
 
-            this.scheduler = this._source.scheduler;
-        }
+        this._source = source;
+        this._otherStream = JudgeUtils.isPromise(otherStream) ? fromPromise(otherStream) : otherStream;
 
-        public subscribeCore(observer:IObserver){
-            var group = GroupDisposable.create(),
-                autoDetachObserver = AutoDetachObserver.create(observer),
-                sourceDisposable = null;
+        this.scheduler = this._source.scheduler;
+    }
 
-            sourceDisposable = this._source.buildStream(observer);
+    public subscribeCore(observer: IObserver) {
+        var group = GroupDisposable.create(),
+            autoDetachObserver = AutoDetachObserver.create(observer),
+            sourceDisposable = null;
 
-            group.add(sourceDisposable);
+        sourceDisposable = this._source.buildStream(observer);
 
-            autoDetachObserver.setDisposable(sourceDisposable);
+        group.add(sourceDisposable);
 
-            group.add(this._otherStream.buildStream(TakeUntilObserver.create(autoDetachObserver)));
+        autoDetachObserver.setDisposable(sourceDisposable);
 
-            return group;
-        }
+        group.add(this._otherStream.buildStream(TakeUntilObserver.create(autoDetachObserver)));
+
+        return group;
     }
 }

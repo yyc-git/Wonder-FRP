@@ -1,19 +1,19 @@
-module wdFrp{
-    export class AnonymousObserver extends Observer{
-        public static create(onNext:Function, onError:Function, onCompleted:Function) {
-            return new this(onNext, onError, onCompleted);
-        }
+import { Observer } from "../core/Observer";
 
-        protected onNext(value:any){
-            this.onUserNext(value);
-        }
+export class AnonymousObserver extends Observer {
+    public static create(onNext: Function, onError: Function, onCompleted: Function) {
+        return new this(onNext, onError, onCompleted);
+    }
 
-        protected onError(error:any){
-            this.onUserError(error);
-        }
+    protected onNext(value: any) {
+        this.onUserNext(value);
+    }
 
-        protected onCompleted(){
-            this.onUserCompleted();
-        }
+    protected onError(error: any) {
+        this.onUserError(error);
+    }
+
+    protected onCompleted() {
+        this.onUserCompleted();
     }
 }

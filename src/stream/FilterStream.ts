@@ -1,43 +1,48 @@
-module wdFrp{
-    export class FilterStream extends BaseStream{
-        public static create(source:Stream, predicate:(value:any, index?:number, source?:Stream)=>boolean, thisArg:any) {
-            var obj = new this(source, predicate, thisArg);
+import { BaseStream } from "./BaseStream";
+import { Stream } from "../core/Stream";
+import { FunctionUtils } from "wonder-commonlib/dist/es2015/utils/FunctionUtils";
+import { IObserver } from "../observer/IObserver";
+import { Observer } from "../core/Observer";
+import { FilterObserver } from "../observer/FilterObserver";
+import {IDisposable} from "../Disposable/IDisposable";
 
-            return obj;
-        }
+export class FilterStream extends BaseStream {
+    public static create(source: Stream, predicate: (value: any, index?: number, source?: Stream) => boolean, thisArg: any) {
+        var obj = new this(source, predicate, thisArg);
 
-        constructor(source:Stream, predicate:(value:any, index?:number, source?:Stream)=>boolean, thisArg:any){
-            super(null);
+        return obj;
+    }
 
-            this._source = source;
-            this.predicate = wdCb.FunctionUtils.bind(thisArg, predicate);
-        }
+    constructor(source: Stream, predicate: (value: any, index?: number, source?: Stream) => boolean, thisArg: any) {
+        super(null);
 
-        public predicate:(value:any, index?:number, source?:Stream)=>boolean = null;
+        this._source = source;
+        this.predicate = FunctionUtils.bind(thisArg, predicate);
+    }
 
-        private _source:Stream = null;
+    public predicate: (value: any, index?: number, source?: Stream) => boolean = null;
 
-        public subscribeCore(observer:IObserver){
-            return this._source.subscribe(this.createObserver(observer));
-        }
+    private _source: Stream = null;
 
-        public internalFilter(predicate:(value:any, index?:number, source?:Stream)=>boolean, thisArg:any){
-            return this.createStreamForInternalFilter(this._source, this._innerPredicate(predicate, this), thisArg);
-        }
+    public subscribeCore(observer: IObserver) {
+        return this._source.subscribe(this.createObserver(observer));
+    }
 
-        protected createObserver(observer:IObserver):Observer{
-            return FilterObserver.create(observer, this.predicate, this);
-        }
+    public internalFilter(predicate: (value: any, index?: number, source?: Stream) => boolean, thisArg: any) {
+        return this.createStreamForInternalFilter(this._source, this._innerPredicate(predicate, this), thisArg);
+    }
 
-        protected createStreamForInternalFilter(source:Stream, innerPredicate:any, thisArg:any):Stream{
-            return FilterStream.create(source, innerPredicate, thisArg);
-        }
+    protected createObserver(observer: IObserver): Observer {
+        return FilterObserver.create(observer, this.predicate, this);
+    }
 
-        private _innerPredicate(predicate:(value:any, index?:number, source?:Stream)=>boolean, self:any){
-            return (value, i, o) => {
-                return self.predicate(value, i, o) && predicate.call(this, value, i, o);
-            }
+    protected createStreamForInternalFilter(source: Stream, innerPredicate: any, thisArg: any): Stream {
+        return FilterStream.create(source, innerPredicate, thisArg);
+    }
+
+    private _innerPredicate(predicate: (value: any, index?: number, source?: Stream) => boolean, self: any) {
+        return (value, i, o) => {
+            return self.predicate(value, i, o) && predicate.call(this, value, i, o);
         }
     }
 }
-

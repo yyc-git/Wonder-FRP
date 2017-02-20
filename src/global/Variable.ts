@@ -1,14 +1,12 @@
-declare var global:NodeJS.Global,window:Window;
+import { JudgeUtils } from "../JudgeUtils";
 
-module wdFrp{
-    export var root:any;
+declare var global: NodeJS.Global, window: Window;
 
-    if(JudgeUtils.isNodeJs() && typeof global != "undefined"){
-        root = global;
-    }
-    else{
-        root = window;
-    }
+export var root: any;
+
+if (JudgeUtils.isNodeJs() && typeof global != "undefined") {
+    root = global;
 }
-
-
+else {
+    root = window;
+}

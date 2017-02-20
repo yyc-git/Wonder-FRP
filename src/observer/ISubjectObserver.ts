@@ -1,6 +1,6 @@
-module wdFrp{
-    export interface ISubjectObserver {
-        addChild(observer:Observer);
-        removeChild(observer:Observer);
-    }
+import { Observer } from "../core/Observer";
+
+export interface ISubjectObserver {
+    addChild(observer: Observer);
+    removeChild(observer: Observer);
 }

@@ -1,23 +1,27 @@
-module wdFrp{
-    export class IgnoreElementsStream extends BaseStream{
-        public static create(source:Stream) {
-            var obj = new this(source);
+import { BaseStream } from "./BaseStream";
+import { Stream } from "../core/Stream";
+import { IObserver } from "../observer/IObserver";
+import { IgnoreElementsObserver } from "../observer/IgnoreElementsObserver";
+import {IDisposable} from "../Disposable/IDisposable";
 
-            return obj;
-        }
+export class IgnoreElementsStream extends BaseStream {
+    public static create(source: Stream) {
+        var obj = new this(source);
 
-        private _source:Stream = null;
+        return obj;
+    }
 
-        constructor(source:Stream){
-            super(null);
+    private _source: Stream = null;
 
-            this._source = source;
+    constructor(source: Stream) {
+        super(null);
 
-            this.scheduler = this._source.scheduler;
-        }
+        this._source = source;
 
-        public subscribeCore(observer:IObserver){
-            return this._source.buildStream(IgnoreElementsObserver.create(observer));
-        }
+        this.scheduler = this._source.scheduler;
+    }
+
+    public subscribeCore(observer: IObserver) {
+        return this._source.buildStream(IgnoreElementsObserver.create(observer));
     }
 }
