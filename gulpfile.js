@@ -1,34 +1,26 @@
-var through = require("through-gulp");
 var gulp = require("gulp");
-var gulpTs = require("gulp-typescript");
-var gulpSourcemaps = require("gulp-sourcemaps");
-var gulpConcat = require("gulp-concat");
 var del = require("del");
 var gulpSync = require("gulp-sync")(gulp);
-var merge = require("merge2");
 var path = require("path");
-var fs = require("fs-extra");
-var combineInnerLib = require("./gulp/common/combineInnerLib");
-var config = require("./gulp/common/config");
-
-var tsFilePaths = config.tsFilePaths;
-var distPath = config.distPath;
-var tsconfigFile = config.tsconfigFile;
-var filePath = path.join(distPath, "wdFrp.js");
-var dtsFilePath = path.join(distPath, "wdFrp.d.ts");
 
 
 var wonderPackage = require("wonder-package");
 
-var addModuleExports = wonderPackage.addModuleExports;
-var browserify = wonderPackage.browserify;
-var requireInnerLibToContent = wonderPackage.requireInnerLibToContent;
+var bundleDTS = wonderPackage.bundleDTS;
+var compileTs = wonderPackage.compileTs;
+var package = wonderPackage.package;
+var format = wonderPackage.format;
+
+
+var config = require("./gulp/common/config");
 
 
 
 
-
-
+var tsFilePaths = config.tsFilePaths;
+var distPath = config.distPath;
+var tsconfigFile = config.tsconfigFile;
+var indexFileDir = config.indexFileDir;
 
 
 gulp.task('clean', function() {
@@ -38,101 +30,40 @@ gulp.task('clean', function() {
 });
 
 
-
-gulp.task("compileTs", function() {
-    var tsProject = gulpTs.createProject(path.join(process.cwd(), tsconfigFile), {
-        declaration: true,
-        noEmitOnError: false,
-        typescript: require('typescript')
-    });
-
-    var tsResult = tsProject.src()
-        .pipe(tsProject());
-
-
-    return merge([
-        tsResult.dts
-            .pipe(gulpConcat("wdFrp.d.ts"))
-            .pipe(gulp.dest("dist")),
-        tsResult.js
-            .pipe(gulpConcat("wdFrp.js"))
-            .pipe(gulp.dest("dist/"))
-    ])
+gulp.task("compileTsES2015", function(done) {
+    compileTs.compileTsES2015(path.join(process.cwd(), tsconfigFile), done);
 });
 
-gulp.task("compileTsDebug", function() {
-    var tsProject = gulpTs.createProject(path.join(process.cwd(), tsconfigFile), {
-        out: "wdFrp.debug.js",
-        typescript: require('typescript')
-    });
+gulp.task("generateDTS", function(done) {
+    var indexDTSPath = path.join(indexFileDir, "index.d.ts"),
+        name = "wonder-frp/dist/es2015";
 
-    var tsResult = tsProject.src()
-        .pipe(gulpSourcemaps.init())
-        .pipe(tsProject());
-
-
-    return merge([
-        tsResult.js
-            .pipe(gulpSourcemaps.write())
-            .pipe(gulp.dest("dist/"))
-    ])
-});
-
-
-
-
-
-gulp.task("combineInnerLib", function(done){
-    requireInnerLibToContent(
-        filePath,
-        [
-            {
-                variableName:"wdCb",
-                path:"wonder-commonlib"
-            }
-        ]
-    );
-
-    createInnerLibJs();
+    bundleDTS.generateDTS(indexDTSPath, name, path.join(distPath, "wdFrp.d.ts"), path.join(distPath, "wdFrp.noDelcareModule.d.ts"));
 
     done();
 });
 
-function createInnerLibJs(){
-    fs.createFileSync( path.join(distPath, "wdFrp.innerLib.js") );
+gulp.task("rollup", function(done) {
+    package.rollup(path.join(process.cwd(), "./rollup.config.js"), done);
+});
 
-    combineInnerLib(
-        path.join(distPath, "wdFrp.innerLib.js"),
-        path.join(process.cwd(), "src/tsconfig.json")
-    );
-}
-
-
-gulp.task("addNodejsVersion", function(done){
-    fs.copySync(filePath, path.join(distPath, "wdFrp.node.js"));
-
-    done();
+gulp.task("formatTs", function(done) {
+    format.formatTs(tsFilePaths, done);
 });
 
 
 
 
-gulp.task("addModuleExports", function(done){
-    addModuleExports(filePath, "wdFrp");
 
-    done();
+
+
+gulp.task("build", gulpSync.sync(["clean", "compileTsES2015", "generateDTS", "generateDTS", "rollup", "formatTs"]));
+
+
+
+gulp.task("watch", function(){
+    gulp.watch(tsFilePaths, gulpSync.sync(["compileTsES2015", "rollup"]));
 });
-
-
-gulp.task("browserify", function() {
-    return browserify(filePath, distPath, "wdFrp");
-});
-
-
-gulp.task("build", gulpSync.sync(["clean", "compileTs",  "compileTsDebug", "combineInnerLib", "addModuleExports", "addNodejsVersion", "browserify"]));
-
-
-
 
 
 
@@ -142,35 +73,9 @@ var karmaConfPath = path.join(process.cwd(), "test/karma.conf.js");
 
 
 
-gulp.task("test", gulpSync.sync(["build"]), function (done) {
-    karma.start({
-        configFile: karmaConfPath
-    }, done);
-});
-
-
-//ci test(single test)
-
-//todo if test failed, the "singleTest" task will error and it will log error info!how to eliminate it?
-//reference:https://github.com/lazd/gulp-karma-test, https://github.com/lazd/gulp-karma/issues/21
-
-gulp.task("singleTest", gulpSync.sync(["build"]), function (done) {
-    karma.start({
-        configFile: karmaConfPath,
-        singleRun:true
-    }, done);
-});
-
 gulp.task("test", function (done) {
     karma.start({
         configFile: karmaConfPath
-        //singleRun:true,
-        //autoWatch:false
     }, done);
-});
-
-
-gulp.task("watch", function(){
-    gulp.watch(tsFilePaths, ["compileTsDebug"]);
 });
 

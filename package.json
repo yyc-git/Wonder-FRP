@@ -6,10 +6,12 @@
     "FRP",
     "Wonder-FRP"
   ],
+  "module": "dist/wdFrp.module.js",
+  "jsnext:main": "dist/wdFrp.module.js",
   "dependencies": {
     "@types/node": "^7.0.5",
     "@types/wonder-commonlib": "^0.1.1",
-    "wonder-commonlib": "^0.1.1"
+    "wonder-commonlib": "^0.1.4"
   },
   "bundledDependencies": [
     "wonder-commonlib"
@@ -19,11 +21,8 @@
     "fs-extra": "^0.22.1",
     "glob": "^7.0.4",
     "gulp": "^3.8.11",
-    "gulp-browserify": "^0.5.1",
     "gulp-concat": "^2.6.0",
-    "gulp-sourcemaps": "^1.5.2",
     "gulp-sync": "^0.1.4",
-    "gulp-typescript": "^3.0.2",
     "gulp-util": "^3.0.7",
     "karma": "~0.12",
     "karma-chrome-launcher": "^0.1.5",
@@ -31,8 +30,10 @@
     "karma-ie-launcher": "^0.1.5",
     "karma-jasmine": "^0.2.2",
     "merge2": "^0.3.5",
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "rollup-plugin-typescript": "^0.8.1",
     "through-gulp": "^0.3.8",
     "typescript": "^2.0.3",
-    "wonder-package": "^0.1.4"
+    "wonder-package": "^0.1.13"
   }
 }
