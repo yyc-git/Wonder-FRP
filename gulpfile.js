@@ -18,6 +18,7 @@ var config = require("./gulp/common/config");
 
 
 var tsFilePaths = config.tsFilePaths;
+var tsFileDir = config.tsFileDir;
 var distPath = config.distPath;
 var tsconfigFile = config.tsconfigFile;
 var indexFileDir = config.indexFileDir;
@@ -31,9 +32,9 @@ gulp.task('clean', function() {
 
 gulp.task("compileTsES2015", function(done) {
     compileTs.compileTsES2015(path.join(process.cwd(), tsconfigFile), {
-        sourceDir: "./src",
-        cwd:"./",
-        targetDir:"./dist/es2015/"
+        sourceDir: tsFileDir,
+        cwd:"/",
+        targetDir:path.join(distPath, "./es2015/")
     }, done);
 });
 
