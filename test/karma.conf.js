@@ -19,8 +19,7 @@ module.exports = function(config) {
         'bower_components/rsvp.js/rsvp.js',
 
 
-        'dist/wdFrp.innerLib.js',
-        'dist/wdFrp.debug.js',
+        'dist/wdFrp.js',
 
 
         'test/helper/jasmine/**',
@@ -30,7 +29,11 @@ module.exports = function(config) {
         'test/unit/**/*Tool.js',
 
 
-        'test/unit/**'
+        'test/unit/**',
+
+        // 'test/unit/**/fromPromise*.js'
+
+        // 'test/unit/**/doSpec.js',
 
         // 'test/unit/**/skipUntilSpec.js',
         // 'test/unit/**/dispose*.js',
@@ -40,8 +43,8 @@ module.exports = function(config) {
         // 'test/unit/**/filterSpec.js',
 
         //{pattern: 'dist/wdFrp.d.ts', watched: false, included: false, served: true},
-        //{pattern: 'dist/wdFrp.js.map', watched: false, included: false, served: true}
-        //{pattern: 'src/**', watched: false, included: false, served: true}
+        {pattern: 'dist/wdFrp.js.map', watched: false, included: false, served: true}
+        // {pattern: 'src/**', watched: false, included: false, served: true}
     ],
 
 
