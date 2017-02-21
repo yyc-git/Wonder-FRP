@@ -2,6 +2,8 @@
 	"compilerOptions": {
 		"target": "es5",
 		"module": "es2015",
+		"moduleResolution":"Node",
+		//"listFiles":true,
 		"noImplicitAny": false,
 		"sourceMap": true,
 		"outDir": "../dist/es2015",
