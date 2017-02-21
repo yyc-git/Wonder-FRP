@@ -5,6 +5,7 @@ import { IObserver } from "../observer/IObserver";
 export declare class AnonymousStream extends Stream {
     static create(subscribeFunc: Function): AnonymousStream;
     constructor(subscribeFunc: Function);
+    buildStream(observer: IObserver): IDisposable;
     subscribe(subject: Subject): IDisposable;
     subscribe(observer: IObserver): IDisposable;
     subscribe(onNext: (value: any) => void): IDisposable;

@@ -55,4 +55,6 @@ export { MockPromise } from "./testing/MockPromise";
 export { Record } from "./testing/Record";
 export { TestScheduler } from "./testing/TestScheduler";
 export { TestStream } from "./testing/TestStream";
+import "./extend/root";
+import "./global/init";
 //# sourceMappingURL=index.js.map

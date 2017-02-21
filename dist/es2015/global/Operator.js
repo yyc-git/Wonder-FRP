@@ -1,3 +1,9 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 import { AnonymousStream } from "../stream/AnonymousStream";
 import { Scheduler } from "../core/Scheduler";
 import { FromArrayStream } from "../stream/FromArrayStream";
@@ -8,13 +14,31 @@ import { IntervalRequestStream } from "../stream/IntervalRequestStream";
 import { TimeoutStream } from "../stream/TimeoutStream";
 import { root } from "./Variable";
 import { DeferStream } from "../stream/DeferStream";
-export var createStream = function (subscribeFunc) {
-    return AnonymousStream.create(subscribeFunc);
-};
-export var fromArray = function (array, scheduler) {
-    if (scheduler === void 0) { scheduler = Scheduler.create(); }
-    return FromArrayStream.create(array, scheduler);
-};
+import { registerClass } from "../definition/typescript/decorator/registerClass";
+var Operator = (function () {
+    function Operator() {
+    }
+    Operator.empty = function () {
+        return this.createStream(function (observer) {
+            observer.completed();
+        });
+    };
+    Operator.createStream = function (subscribeFunc) {
+        return AnonymousStream.create(subscribeFunc);
+    };
+    Operator.fromArray = function (array, scheduler) {
+        if (scheduler === void 0) { scheduler = Scheduler.create(); }
+        return FromArrayStream.create(array, scheduler);
+    };
+    return Operator;
+}());
+Operator = __decorate([
+    registerClass("Operator")
+], Operator);
+export { Operator };
+export var createStream = Operator.createStream;
+export var empty = Operator.empty;
+export var fromArray = Operator.fromArray;
 export var fromPromise = function (promise, scheduler) {
     if (scheduler === void 0) { scheduler = Scheduler.create(); }
     return FromPromiseStream.create(promise, scheduler);
@@ -33,11 +57,6 @@ export var intervalRequest = function (scheduler) {
 export var timeout = function (time, scheduler) {
     if (scheduler === void 0) { scheduler = Scheduler.create(); }
     return TimeoutStream.create(time, scheduler);
-};
-export var empty = function () {
-    return createStream(function (observer) {
-        observer.completed();
-    });
 };
 export var callFunc = function (func, context) {
     if (context === void 0) { context = root; }

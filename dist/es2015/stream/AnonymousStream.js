@@ -1,13 +1,19 @@
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 import { Stream } from "../core/Stream";
 import { Scheduler } from "../core/Scheduler";
 import { Subject } from "../subject/Subject";
 import { AutoDetachObserver } from "../observer/AutoDetachObserver";
 import { JudgeUtils } from "../JudgeUtils";
+import { SingleDisposable } from "../Disposable/SingleDisposable";
 var AnonymousStream = (function (_super) {
     __extends(AnonymousStream, _super);
     function AnonymousStream(subscribeFunc) {
@@ -18,6 +24,9 @@ var AnonymousStream = (function (_super) {
     AnonymousStream.create = function (subscribeFunc) {
         var obj = new this(subscribeFunc);
         return obj;
+    };
+    AnonymousStream.prototype.buildStream = function (observer) {
+        return SingleDisposable.create((this.subscribeFunc(observer) || function () { }));
     };
     AnonymousStream.prototype.subscribe = function () {
         var args = [];

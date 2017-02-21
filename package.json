@@ -11,7 +11,7 @@
   "dependencies": {
     "@types/node": "^7.0.5",
     "@types/wonder-commonlib": "^0.1.1",
-    "wonder-commonlib": "^0.1.4"
+    "wonder-commonlib": "^0.1.6"
   },
   "bundledDependencies": [
     "wonder-commonlib"
@@ -32,8 +32,8 @@
     "merge2": "^0.3.5",
     "rollup-plugin-node-resolve": "^2.0.0",
     "through-gulp": "^0.3.8",
-    "typescript": "^2.1.6",
-    "wonder-package": "^0.1.18",
+    "typescript": "^2.3.0-dev.20170220",
+    "wonder-package": "^0.1.19",
     "wonder-rollup-plugin-typescript": "^0.1.1"
   }
 }
