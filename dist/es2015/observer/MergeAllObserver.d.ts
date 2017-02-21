@@ -1,3 +1,4 @@
+/// <reference types="wonder-commonlib" />
 import { Observer } from "../core/Observer";
 import { IObserver } from "./IObserver";
 import { Collection } from "wonder-commonlib/dist/es2015/Collection";
