@@ -1,4 +1,4 @@
-import { createStream } from "../../global/Operator";
+import { createStream} from "../../global/Operator";
 import { IObserver } from "../../observer/IObserver";
 import { AnonymousStream } from "../../stream/AnonymousStream";
 

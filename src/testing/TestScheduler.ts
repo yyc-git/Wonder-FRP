@@ -7,7 +7,6 @@ import { MockObserver } from "./MockObserver";
 import { IObserver } from "../observer/IObserver";
 import { Log } from "wonder-commonlib/dist/es2015/Log";
 import { Observer } from "../core/Observer";
-import { interval, createStream } from "../global/Operator";
 import { TestStream } from "./TestStream";
 import { MockPromise } from "./MockPromise";
 

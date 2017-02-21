@@ -7,7 +7,10 @@ import { GroupDisposable } from "../Disposable/GroupDisposable";
 import { IDisposable } from "../Disposable/IDisposable";
 import { SkipUntilOtherObserver } from "../observer/SkipUntilOtherObserver";
 import { SkipUntilSourceObserver } from "../observer/SkipUntilSourceObserver";
+import { ClassMapUtils } from "../utils/ClassMapUtils";
+import { registerClass } from "../definition/typescript/decorator/registerClass";
 
+@registerClass("SkipUntilStream")
 export class SkipUntilStream extends BaseStream {
     public static create(source: Stream, otherSteam: Stream) {
         var obj = new this(source, otherSteam);

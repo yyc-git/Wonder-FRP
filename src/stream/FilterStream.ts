@@ -4,8 +4,10 @@ import { FunctionUtils } from "wonder-commonlib/dist/es2015/utils/FunctionUtils"
 import { IObserver } from "../observer/IObserver";
 import { Observer } from "../core/Observer";
 import { FilterObserver } from "../observer/FilterObserver";
-import {IDisposable} from "../Disposable/IDisposable";
+import { IDisposable } from "../Disposable/IDisposable";
+import { registerClass } from "../definition/typescript/decorator/registerClass";
 
+@registerClass("FilterStream")
 export class FilterStream extends BaseStream {
     public static create(source: Stream, predicate: (value: any, index?: number, source?: Stream) => boolean, thisArg: any) {
         var obj = new this(source, predicate, thisArg);

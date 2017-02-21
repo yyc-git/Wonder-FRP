@@ -6,7 +6,9 @@ import { IObserver } from "../observer/IObserver";
 import { GroupDisposable } from "../Disposable/GroupDisposable";
 import { AutoDetachObserver } from "../observer/AutoDetachObserver";
 import { TakeUntilObserver } from "../observer/TakeUntilObserver";
+import { registerClass } from "../definition/typescript/decorator/registerClass";
 
+@registerClass("TakeUntilStream")
 export class TakeUntilStream extends BaseStream {
     public static create(source: Stream, otherSteam: Stream) {
         var obj = new this(source, otherSteam);

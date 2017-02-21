@@ -1,5 +1,4 @@
 import { IObserver } from "../observer/IObserver";
-import { interval } from "../global/Operator";
 import { root } from "../global/Variable";
 
 export class Scheduler {

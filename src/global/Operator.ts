@@ -9,14 +9,30 @@ import { TimeoutStream } from "../stream/TimeoutStream";
 import { IObserver } from "../observer/IObserver";
 import { root } from "./Variable";
 import { DeferStream } from "../stream/DeferStream";
+import { registerClass } from "../definition/typescript/decorator/registerClass";
 
-export var createStream = (subscribeFunc) => {
-    return AnonymousStream.create(subscribeFunc);
-};
+@registerClass("Operator")
+export class Operator {
+    public static empty() {
+        return this.createStream((observer: IObserver) => {
+            observer.completed();
+        });
+    }
 
-export var fromArray = (array: Array<any>, scheduler = Scheduler.create()) => {
-    return FromArrayStream.create(array, scheduler);
-};
+    public static createStream(subscribeFunc) {
+        return AnonymousStream.create(subscribeFunc);
+    }
+
+    public static fromArray(array: Array<any>, scheduler = Scheduler.create()) {
+        return FromArrayStream.create(array, scheduler);
+    }
+}
+
+export var createStream = Operator.createStream;
+
+export var empty = Operator.empty;
+
+export var fromArray = Operator.fromArray;
 
 export var fromPromise = (promise: any, scheduler = Scheduler.create()) => {
     return FromPromiseStream.create(promise, scheduler);
@@ -37,12 +53,6 @@ export var intervalRequest = (scheduler = Scheduler.create()) => {
 export var timeout = (time, scheduler = Scheduler.create()) => {
     return TimeoutStream.create(time, scheduler);
 };
-export var empty = () => {
-    return createStream((observer: IObserver) => {
-        observer.completed();
-    });
-};
-
 export var callFunc = (func: Function, context = root) => {
     return createStream((observer: IObserver) => {
         try {

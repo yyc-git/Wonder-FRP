@@ -5,7 +5,9 @@ import { IObserver } from "../observer/IObserver";
 import { Collection } from "wonder-commonlib/dist/es2015/Collection";
 import { GroupDisposable } from "../Disposable/GroupDisposable";
 import { MergeAllObserver } from "../observer/MergeAllObserver";
+import { registerClass } from "../definition/typescript/decorator/registerClass";
 
+@registerClass("MergeAllStream")
 export class MergeAllStream extends BaseStream {
     public static create(source: Stream) {
         var obj = new this(source);

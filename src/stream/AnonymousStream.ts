@@ -5,6 +5,7 @@ import { IDisposable } from "../Disposable/IDisposable";
 import { IObserver } from "../observer/IObserver";
 import { AutoDetachObserver } from "../observer/AutoDetachObserver";
 import { JudgeUtils } from "../JudgeUtils";
+import { SingleDisposable } from "../Disposable/SingleDisposable";
 
 export class AnonymousStream extends Stream {
     public static create(subscribeFunc: Function) {
@@ -17,6 +18,10 @@ export class AnonymousStream extends Stream {
         super(subscribeFunc);
 
         this.scheduler = Scheduler.create();
+    }
+
+    public buildStream(observer: IObserver): IDisposable {
+        return SingleDisposable.create(<Function>(this.subscribeFunc(observer) || function() { }));
     }
 
     public subscribe(subject: Subject): IDisposable;

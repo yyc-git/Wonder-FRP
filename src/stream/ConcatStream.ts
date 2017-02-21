@@ -6,7 +6,10 @@ import { fromPromise } from "../global/Operator";
 import { IObserver } from "../observer/IObserver";
 import { GroupDisposable } from "../Disposable/GroupDisposable";
 import { ConcatObserver } from "../observer/ConcatObserver";
+import { ClassMapUtils } from "../utils/ClassMapUtils";
+import { registerClass } from "../definition/typescript/decorator/registerClass";
 
+@registerClass("ConcatStream")
 export class ConcatStream extends BaseStream {
     public static create(sources: Array<Stream>) {
         var obj = new this(sources);

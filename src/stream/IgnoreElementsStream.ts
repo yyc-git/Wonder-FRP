@@ -2,8 +2,10 @@ import { BaseStream } from "./BaseStream";
 import { Stream } from "../core/Stream";
 import { IObserver } from "../observer/IObserver";
 import { IgnoreElementsObserver } from "../observer/IgnoreElementsObserver";
-import {IDisposable} from "../Disposable/IDisposable";
+import { IDisposable } from "../Disposable/IDisposable";
+import { registerClass } from "../definition/typescript/decorator/registerClass";
 
+@registerClass("IgnoreElementsStream")
 export class IgnoreElementsStream extends BaseStream {
     public static create(source: Stream) {
         var obj = new this(source);

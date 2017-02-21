@@ -4,7 +4,9 @@ import { IObserver } from "../observer/IObserver";
 import { Collection } from "wonder-commonlib/dist/es2015/Collection";
 import { GroupDisposable } from "../Disposable/GroupDisposable";
 import { MergeObserver } from "../observer/MergeObserver";
+import { registerClass } from "../definition/typescript/decorator/registerClass";
 
+@registerClass("MergeStream")
 export class MergeStream extends BaseStream {
     public static create(source: Stream, maxConcurrent: number) {
         var obj = new this(source, maxConcurrent);
@@ -25,9 +27,6 @@ export class MergeStream extends BaseStream {
     private _maxConcurrent: number = null;
 
     public subscribeCore(observer: IObserver) {
-        //var groupDisposable = GroupDisposable.create();
-        //
-        //this._source.buildStream(MergeObserver.create(observer, this._maxConcurrent, groupDisposable));
         var streamGroup = Collection.create<Stream>(),
             groupDisposable = GroupDisposable.create();
 

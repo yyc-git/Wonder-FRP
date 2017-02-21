@@ -1,5 +1,4 @@
 import { BaseStream } from "./BaseStream";
-import { interval } from "../global/Operator";
 import { Scheduler } from "../core/Scheduler";
 import { IObserver } from "../observer/IObserver";
 import { SingleDisposable } from "../Disposable/SingleDisposable";

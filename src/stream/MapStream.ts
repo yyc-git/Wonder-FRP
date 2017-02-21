@@ -2,8 +2,10 @@ import { BaseStream } from "./BaseStream";
 import { Stream } from "../core/Stream";
 import { IObserver } from "../observer/IObserver";
 import { MapObserver } from "../observer/MapObserver";
-import {IDisposable} from "../Disposable/IDisposable";
+import { IDisposable } from "../Disposable/IDisposable";
+import { registerClass } from "../definition/typescript/decorator/registerClass";
 
+@registerClass("MapStream")
 export class MapStream extends BaseStream {
     public static create(source: Stream, selector: Function) {
         var obj = new this(source, selector);

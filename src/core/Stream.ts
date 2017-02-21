@@ -6,22 +6,10 @@ import { Observer } from "./Observer";
 import { Subject } from "../subject/Subject";
 import { IDisposable } from "../Disposable/IDisposable";
 import { SingleDisposable } from "../Disposable/SingleDisposable";
-import { DoStream } from "../stream/DoStream";
-import { MapStream } from "../stream/MapStream";
-import { MergeAllStream } from "../stream/MergeAllStream";
-import { SkipUntilStream } from "../stream/SkipUntilStream";
-import { TakeUntilStream } from "../stream/TakeUntilStream";
+import { ClassMapUtils } from "../utils/ClassMapUtils";
 import { require, assert } from "../definition/typescript/decorator/contract";
-import { empty, createStream, fromArray } from "../global/Operator";
 import { FunctionUtils } from "wonder-commonlib/dist/es2015/utils/FunctionUtils";
-import { FilterStream } from "../stream/FilterStream";
-import { FilterWithStateStream } from "../stream/FilterWithStateStream";
 import { JudgeUtils } from "../JudgeUtils";
-import { ConcatStream } from "../stream/ConcatStream";
-import { MergeStream } from "../stream/MergeStream";
-import { RepeatStream } from "../stream/RepeatStream";
-import { IgnoreElementsStream } from "../stream/IgnoreElementsStream";
-import { AnonymousStream } from "../stream/AnonymousStream";
 
 export abstract class Stream extends Entity {
     public scheduler: Scheduler = null;
@@ -40,11 +28,11 @@ export abstract class Stream extends Entity {
     }
 
     public do(onNext?: Function, onError?: Function, onCompleted?: Function) {
-        return DoStream.create(this, onNext, onError, onCompleted);
+        return ClassMapUtils.getClass("DoStream").create(this, onNext, onError, onCompleted);
     }
 
     public map(selector: Function) {
-        return MapStream.create(this, selector);
+        return ClassMapUtils.getClass("MapStream").create(this, selector);
     }
 
     public flatMap(selector: Function) {
@@ -56,7 +44,7 @@ export abstract class Stream extends Entity {
     }
 
     public mergeAll() {
-        return MergeAllStream.create(this);
+        return ClassMapUtils.getClass("MergeAllStream").create(this);
     }
 
     public concatAll() {
@@ -64,11 +52,11 @@ export abstract class Stream extends Entity {
     }
 
     public skipUntil(otherStream: Stream) {
-        return SkipUntilStream.create(this, otherStream);
+        return ClassMapUtils.getClass("SkipUntilStream").create(this, otherStream);
     }
 
     public takeUntil(otherStream: Stream) {
-        return TakeUntilStream.create(this, otherStream);
+        return ClassMapUtils.getClass("TakeUntilStream").create(this, otherStream);
     }
 
     @require(function(count: number = 1) {
@@ -78,10 +66,10 @@ export abstract class Stream extends Entity {
         var self = this;
 
         if (count === 0) {
-            return empty();
+            return ClassMapUtils.getClass("Operator").empty();
         }
 
-        return createStream((observer: IObserver) => {
+        return ClassMapUtils.getClass("Operator").createStream((observer: IObserver) => {
             self.subscribe((value: any) => {
                 if (count > 0) {
                     observer.next(value);
@@ -107,10 +95,10 @@ export abstract class Stream extends Entity {
         var self = this;
 
         if (count === 0) {
-            return empty();
+            return ClassMapUtils.getClass("Operator").empty();
         }
 
-        return createStream((observer: IObserver) => {
+        return ClassMapUtils.getClass("Operator").createStream((observer: IObserver) => {
             var queue = [];
 
             self.subscribe((value: any) => {
@@ -137,7 +125,7 @@ export abstract class Stream extends Entity {
 
         bindPredicate = FunctionUtils.bind(thisArg, predicate);
 
-        return createStream((observer: IObserver) => {
+        return ClassMapUtils.getClass("Operator").createStream((observer: IObserver) => {
             var i = 0,
                 isStart = false;
 
@@ -168,7 +156,7 @@ export abstract class Stream extends Entity {
     public lastOrDefault(defaultValue: any = null) {
         var self = this;
 
-        return createStream((observer: IObserver) => {
+        return ClassMapUtils.getClass("Operator").createStream((observer: IObserver) => {
             var queue = [];
 
             self.subscribe((value: any) => {
@@ -195,23 +183,23 @@ export abstract class Stream extends Entity {
     }
 
     public filter(predicate: (value: any) => boolean, thisArg = this) {
-        if (this instanceof FilterStream) {
+        if (this instanceof ClassMapUtils.getClass("FilterStream")) {
             let self: any = this;
 
             return self.internalFilter(predicate, thisArg);
         }
 
-        return FilterStream.create(this, predicate, thisArg);
+        return ClassMapUtils.getClass("FilterStream").create(this, predicate, thisArg);
     }
 
     public filterWithState(predicate: (value: any) => boolean, thisArg = this) {
-        if (this instanceof FilterStream) {
+        if (this instanceof ClassMapUtils.getClass("FilterStream")) {
             let self: any = this;
 
             return self.internalFilter(predicate, thisArg);
         }
 
-        return FilterWithStateStream.create(this, predicate, thisArg);
+        return ClassMapUtils.getClass("FilterWithStateStream").create(this, predicate, thisArg);
     }
 
     public concat(streamArr: Array<Stream>);
@@ -229,7 +217,7 @@ export abstract class Stream extends Entity {
 
         args.unshift(this);
 
-        return ConcatStream.create(args);
+        return ClassMapUtils.getClass("ConcatStream").create(args);
     }
 
     public merge(maxConcurrent: number);
@@ -240,7 +228,7 @@ export abstract class Stream extends Entity {
         if (JudgeUtils.isNumber(args[0])) {
             var maxConcurrent: number = args[0];
 
-            return MergeStream.create(this, maxConcurrent);
+            return ClassMapUtils.getClass("MergeStream").create(this, maxConcurrent);
         }
 
         if (JudgeUtils.isArray(args[0])) {
@@ -253,17 +241,17 @@ export abstract class Stream extends Entity {
 
         args.unshift(this);
 
-        stream = fromArray(args).mergeAll();
+        stream = ClassMapUtils.getClass("Operator").fromArray(args).mergeAll();
 
         return stream;
     }
 
     public repeat(count: number = -1) {
-        return RepeatStream.create(this, count);
+        return ClassMapUtils.getClass("RepeatStream").create(this, count);
     }
 
     public ignoreElements() {
-        return IgnoreElementsStream.create(this);
+        return ClassMapUtils.getClass("IgnoreElementsStream").create(this);
     }
 
     protected handleSubject(subject: any) {

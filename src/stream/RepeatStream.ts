@@ -3,7 +3,9 @@ import { Stream } from "../core/Stream";
 import { IObserver } from "../observer/IObserver";
 import { GroupDisposable } from "../Disposable/GroupDisposable";
 import { ConcatObserver } from "../observer/ConcatObserver";
+import { registerClass } from "../definition/typescript/decorator/registerClass";
 
+@registerClass("RepeatStream")
 export class RepeatStream extends BaseStream {
     public static create(source: Stream, count: number) {
         var obj = new this(source, count);

@@ -1,5 +1,4 @@
 import { root } from "../global/Variable";
-import { timeout } from "../global/Operator";
 
 root.requestNextAnimationFrame = (function() {
     var originalRequestAnimationFrame = undefined,
@@ -123,3 +122,4 @@ root.cancelNextRequestAnimationFrame = root.cancelRequestAnimationFrame
     || root.oCancelRequestAnimationFrame
     || root.msCancelRequestAnimationFrame
     || clearTimeout;
+
