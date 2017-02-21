@@ -29,32 +29,12 @@ gulp.task('clean', function() {
     });
 });
 
-
 gulp.task("compileTsES2015", function(done) {
-    var fs = require("fs-extra");
-
-    var glob = require("glob");
-
-
-    var filePaths = glob.sync("./src/*.ts", {
-            cwd: "./"
-        });
-
-    filePaths.forEach(function(filePath){
-        fs.copySync(filePath, path.join("./dist/es2015/", path.relative("./src", filePath)));
-    });
-
-
-
-    var filePaths = glob.sync(" ./src/**/*.ts", {
-        cwd: "./"
-    });
-
-    filePaths.forEach(function(filePath){
-        fs.copySync(filePath, path.join("./dist/es2015/", path.relative("./src", filePath)));
-    });
-
-    compileTs.compileTsES2015(path.join(process.cwd(), tsconfigFile), done);
+    compileTs.compileTsES2015(path.join(process.cwd(), tsconfigFile), {
+        sourceDir: "./src",
+        cwd:"./",
+        targetDir:"./dist/es2015/"
+    }, done);
 });
 
 gulp.task("generateDTS", function(done) {

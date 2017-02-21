@@ -33,7 +33,7 @@
     "rollup-plugin-node-resolve": "^2.0.0",
     "through-gulp": "^0.3.8",
     "typescript": "^2.1.6",
-    "wonder-package": "^0.1.13",
+    "wonder-package": "^0.1.18",
     "wonder-rollup-plugin-typescript": "^0.1.1"
   }
 }
