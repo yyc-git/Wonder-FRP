@@ -64,8 +64,8 @@ declare module 'wonder-frp/dist/es2015' {
     export { Record } from "wonder-frp/dist/es2015/testing/Record";
     export { TestScheduler } from "wonder-frp/dist/es2015/testing/TestScheduler";
     export { TestStream } from "wonder-frp/dist/es2015/testing/TestStream";
-    import "./extend/root";
-    import "./global/init";
+    //import "./extend/root";
+    //import "./global/init";
 }
 
 declare module 'wonder-frp/dist/es2015/JudgeUtils' {

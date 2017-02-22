@@ -44,8 +44,27 @@ gulp.task("generateDTS", function(done) {
 
     bundleDTS.generateDTS(indexDTSPath, name, path.join(distPath, "wdFrp.d.ts"), path.join(distPath, "wdFrp.noDelcareModule.d.ts"));
 
+    _replaceDTSFileContent(path.join(distPath, "wdFrp.d.ts"));
+    // _replaceDTSFileContent(path.join(distPath, "wdFrp.noDelcareModule.d.ts"));
+
     done();
 });
+
+function _replaceDTSFileContent(dtsFilePath) {
+    var fs = require("fs-extra");
+
+    var replaceTargetArr = [
+        "import \"./extend/root\";",
+        "import \"./global/init\";"
+    ];
+    var dtsFileContent = fs.readFileSync(dtsFilePath).toString();
+
+    replaceTargetArr.forEach(function(target){
+        dtsFileContent = dtsFileContent.replace(target, "//" + target);
+    });
+
+    fs.writeFileSync(dtsFilePath, dtsFileContent);
+}
 
 gulp.task("rollup", function(done) {
     package.rollup(path.join(process.cwd(), "./rollup.config.js"), done);
