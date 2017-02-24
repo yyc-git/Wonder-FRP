@@ -1,4 +1,4 @@
-import { createStream} from "../../global/Operator";
+import { createStream } from "../../global/Operator";
 import { IObserver } from "../../observer/IObserver";
 import { AnonymousStream } from "../../stream/AnonymousStream";
 
@@ -39,8 +39,8 @@ export var fromStream = (stream: any, finishEventName: string = "end") => {
 
     return createStream((observer) => {
         var dataHandler = (data) => {
-                observer.next(data);
-            },
+            observer.next(data);
+        },
             errorHandler = (err) => {
                 observer.error(err);
             },
