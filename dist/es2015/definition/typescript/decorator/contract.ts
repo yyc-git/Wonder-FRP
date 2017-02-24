@@ -1,16 +1,16 @@
-import {Log} from "wonder-commonlib/dist/es2015/Log";
-import {Main} from "../../../core/Main";
+import { Log } from "wonder-commonlib/dist/es2015/Log";
+import { Main } from "../../../core/Main";
 
 export function assert(cond: boolean, message: string = "contract error") {
     Log.error(!cond, message);
 }
 
 export function require(InFunc) {
-    return function (target, name, descriptor) {
+    return function(target, name, descriptor) {
         var value = descriptor.value;
 
-        descriptor.value = function(...args){
-            if(Main.isTest){
+        descriptor.value = function(...args) {
+            if (Main.isTest) {
                 InFunc.apply(this, args);
             }
 
@@ -22,10 +22,10 @@ export function require(InFunc) {
 }
 
 export function ensure(OutFunc) {
-    return function (target, name, descriptor) {
+    return function(target, name, descriptor) {
         var value = descriptor.value;
 
-        descriptor.value = function (...args) {
+        descriptor.value = function(...args) {
             var result = value.apply(this, args),
                 params = [result].concat(args);
 
@@ -41,10 +41,10 @@ export function ensure(OutFunc) {
 }
 
 export function requireGetter(InFunc) {
-    return function (target, name, descriptor) {
+    return function(target, name, descriptor) {
         var getter = descriptor.get;
 
-        descriptor.get = function () {
+        descriptor.get = function() {
             if (Main.isTest) {
                 InFunc.call(this);
             }
@@ -57,10 +57,10 @@ export function requireGetter(InFunc) {
 }
 
 export function requireSetter(InFunc) {
-    return function (target, name, descriptor) {
+    return function(target, name, descriptor) {
         var setter = descriptor.set;
 
-        descriptor.set = function (val) {
+        descriptor.set = function(val) {
             if (Main.isTest) {
                 InFunc.call(this, val);
             }
@@ -73,10 +73,10 @@ export function requireSetter(InFunc) {
 }
 
 export function ensureGetter(OutFunc) {
-    return function (target, name, descriptor) {
+    return function(target, name, descriptor) {
         var getter = descriptor.get;
 
-        descriptor.get = function () {
+        descriptor.get = function() {
             var result = getter.call(this);
 
             if (Main.isTest) {
@@ -91,10 +91,10 @@ export function ensureGetter(OutFunc) {
 }
 
 export function ensureSetter(OutFunc) {
-    return function (target, name, descriptor) {
+    return function(target, name, descriptor) {
         var setter = descriptor.set;
 
-        descriptor.set = function (val) {
+        descriptor.set = function(val) {
             var result = setter.call(this, val),
                 params = [result, val];
 
@@ -108,7 +108,7 @@ export function ensureSetter(OutFunc) {
 }
 
 export function invariant(func) {
-    return function (target) {
+    return function(target) {
         if (Main.isTest) {
             func(target);
         }
