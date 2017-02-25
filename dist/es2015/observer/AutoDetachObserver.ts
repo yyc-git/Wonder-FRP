@@ -1,6 +1,6 @@
 import { Observer } from "../core/Observer";
 import { IObserver } from "./IObserver";
-import { require } from "../definition/typescript/decorator/contract";
+import { requireCheck } from "../definition/typescript/decorator/contract";
 import { Log } from "wonder-commonlib/dist/es2015/Log";
 
 export class AutoDetachObserver extends Observer {
@@ -16,7 +16,7 @@ export class AutoDetachObserver extends Observer {
         }
     }
 
-    @require(function() {
+    @requireCheck(function() {
         if (this.isDisposed) {
             Log.warn("only can dispose once");
         }

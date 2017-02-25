@@ -19,7 +19,7 @@ import { Entity } from "./Entity";
 import { Subject } from "../subject/Subject";
 import { SingleDisposable } from "../Disposable/SingleDisposable";
 import { ClassMapUtils } from "../utils/ClassMapUtils";
-import { require, assert } from "../definition/typescript/decorator/contract";
+import { requireCheck, assert } from "../definition/typescript/decorator/contract";
 import { FunctionUtils } from "wonder-commonlib/dist/es2015/utils/FunctionUtils";
 import { JudgeUtils } from "../JudgeUtils";
 var Stream = (function (_super) {
@@ -227,13 +227,13 @@ var Stream = (function (_super) {
 }(Entity));
 export { Stream };
 __decorate([
-    require(function (count) {
+    requireCheck(function (count) {
         if (count === void 0) { count = 1; }
         assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
     })
 ], Stream.prototype, "take", null);
 __decorate([
-    require(function (count) {
+    requireCheck(function (count) {
         if (count === void 0) { count = 1; }
         assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
     })

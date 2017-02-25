@@ -782,7 +782,7 @@ function assert(cond, message) {
     if (message === void 0) { message = "contract error"; }
     Log.error(!cond, message);
 }
-function require(InFunc) {
+function requireCheck(InFunc) {
     return function (target, name, descriptor) {
         var value = descriptor.value;
         descriptor.value = function () {
@@ -926,7 +926,7 @@ var AutoDetachObserver = (function (_super) {
     return AutoDetachObserver;
 }(Observer));
 __decorate([
-    require(function () {
+    requireCheck(function () {
         if (this.isDisposed) {
             Log.warn("only can dispose once");
         }
@@ -1256,13 +1256,13 @@ var Stream = (function (_super) {
     return Stream;
 }(Entity));
 __decorate([
-    require(function (count) {
+    requireCheck(function (count) {
         if (count === void 0) { count = 1; }
         assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
     })
 ], Stream.prototype, "take", null);
 __decorate([
-    require(function (count) {
+    requireCheck(function (count) {
         if (count === void 0) { count = 1; }
         assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
     })
@@ -1549,7 +1549,7 @@ var TimeoutStream = (function (_super) {
     return TimeoutStream;
 }(BaseStream));
 __decorate([
-    require(function (time, scheduler) {
+    requireCheck(function (time, scheduler) {
         assert(time > 0, Log.info.FUNC_SHOULD("time", "> 0"));
     })
 ], TimeoutStream, "create", null);
@@ -2041,7 +2041,7 @@ var MergeAllObserver = (function (_super) {
     return MergeAllObserver;
 }(Observer));
 __decorate([
-    require(function (innerSource) {
+    requireCheck(function (innerSource) {
         assert(innerSource instanceof Stream || JudgeUtils$$1.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
     })
 ], MergeAllObserver.prototype, "onNext", null);
@@ -2132,7 +2132,7 @@ var MergeObserver = (function (_super) {
     return MergeObserver;
 }(Observer));
 __decorate([
-    require(function (innerSource) {
+    requireCheck(function (innerSource) {
         assert(innerSource instanceof Stream || JudgeUtils$$1.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
     })
 ], MergeObserver.prototype, "onNext", null);
@@ -3330,5 +3330,5 @@ root$1.cancelNextRequestAnimationFrame = root$1.cancelRequestAnimationFrame
     || root$1.msCancelRequestAnimationFrame
     || clearTimeout;
 
-export { JudgeUtils$$1 as JudgeUtils, fromNodeCallback, fromStream, fromReadableStream, fromWritableStream, fromTransformStream, Entity, Main, Observer, Scheduler, Stream, assert, require, ensure, requireGetter, requireSetter, ensureGetter, ensureSetter, invariant, GroupDisposable, InnerSubscription, InnerSubscriptionGroup, SingleDisposable, FilterState, createStream, fromArray, fromPromise, fromEventPattern, interval, intervalRequest, timeout, empty, callFunc, judge, defer, just, root$1 as root, AnonymousObserver, AutoDetachObserver, ConcatObserver, DoObserver, FilterObserver, FilterWithStateObserver, IgnoreElementsObserver, MapObserver, MergeAllObserver, MergeObserver, SkipUntilOtherObserver, SkipUntilSourceObserver, SubjectObserver, TakeUntilObserver, AnonymousStream, BaseStream, ConcatStream, DeferStream, DoStream, FilterStream, FilterWithStateStream, FromArrayStream, FromEventPatternStream, FromPromiseStream, IgnoreElementsStream, IntervalRequestStream, IntervalStream, MapStream, MergeAllStream, MergeStream, RepeatStream, SkipUntilStream, TakeUntilStream, TimeoutStream, GeneratorSubject, Subject, ActionType, MockObserver, MockPromise, Record, TestScheduler, TestStream };
+export { JudgeUtils$$1 as JudgeUtils, fromNodeCallback, fromStream, fromReadableStream, fromWritableStream, fromTransformStream, Entity, Main, Observer, Scheduler, Stream, assert, requireCheck, ensure, requireGetter, requireSetter, ensureGetter, ensureSetter, invariant, GroupDisposable, InnerSubscription, InnerSubscriptionGroup, SingleDisposable, FilterState, createStream, fromArray, fromPromise, fromEventPattern, interval, intervalRequest, timeout, empty, callFunc, judge, defer, just, root$1 as root, AnonymousObserver, AutoDetachObserver, ConcatObserver, DoObserver, FilterObserver, FilterWithStateObserver, IgnoreElementsObserver, MapObserver, MergeAllObserver, MergeObserver, SkipUntilOtherObserver, SkipUntilSourceObserver, SubjectObserver, TakeUntilObserver, AnonymousStream, BaseStream, ConcatStream, DeferStream, DoStream, FilterStream, FilterWithStateStream, FromArrayStream, FromEventPatternStream, FromPromiseStream, IgnoreElementsStream, IntervalRequestStream, IntervalStream, MapStream, MergeAllStream, MergeStream, RepeatStream, SkipUntilStream, TakeUntilStream, TimeoutStream, GeneratorSubject, Subject, ActionType, MockObserver, MockPromise, Record, TestScheduler, TestStream };
 //# sourceMappingURL=wdFrp.module.js.map

@@ -4,7 +4,7 @@ import { IObserver } from "./IObserver";
 import { Collection } from "wonder-commonlib/dist/es2015/Collection";
 import { Stream } from "../core/Stream";
 import { GroupDisposable } from "../Disposable/GroupDisposable";
-import { require, assert } from "../definition/typescript/decorator/contract";
+import { requireCheck, assert } from "../definition/typescript/decorator/contract";
 import { JudgeUtils } from "../JudgeUtils";
 import { fromPromise } from "../global/Operator";
 
@@ -27,7 +27,7 @@ export class MergeAllObserver extends Observer {
     private _streamGroup: Collection<Stream> = null;
     private _groupDisposable: GroupDisposable = null;
 
-    @require(function(innerSource: any) {
+    @requireCheck(function(innerSource: any) {
         assert(innerSource instanceof Stream || JudgeUtils.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
 
     })

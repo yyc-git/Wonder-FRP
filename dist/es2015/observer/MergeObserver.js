@@ -19,7 +19,7 @@ import { Observer } from "../core/Observer";
 import { Stream } from "../core/Stream";
 import { JudgeUtils } from "../JudgeUtils";
 import { fromPromise } from "../global/Operator";
-import { require, assert } from "../definition/typescript/decorator/contract";
+import { requireCheck, assert } from "../definition/typescript/decorator/contract";
 var MergeObserver = (function (_super) {
     __extends(MergeObserver, _super);
     function MergeObserver(currentObserver, maxConcurrent, streamGroup, groupDisposable) {
@@ -71,7 +71,7 @@ var MergeObserver = (function (_super) {
 }(Observer));
 export { MergeObserver };
 __decorate([
-    require(function (innerSource) {
+    requireCheck(function (innerSource) {
         assert(innerSource instanceof Stream || JudgeUtils.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
     })
 ], MergeObserver.prototype, "onNext", null);

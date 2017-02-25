@@ -7,7 +7,7 @@ import { Subject } from "../subject/Subject";
 import { IDisposable } from "../Disposable/IDisposable";
 import { SingleDisposable } from "../Disposable/SingleDisposable";
 import { ClassMapUtils } from "../utils/ClassMapUtils";
-import { require, assert } from "../definition/typescript/decorator/contract";
+import { requireCheck, assert } from "../definition/typescript/decorator/contract";
 import { FunctionUtils } from "wonder-commonlib/dist/es2015/utils/FunctionUtils";
 import { JudgeUtils } from "../JudgeUtils";
 
@@ -59,7 +59,7 @@ export abstract class Stream extends Entity {
         return ClassMapUtils.getClass("TakeUntilStream").create(this, otherStream);
     }
 
-    @require(function(count: number = 1) {
+    @requireCheck(function(count: number = 1) {
         assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
     })
     public take(count: number = 1) {
@@ -88,7 +88,7 @@ export abstract class Stream extends Entity {
         });
     }
 
-    @require(function(count: number = 1) {
+    @requireCheck(function(count: number = 1) {
         assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
     })
     public takeLast(count: number = 1) {

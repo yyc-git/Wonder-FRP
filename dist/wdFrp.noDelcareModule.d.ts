@@ -88,7 +88,7 @@ export abstract class Stream extends Entity {
 }
 
 export function assert(cond: boolean, message?: string): void;
-export function require(InFunc: any): (target: any, name: any, descriptor: any) => any;
+export function requireCheck(InFunc: any): (target: any, name: any, descriptor: any) => any;
 export function ensure(OutFunc: any): (target: any, name: any, descriptor: any) => any;
 export function requireGetter(InFunc: any): (target: any, name: any, descriptor: any) => any;
 export function requireSetter(InFunc: any): (target: any, name: any, descriptor: any) => any;

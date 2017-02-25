@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { Log } from "wonder-commonlib/dist/es2015/Log";
 import { BaseStream } from "./BaseStream";
-import { require, assert } from "../definition/typescript/decorator/contract";
+import { requireCheck, assert } from "../definition/typescript/decorator/contract";
 import { SingleDisposable } from "../Disposable/SingleDisposable";
 import { root } from "../global/Variable";
 var TimeoutStream = (function (_super) {
@@ -45,7 +45,7 @@ var TimeoutStream = (function (_super) {
 }(BaseStream));
 export { TimeoutStream };
 __decorate([
-    require(function (time, scheduler) {
+    requireCheck(function (time, scheduler) {
         assert(time > 0, Log.info.FUNC_SHOULD("time", "> 0"));
     })
 ], TimeoutStream, "create", null);

@@ -15,7 +15,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { Observer } from "../core/Observer";
-import { require } from "../definition/typescript/decorator/contract";
+import { requireCheck } from "../definition/typescript/decorator/contract";
 import { Log } from "wonder-commonlib/dist/es2015/Log";
 var AutoDetachObserver = (function (_super) {
     __extends(AutoDetachObserver, _super);
@@ -72,7 +72,7 @@ var AutoDetachObserver = (function (_super) {
 }(Observer));
 export { AutoDetachObserver };
 __decorate([
-    require(function () {
+    requireCheck(function () {
         if (this.isDisposed) {
             Log.warn("only can dispose once");
         }

@@ -17,7 +17,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { Log } from "wonder-commonlib/dist/es2015/Log";
 import { Observer } from "../core/Observer";
 import { Stream } from "../core/Stream";
-import { require, assert } from "../definition/typescript/decorator/contract";
+import { requireCheck, assert } from "../definition/typescript/decorator/contract";
 import { JudgeUtils } from "../JudgeUtils";
 import { fromPromise } from "../global/Operator";
 var MergeAllObserver = (function (_super) {
@@ -56,7 +56,7 @@ var MergeAllObserver = (function (_super) {
 }(Observer));
 export { MergeAllObserver };
 __decorate([
-    require(function (innerSource) {
+    requireCheck(function (innerSource) {
         assert(innerSource instanceof Stream || JudgeUtils.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
     })
 ], MergeAllObserver.prototype, "onNext", null);

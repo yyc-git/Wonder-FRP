@@ -11,7 +11,7 @@ declare module 'wonder-frp/dist/es2015' {
     export { Observer } from "wonder-frp/dist/es2015/core/Observer";
     export { Scheduler } from "wonder-frp/dist/es2015/core/Scheduler";
     export { Stream } from "wonder-frp/dist/es2015/core/Stream";
-    export { assert, require, ensure, requireGetter, requireSetter, ensureGetter, ensureSetter, invariant } from "wonder-frp/dist/es2015/definition/typescript/decorator/contract";
+    export { assert, requireCheck, ensure, requireGetter, requireSetter, ensureGetter, ensureSetter, invariant } from "wonder-frp/dist/es2015/definition/typescript/decorator/contract";
     export { GroupDisposable } from "wonder-frp/dist/es2015/Disposable/GroupDisposable";
     export { IDisposable } from "wonder-frp/dist/es2015/Disposable/IDisposable";
     export { InnerSubscription } from "wonder-frp/dist/es2015/Disposable/InnerSubscription";
@@ -176,7 +176,7 @@ declare module 'wonder-frp/dist/es2015/core/Stream' {
 
 declare module 'wonder-frp/dist/es2015/definition/typescript/decorator/contract' {
     export function assert(cond: boolean, message?: string): void;
-    export function require(InFunc: any): (target: any, name: any, descriptor: any) => any;
+    export function requireCheck(InFunc: any): (target: any, name: any, descriptor: any) => any;
     export function ensure(OutFunc: any): (target: any, name: any, descriptor: any) => any;
     export function requireGetter(InFunc: any): (target: any, name: any, descriptor: any) => any;
     export function requireSetter(InFunc: any): (target: any, name: any, descriptor: any) => any;

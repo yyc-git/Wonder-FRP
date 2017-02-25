@@ -4,7 +4,7 @@ export function assert(cond, message) {
     if (message === void 0) { message = "contract error"; }
     Log.error(!cond, message);
 }
-export function require(InFunc) {
+export function requireCheck(InFunc) {
     return function (target, name, descriptor) {
         var value = descriptor.value;
         descriptor.value = function () {

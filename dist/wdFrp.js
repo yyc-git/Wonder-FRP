@@ -788,7 +788,7 @@
 	    if (message === void 0) { message = "contract error"; }
 	    Log.error(!cond, message);
 	}
-	function require(InFunc) {
+	function requireCheck(InFunc) {
 	    return function (target, name, descriptor) {
 	        var value = descriptor.value;
 	        descriptor.value = function () {
@@ -932,7 +932,7 @@
 	    return AutoDetachObserver;
 	}(Observer));
 	__decorate([
-	    require(function () {
+	    requireCheck(function () {
 	        if (this.isDisposed) {
 	            Log.warn("only can dispose once");
 	        }
@@ -1262,13 +1262,13 @@
 	    return Stream;
 	}(Entity));
 	__decorate([
-	    require(function (count) {
+	    requireCheck(function (count) {
 	        if (count === void 0) { count = 1; }
 	        assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
 	    })
 	], Stream.prototype, "take", null);
 	__decorate([
-	    require(function (count) {
+	    requireCheck(function (count) {
 	        if (count === void 0) { count = 1; }
 	        assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
 	    })
@@ -1554,7 +1554,7 @@
 	    return TimeoutStream;
 	}(BaseStream));
 	__decorate([
-	    require(function (time, scheduler) {
+	    requireCheck(function (time, scheduler) {
 	        assert(time > 0, Log.info.FUNC_SHOULD("time", "> 0"));
 	    })
 	], TimeoutStream, "create", null);
@@ -2045,7 +2045,7 @@
 	    return MergeAllObserver;
 	}(Observer));
 	__decorate([
-	    require(function (innerSource) {
+	    requireCheck(function (innerSource) {
 	        assert(innerSource instanceof Stream || JudgeUtils$$1.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
 	    })
 	], MergeAllObserver.prototype, "onNext", null);
@@ -2136,7 +2136,7 @@
 	    return MergeObserver;
 	}(Observer));
 	__decorate([
-	    require(function (innerSource) {
+	    requireCheck(function (innerSource) {
 	        assert(innerSource instanceof Stream || JudgeUtils$$1.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
 	    })
 	], MergeObserver.prototype, "onNext", null);
@@ -3345,7 +3345,7 @@
 	exports.Scheduler = Scheduler;
 	exports.Stream = Stream;
 	exports.assert = assert;
-	exports.require = require;
+	exports.requireCheck = requireCheck;
 	exports.ensure = ensure;
 	exports.requireGetter = requireGetter;
 	exports.requireSetter = requireSetter;

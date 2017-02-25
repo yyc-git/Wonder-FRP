@@ -6,7 +6,7 @@ import { Stream } from "../core/Stream";
 import { GroupDisposable } from "../Disposable/GroupDisposable";
 import { JudgeUtils } from "../JudgeUtils";
 import { fromPromise } from "../global/Operator";
-import { require, assert } from "../definition/typescript/decorator/contract";
+import { requireCheck, assert } from "../definition/typescript/decorator/contract";
 
 export class MergeObserver extends Observer {
     public static create(currentObserver: IObserver, maxConcurrent: number, streamGroup: Collection<Stream>, groupDisposable: GroupDisposable) {
@@ -41,7 +41,7 @@ export class MergeObserver extends Observer {
         this._groupDisposable.add(innerSource.buildStream(InnerObserver.create(this, this._streamGroup, innerSource)));
     }
 
-    @require(function(innerSource: any) {
+    @requireCheck(function(innerSource: any) {
         assert(innerSource instanceof Stream || JudgeUtils.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
 
     })

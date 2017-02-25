@@ -5,7 +5,7 @@ export { Main } from "./core/Main";
 export { Observer } from "./core/Observer";
 export { Scheduler } from "./core/Scheduler";
 export { Stream } from "./core/Stream";
-export { assert, require, ensure, requireGetter, requireSetter, ensureGetter, ensureSetter, invariant } from "./definition/typescript/decorator/contract";
+export { assert, requireCheck, ensure, requireGetter, requireSetter, ensureGetter, ensureSetter, invariant } from "./definition/typescript/decorator/contract";
 export { GroupDisposable } from "./Disposable/GroupDisposable";
 export { InnerSubscription } from "./Disposable/InnerSubscription";
 export { InnerSubscriptionGroup } from "./Disposable/InnerSubscriptionGroup";
