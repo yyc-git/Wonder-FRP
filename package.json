@@ -13,9 +13,6 @@
     "@types/wonder-commonlib": "^0.1.1",
     "wonder-commonlib": "^0.1.6"
   },
-  "bundledDependencies": [
-    "wonder-commonlib"
-  ],
   "devDependencies": {
     "del": "^1.2.0",
     "fs-extra": "^0.22.1",
