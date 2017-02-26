@@ -1,6 +1,6 @@
 {
   "name": "wonder-frp",
-  "version": "0.1.14",
+  "version": "0.1.16",
   "main": "dist/wdFrp.js",
   "keywords": [
     "FRP",
@@ -11,7 +11,7 @@
   "dependencies": {
     "@types/node": "^7.0.5",
     "@types/wonder-commonlib": "^0.1.1",
-    "wonder-commonlib": "^0.1.6"
+    "wonder-commonlib": "^0.1.8"
   },
   "devDependencies": {
     "del": "^1.2.0",
@@ -29,7 +29,7 @@
     "rollup-plugin-node-resolve": "^2.0.0",
     "through-gulp": "^0.3.8",
     "typescript": "^2.3.0-dev.20170220",
-    "wonder-package": "^0.1.21",
+    "wonder-package": "^0.1.25",
     "wonder-rollup-plugin-typescript": "^0.1.1"
   }
 }

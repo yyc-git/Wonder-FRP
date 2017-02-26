@@ -1,0 +1,37 @@
+import { Entity } from "./Entity";
+import { Scheduler } from "./Scheduler";
+import { IObserver } from "../observer/IObserver";
+import { Observer } from "./Observer";
+import { Subject } from "../subject/Subject";
+import { IDisposable } from "../Disposable/IDisposable";
+export declare abstract class Stream extends Entity {
+    scheduler: Scheduler;
+    subscribeFunc: (observer: IObserver) => Function | void;
+    constructor(subscribeFunc: any);
+    abstract subscribe(arg1: Function | Observer | Subject, onError?: Function, onCompleted?: Function): IDisposable;
+    buildStream(observer: IObserver): IDisposable;
+    do(onNext?: Function, onError?: Function, onCompleted?: Function): any;
+    map(selector: Function): any;
+    flatMap(selector: Function): any;
+    concatMap(selector: Function): any;
+    mergeAll(): any;
+    concatAll(): any;
+    skipUntil(otherStream: Stream): any;
+    takeUntil(otherStream: Stream): any;
+    take(count?: number): any;
+    takeLast(count?: number): any;
+    takeWhile(predicate: (value: any, index: number, source: Stream) => boolean, thisArg?: this): any;
+    lastOrDefault(defaultValue?: any): any;
+    filter(predicate: (value: any) => boolean, thisArg?: this): any;
+    filterWithState(predicate: (value: any) => boolean, thisArg?: this): any;
+    concat(streamArr: Array<Stream>): any;
+    concat(...otherStream: any[]): any;
+    merge(maxConcurrent: number): any;
+    merge(streamArr: Array<Stream>): any;
+    merge(...otherStreams: any[]): any;
+    repeat(count?: number): any;
+    ignoreElements(): any;
+    protected handleSubject(subject: any): boolean;
+    private _isSubject(subject);
+    private _setSubject(subject);
+}

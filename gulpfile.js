@@ -38,14 +38,22 @@ gulp.task("compileTsES2015", function(done) {
     }, done);
 });
 
+gulp.task("compileTsCommonjs", function(done) {
+    compileTs.compileTsCommonjs(path.join(process.cwd(), tsconfigFile), {
+        sourceDir: tsFileDir,
+        cwd:"/",
+        targetDir:path.join(distPath, "./commonjs/")
+    }, done);
+});
+
 gulp.task("generateDTS", function(done) {
-    var indexDTSPath = path.join(indexFileDir, "index.d.ts"),
-        name = "wonder-frp/dist/es2015";
+    var indexDTSPath = path.join(indexFileDir, "index.d.ts");
 
-    bundleDTS.generateDTS(indexDTSPath, name, path.join(distPath, "wdFrp.d.ts"), path.join(distPath, "wdFrp.noDelcareModule.d.ts"));
+    bundleDTS.generateES2015DTS(indexDTSPath, "wonder-frp/dist/es2015", path.join(distPath, "wdFrp.es2015.d.ts"));
+    bundleDTS.generateCommonjsDTS(indexDTSPath, "wonder-frp/dist/commonjs", path.join(distPath, "wdFrp.commonjs.d.ts"));
 
-    _replaceDTSFileContent(path.join(distPath, "wdFrp.d.ts"));
-    // _replaceDTSFileContent(path.join(distPath, "wdFrp.noDelcareModule.d.ts"));
+    _replaceDTSFileContent(path.join(distPath, "wdFrp.es2015.d.ts"));
+    _replaceDTSFileContent(path.join(distPath, "wdFrp.commonjs.d.ts"));
 
     done();
 });
@@ -80,7 +88,7 @@ gulp.task("formatTs", function(done) {
 
 
 
-gulp.task("build", gulpSync.sync(["clean", "compileTsES2015", "generateDTS", "generateDTS", "rollup", "formatTs"]));
+gulp.task("build", gulpSync.sync(["clean", "compileTsES2015", "compileTsCommonjs", "generateDTS", "generateDTS", "rollup", "formatTs"]));
 
 
 
