@@ -1272,8 +1272,14 @@ var root$1;
 if (JudgeUtils$$1.isNodeJs() && typeof global != "undefined") {
     root$1 = global;
 }
-else {
+else if (typeof window != "undefined") {
     root$1 = window;
+}
+else if (typeof self != "undefined") {
+    root$1 = self;
+}
+else {
+    Log.error("no avaliable root!");
 }
 
 var Scheduler = (function () {
