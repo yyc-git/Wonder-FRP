@@ -225,19 +225,19 @@ var Stream = (function (_super) {
     Stream.prototype._setSubject = function (subject) {
         subject.source = this;
     };
+    __decorate([
+        contract_1.requireCheck(function (count) {
+            if (count === void 0) { count = 1; }
+            contract_1.assert(count >= 0, Log_1.Log.info.FUNC_SHOULD("count", ">= 0"));
+        })
+    ], Stream.prototype, "take", null);
+    __decorate([
+        contract_1.requireCheck(function (count) {
+            if (count === void 0) { count = 1; }
+            contract_1.assert(count >= 0, Log_1.Log.info.FUNC_SHOULD("count", ">= 0"));
+        })
+    ], Stream.prototype, "takeLast", null);
     return Stream;
 }(Entity_1.Entity));
-__decorate([
-    contract_1.requireCheck(function (count) {
-        if (count === void 0) { count = 1; }
-        contract_1.assert(count >= 0, Log_1.Log.info.FUNC_SHOULD("count", ">= 0"));
-    })
-], Stream.prototype, "take", null);
-__decorate([
-    contract_1.requireCheck(function (count) {
-        if (count === void 0) { count = 1; }
-        contract_1.assert(count >= 0, Log_1.Log.info.FUNC_SHOULD("count", ">= 0"));
-    })
-], Stream.prototype, "takeLast", null);
 exports.Stream = Stream;
 //# sourceMappingURL=Stream.js.map

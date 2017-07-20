@@ -1626,11 +1626,11 @@
 	    };
 	}
 
-	var Operator = (function () {
+	var Operator = Operator_1 = (function () {
 	    function Operator() {
 	    }
 	    Operator.empty = function () {
-	        return this.createStream(function (observer) {
+	        return Operator_1.createStream(function (observer) {
 	            observer.completed();
 	        });
 	    };
@@ -1643,7 +1643,7 @@
 	    };
 	    return Operator;
 	}());
-	Operator = __decorate([
+	Operator = Operator_1 = __decorate([
 	    registerClass("Operator")
 	], Operator);
 	var createStream = Operator.createStream;
@@ -1692,6 +1692,7 @@
 	        observer.completed();
 	    });
 	};
+	var Operator_1;
 
 	var fromNodeCallback = function (func, context) {
 	    return function () {

@@ -46,10 +46,10 @@ var TakeUntilStream = (function (_super) {
         group.add(this._otherStream.buildStream(TakeUntilObserver_1.TakeUntilObserver.create(autoDetachObserver)));
         return group;
     };
+    TakeUntilStream = __decorate([
+        registerClass_1.registerClass("TakeUntilStream")
+    ], TakeUntilStream);
     return TakeUntilStream;
 }(BaseStream_1.BaseStream));
-TakeUntilStream = __decorate([
-    registerClass_1.registerClass("TakeUntilStream")
-], TakeUntilStream);
 exports.TakeUntilStream = TakeUntilStream;
 //# sourceMappingURL=TakeUntilStream.js.map

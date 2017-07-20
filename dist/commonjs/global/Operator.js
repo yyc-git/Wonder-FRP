@@ -20,8 +20,9 @@ var registerClass_1 = require("../definition/typescript/decorator/registerClass"
 var Operator = (function () {
     function Operator() {
     }
+    Operator_1 = Operator;
     Operator.empty = function () {
-        return this.createStream(function (observer) {
+        return Operator_1.createStream(function (observer) {
             observer.completed();
         });
     };
@@ -32,11 +33,12 @@ var Operator = (function () {
         if (scheduler === void 0) { scheduler = Scheduler_1.Scheduler.create(); }
         return FromArrayStream_1.FromArrayStream.create(array, scheduler);
     };
+    Operator = Operator_1 = __decorate([
+        registerClass_1.registerClass("Operator")
+    ], Operator);
     return Operator;
+    var Operator_1;
 }());
-Operator = __decorate([
-    registerClass_1.registerClass("Operator")
-], Operator);
 exports.Operator = Operator;
 exports.createStream = Operator.createStream;
 exports.empty = Operator.empty;

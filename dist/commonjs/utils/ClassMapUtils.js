@@ -9,8 +9,8 @@ var ClassMapUtils = (function () {
     ClassMapUtils.getClass = function (className) {
         return this._classMap[className];
     };
+    ClassMapUtils._classMap = {};
     return ClassMapUtils;
 }());
-ClassMapUtils._classMap = {};
 exports.ClassMapUtils = ClassMapUtils;
 //# sourceMappingURL=ClassMapUtils.js.map

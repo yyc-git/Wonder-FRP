@@ -35,10 +35,10 @@ var IgnoreElementsStream = (function (_super) {
     IgnoreElementsStream.prototype.subscribeCore = function (observer) {
         return this._source.buildStream(IgnoreElementsObserver_1.IgnoreElementsObserver.create(observer));
     };
+    IgnoreElementsStream = __decorate([
+        registerClass_1.registerClass("IgnoreElementsStream")
+    ], IgnoreElementsStream);
     return IgnoreElementsStream;
 }(BaseStream_1.BaseStream));
-IgnoreElementsStream = __decorate([
-    registerClass_1.registerClass("IgnoreElementsStream")
-], IgnoreElementsStream);
 exports.IgnoreElementsStream = IgnoreElementsStream;
 //# sourceMappingURL=IgnoreElementsStream.js.map

@@ -1,8 +1,8 @@
 var Main = (function () {
     function Main() {
     }
+    Main.isTest = false;
     return Main;
 }());
 export { Main };
-Main.isTest = false;
 //# sourceMappingURL=Main.js.map

@@ -20,7 +20,7 @@ var BaseStream_1 = require("./BaseStream");
 var FunctionUtils_1 = require("wonder-commonlib/dist/commonjs/utils/FunctionUtils");
 var FilterObserver_1 = require("../observer/FilterObserver");
 var registerClass_1 = require("../definition/typescript/decorator/registerClass");
-var FilterStream = FilterStream_1 = (function (_super) {
+var FilterStream = (function (_super) {
     __extends(FilterStream, _super);
     function FilterStream(source, predicate, thisArg) {
         var _this = _super.call(this, null) || this;
@@ -30,6 +30,7 @@ var FilterStream = FilterStream_1 = (function (_super) {
         _this.predicate = FunctionUtils_1.FunctionUtils.bind(thisArg, predicate);
         return _this;
     }
+    FilterStream_1 = FilterStream;
     FilterStream.create = function (source, predicate, thisArg) {
         var obj = new this(source, predicate, thisArg);
         return obj;
@@ -52,11 +53,11 @@ var FilterStream = FilterStream_1 = (function (_super) {
             return self.predicate(value, i, o) && predicate.call(_this, value, i, o);
         };
     };
+    FilterStream = FilterStream_1 = __decorate([
+        registerClass_1.registerClass("FilterStream")
+    ], FilterStream);
     return FilterStream;
+    var FilterStream_1;
 }(BaseStream_1.BaseStream));
-FilterStream = FilterStream_1 = __decorate([
-    registerClass_1.registerClass("FilterStream")
-], FilterStream);
 exports.FilterStream = FilterStream;
-var FilterStream_1;
 //# sourceMappingURL=FilterStream.js.map

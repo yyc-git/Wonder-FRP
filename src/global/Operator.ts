@@ -14,7 +14,7 @@ import { registerClass } from "../definition/typescript/decorator/registerClass"
 @registerClass("Operator")
 export class Operator {
     public static empty() {
-        return this.createStream((observer: IObserver) => {
+        return Operator.createStream((observer: IObserver) => {
             observer.completed();
         });
     }

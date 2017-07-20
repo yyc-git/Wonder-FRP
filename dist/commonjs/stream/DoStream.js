@@ -38,10 +38,10 @@ var DoStream = (function (_super) {
     DoStream.prototype.subscribeCore = function (observer) {
         return this._source.buildStream(DoObserver_1.DoObserver.create(observer, this._observer));
     };
+    DoStream = __decorate([
+        registerClass_1.registerClass("DoStream")
+    ], DoStream);
     return DoStream;
 }(BaseStream_1.BaseStream));
-DoStream = __decorate([
-    registerClass_1.registerClass("DoStream")
-], DoStream);
 exports.DoStream = DoStream;
 //# sourceMappingURL=DoStream.js.map

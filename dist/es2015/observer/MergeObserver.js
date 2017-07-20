@@ -67,14 +67,14 @@ var MergeObserver = (function (_super) {
     MergeObserver.prototype._isReachMaxConcurrent = function () {
         return this.activeCount < this._maxConcurrent;
     };
+    __decorate([
+        requireCheck(function (innerSource) {
+            assert(innerSource instanceof Stream || JudgeUtils.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
+        })
+    ], MergeObserver.prototype, "onNext", null);
     return MergeObserver;
 }(Observer));
 export { MergeObserver };
-__decorate([
-    requireCheck(function (innerSource) {
-        assert(innerSource instanceof Stream || JudgeUtils.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
-    })
-], MergeObserver.prototype, "onNext", null);
 var InnerObserver = (function (_super) {
     __extends(InnerObserver, _super);
     function InnerObserver(parent, streamGroup, currentStream) {

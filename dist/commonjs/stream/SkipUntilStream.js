@@ -48,10 +48,10 @@ var SkipUntilStream = (function (_super) {
         group.add(otherDisposable);
         return group;
     };
+    SkipUntilStream = __decorate([
+        registerClass_1.registerClass("SkipUntilStream")
+    ], SkipUntilStream);
     return SkipUntilStream;
 }(BaseStream_1.BaseStream));
-SkipUntilStream = __decorate([
-    registerClass_1.registerClass("SkipUntilStream")
-], SkipUntilStream);
 exports.SkipUntilStream = SkipUntilStream;
 //# sourceMappingURL=SkipUntilStream.js.map

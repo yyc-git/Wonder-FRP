@@ -19,11 +19,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var FilterStream_1 = require("./FilterStream");
 var FilterWithStateObserver_1 = require("../observer/FilterWithStateObserver");
 var registerClass_1 = require("../definition/typescript/decorator/registerClass");
-var FilterWithStateStream = FilterWithStateStream_1 = (function (_super) {
+var FilterWithStateStream = (function (_super) {
     __extends(FilterWithStateStream, _super);
     function FilterWithStateStream() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    FilterWithStateStream_1 = FilterWithStateStream;
     FilterWithStateStream.create = function (source, predicate, thisArg) {
         var obj = new this(source, predicate, thisArg);
         return obj;
@@ -34,11 +35,11 @@ var FilterWithStateStream = FilterWithStateStream_1 = (function (_super) {
     FilterWithStateStream.prototype.createStreamForInternalFilter = function (source, innerPredicate, thisArg) {
         return FilterWithStateStream_1.create(source, innerPredicate, thisArg);
     };
+    FilterWithStateStream = FilterWithStateStream_1 = __decorate([
+        registerClass_1.registerClass("FilterWithStateStream")
+    ], FilterWithStateStream);
     return FilterWithStateStream;
+    var FilterWithStateStream_1;
 }(FilterStream_1.FilterStream));
-FilterWithStateStream = FilterWithStateStream_1 = __decorate([
-    registerClass_1.registerClass("FilterWithStateStream")
-], FilterWithStateStream);
 exports.FilterWithStateStream = FilterWithStateStream;
-var FilterWithStateStream_1;
 //# sourceMappingURL=FilterWithStateStream.js.map

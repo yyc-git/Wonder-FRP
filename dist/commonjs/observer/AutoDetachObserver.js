@@ -70,14 +70,14 @@ var AutoDetachObserver = (function (_super) {
             throw e;
         }
     };
+    __decorate([
+        contract_1.requireCheck(function () {
+            if (this.isDisposed) {
+                Log_1.Log.warn("only can dispose once");
+            }
+        })
+    ], AutoDetachObserver.prototype, "dispose", null);
     return AutoDetachObserver;
 }(Observer_1.Observer));
-__decorate([
-    contract_1.requireCheck(function () {
-        if (this.isDisposed) {
-            Log_1.Log.warn("only can dispose once");
-        }
-    })
-], AutoDetachObserver.prototype, "dispose", null);
 exports.AutoDetachObserver = AutoDetachObserver;
 //# sourceMappingURL=AutoDetachObserver.js.map

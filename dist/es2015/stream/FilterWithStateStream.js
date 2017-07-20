@@ -17,11 +17,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { FilterStream } from "./FilterStream";
 import { FilterWithStateObserver } from "../observer/FilterWithStateObserver";
 import { registerClass } from "../definition/typescript/decorator/registerClass";
-var FilterWithStateStream = FilterWithStateStream_1 = (function (_super) {
+var FilterWithStateStream = (function (_super) {
     __extends(FilterWithStateStream, _super);
     function FilterWithStateStream() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    FilterWithStateStream_1 = FilterWithStateStream;
     FilterWithStateStream.create = function (source, predicate, thisArg) {
         var obj = new this(source, predicate, thisArg);
         return obj;
@@ -32,11 +33,11 @@ var FilterWithStateStream = FilterWithStateStream_1 = (function (_super) {
     FilterWithStateStream.prototype.createStreamForInternalFilter = function (source, innerPredicate, thisArg) {
         return FilterWithStateStream_1.create(source, innerPredicate, thisArg);
     };
+    FilterWithStateStream = FilterWithStateStream_1 = __decorate([
+        registerClass("FilterWithStateStream")
+    ], FilterWithStateStream);
     return FilterWithStateStream;
+    var FilterWithStateStream_1;
 }(FilterStream));
-FilterWithStateStream = FilterWithStateStream_1 = __decorate([
-    registerClass("FilterWithStateStream")
-], FilterWithStateStream);
 export { FilterWithStateStream };
-var FilterWithStateStream_1;
 //# sourceMappingURL=FilterWithStateStream.js.map

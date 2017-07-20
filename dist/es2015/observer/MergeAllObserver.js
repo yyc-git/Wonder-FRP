@@ -52,14 +52,14 @@ var MergeAllObserver = (function (_super) {
             this.currentObserver.completed();
         }
     };
+    __decorate([
+        requireCheck(function (innerSource) {
+            assert(innerSource instanceof Stream || JudgeUtils.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
+        })
+    ], MergeAllObserver.prototype, "onNext", null);
     return MergeAllObserver;
 }(Observer));
 export { MergeAllObserver };
-__decorate([
-    requireCheck(function (innerSource) {
-        assert(innerSource instanceof Stream || JudgeUtils.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
-    })
-], MergeAllObserver.prototype, "onNext", null);
 var InnerObserver = (function (_super) {
     __extends(InnerObserver, _super);
     function InnerObserver(parent, streamGroup, currentStream) {

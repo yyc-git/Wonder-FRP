@@ -38,10 +38,10 @@ var MergeAllStream = (function (_super) {
         this._source.buildStream(MergeAllObserver.create(observer, streamGroup, groupDisposable));
         return groupDisposable;
     };
+    MergeAllStream = __decorate([
+        registerClass("MergeAllStream")
+    ], MergeAllStream);
     return MergeAllStream;
 }(BaseStream));
-MergeAllStream = __decorate([
-    registerClass("MergeAllStream")
-], MergeAllStream);
 export { MergeAllStream };
 //# sourceMappingURL=MergeAllStream.js.map

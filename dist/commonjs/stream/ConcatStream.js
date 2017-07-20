@@ -58,10 +58,10 @@ var ConcatStream = (function (_super) {
         this.scheduler.publishRecursive(observer, 0, loopRecursive);
         return GroupDisposable_1.GroupDisposable.create(d);
     };
+    ConcatStream = __decorate([
+        registerClass_1.registerClass("ConcatStream")
+    ], ConcatStream);
     return ConcatStream;
 }(BaseStream_1.BaseStream));
-ConcatStream = __decorate([
-    registerClass_1.registerClass("ConcatStream")
-], ConcatStream);
 exports.ConcatStream = ConcatStream;
 //# sourceMappingURL=ConcatStream.js.map

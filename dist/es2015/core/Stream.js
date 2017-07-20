@@ -223,19 +223,19 @@ var Stream = (function (_super) {
     Stream.prototype._setSubject = function (subject) {
         subject.source = this;
     };
+    __decorate([
+        requireCheck(function (count) {
+            if (count === void 0) { count = 1; }
+            assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
+        })
+    ], Stream.prototype, "take", null);
+    __decorate([
+        requireCheck(function (count) {
+            if (count === void 0) { count = 1; }
+            assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
+        })
+    ], Stream.prototype, "takeLast", null);
     return Stream;
 }(Entity));
 export { Stream };
-__decorate([
-    requireCheck(function (count) {
-        if (count === void 0) { count = 1; }
-        assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
-    })
-], Stream.prototype, "take", null);
-__decorate([
-    requireCheck(function (count) {
-        if (count === void 0) { count = 1; }
-        assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
-    })
-], Stream.prototype, "takeLast", null);
 //# sourceMappingURL=Stream.js.map

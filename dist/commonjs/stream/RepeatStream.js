@@ -49,10 +49,10 @@ var RepeatStream = (function (_super) {
         this.scheduler.publishRecursive(observer, this._count, loopRecursive);
         return GroupDisposable_1.GroupDisposable.create(d);
     };
+    RepeatStream = __decorate([
+        registerClass_1.registerClass("RepeatStream")
+    ], RepeatStream);
     return RepeatStream;
 }(BaseStream_1.BaseStream));
-RepeatStream = __decorate([
-    registerClass_1.registerClass("RepeatStream")
-], RepeatStream);
 exports.RepeatStream = RepeatStream;
 //# sourceMappingURL=RepeatStream.js.map

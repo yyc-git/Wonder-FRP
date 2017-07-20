@@ -35,10 +35,10 @@ var MapStream = (function (_super) {
     MapStream.prototype.subscribeCore = function (observer) {
         return this._source.buildStream(MapObserver.create(observer, this._selector));
     };
+    MapStream = __decorate([
+        registerClass("MapStream")
+    ], MapStream);
     return MapStream;
 }(BaseStream));
-MapStream = __decorate([
-    registerClass("MapStream")
-], MapStream);
 export { MapStream };
 //# sourceMappingURL=MapStream.js.map

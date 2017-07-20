@@ -40,10 +40,10 @@ var MergeAllStream = (function (_super) {
         this._source.buildStream(MergeAllObserver_1.MergeAllObserver.create(observer, streamGroup, groupDisposable));
         return groupDisposable;
     };
+    MergeAllStream = __decorate([
+        registerClass_1.registerClass("MergeAllStream")
+    ], MergeAllStream);
     return MergeAllStream;
 }(BaseStream_1.BaseStream));
-MergeAllStream = __decorate([
-    registerClass_1.registerClass("MergeAllStream")
-], MergeAllStream);
 exports.MergeAllStream = MergeAllStream;
 //# sourceMappingURL=MergeAllStream.js.map

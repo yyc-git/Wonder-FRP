@@ -15,8 +15,8 @@ var Entity = (function () {
         enumerable: true,
         configurable: true
     });
+    Entity.UID = 1;
     return Entity;
 }());
-Entity.UID = 1;
 exports.Entity = Entity;
 //# sourceMappingURL=Entity.js.map

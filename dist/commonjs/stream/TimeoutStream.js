@@ -43,12 +43,12 @@ var TimeoutStream = (function (_super) {
             Variable_1.root.clearTimeout(id);
         });
     };
+    __decorate([
+        contract_1.requireCheck(function (time, scheduler) {
+            contract_1.assert(time > 0, Log_1.Log.info.FUNC_SHOULD("time", "> 0"));
+        })
+    ], TimeoutStream, "create", null);
     return TimeoutStream;
 }(BaseStream_1.BaseStream));
-__decorate([
-    contract_1.requireCheck(function (time, scheduler) {
-        contract_1.assert(time > 0, Log_1.Log.info.FUNC_SHOULD("time", "> 0"));
-    })
-], TimeoutStream, "create", null);
 exports.TimeoutStream = TimeoutStream;
 //# sourceMappingURL=TimeoutStream.js.map

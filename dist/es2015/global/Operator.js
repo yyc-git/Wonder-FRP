@@ -18,8 +18,9 @@ import { registerClass } from "../definition/typescript/decorator/registerClass"
 var Operator = (function () {
     function Operator() {
     }
+    Operator_1 = Operator;
     Operator.empty = function () {
-        return this.createStream(function (observer) {
+        return Operator_1.createStream(function (observer) {
             observer.completed();
         });
     };
@@ -30,11 +31,12 @@ var Operator = (function () {
         if (scheduler === void 0) { scheduler = Scheduler.create(); }
         return FromArrayStream.create(array, scheduler);
     };
+    Operator = Operator_1 = __decorate([
+        registerClass("Operator")
+    ], Operator);
     return Operator;
+    var Operator_1;
 }());
-Operator = __decorate([
-    registerClass("Operator")
-], Operator);
 export { Operator };
 export var createStream = Operator.createStream;
 export var empty = Operator.empty;

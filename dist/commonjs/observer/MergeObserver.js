@@ -69,13 +69,13 @@ var MergeObserver = (function (_super) {
     MergeObserver.prototype._isReachMaxConcurrent = function () {
         return this.activeCount < this._maxConcurrent;
     };
+    __decorate([
+        contract_1.requireCheck(function (innerSource) {
+            contract_1.assert(innerSource instanceof Stream_1.Stream || JudgeUtils_1.JudgeUtils.isPromise(innerSource), Log_1.Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
+        })
+    ], MergeObserver.prototype, "onNext", null);
     return MergeObserver;
 }(Observer_1.Observer));
-__decorate([
-    contract_1.requireCheck(function (innerSource) {
-        contract_1.assert(innerSource instanceof Stream_1.Stream || JudgeUtils_1.JudgeUtils.isPromise(innerSource), Log_1.Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
-    })
-], MergeObserver.prototype, "onNext", null);
 exports.MergeObserver = MergeObserver;
 var InnerObserver = (function (_super) {
     __extends(InnerObserver, _super);

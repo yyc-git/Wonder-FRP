@@ -54,13 +54,13 @@ var MergeAllObserver = (function (_super) {
             this.currentObserver.completed();
         }
     };
+    __decorate([
+        contract_1.requireCheck(function (innerSource) {
+            contract_1.assert(innerSource instanceof Stream_1.Stream || JudgeUtils_1.JudgeUtils.isPromise(innerSource), Log_1.Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
+        })
+    ], MergeAllObserver.prototype, "onNext", null);
     return MergeAllObserver;
 }(Observer_1.Observer));
-__decorate([
-    contract_1.requireCheck(function (innerSource) {
-        contract_1.assert(innerSource instanceof Stream_1.Stream || JudgeUtils_1.JudgeUtils.isPromise(innerSource), Log_1.Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
-    })
-], MergeAllObserver.prototype, "onNext", null);
 exports.MergeAllObserver = MergeAllObserver;
 var InnerObserver = (function (_super) {
     __extends(InnerObserver, _super);

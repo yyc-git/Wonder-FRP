@@ -41,10 +41,10 @@ var MergeStream = (function (_super) {
         this._source.buildStream(MergeObserver_1.MergeObserver.create(observer, this._maxConcurrent, streamGroup, groupDisposable));
         return groupDisposable;
     };
+    MergeStream = __decorate([
+        registerClass_1.registerClass("MergeStream")
+    ], MergeStream);
     return MergeStream;
 }(BaseStream_1.BaseStream));
-MergeStream = __decorate([
-    registerClass_1.registerClass("MergeStream")
-], MergeStream);
 exports.MergeStream = MergeStream;
 //# sourceMappingURL=MergeStream.js.map
