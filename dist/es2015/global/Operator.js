@@ -4,6 +4,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+import "../stream/DoStream";
+import "../stream/ConcatStream";
+import "../stream/MapStream";
+import "../stream/MergeAllStream";
+import "../stream/SkipUntilStream";
+import "../stream/TakeUntilStream";
+import "../stream/FilterStream";
+import "../stream/FilterWithStateStream";
+import "../stream/MergeStream";
+import "../stream/RepeatStream";
+import "../stream/IgnoreElementsStream";
+import "../extend/root";
 import { AnonymousStream } from "../stream/AnonymousStream";
 import { Scheduler } from "../core/Scheduler";
 import { FromArrayStream } from "../stream/FromArrayStream";

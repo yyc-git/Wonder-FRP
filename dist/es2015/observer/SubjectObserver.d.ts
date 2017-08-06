@@ -1,4 +1,3 @@
-/// <reference types="wonder-commonlib" />
 import { IObserver } from "./IObserver";
 import { Collection } from "wonder-commonlib/dist/es2015/Collection";
 import { IDisposable } from "../Disposable/IDisposable";

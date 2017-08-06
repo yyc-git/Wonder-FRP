@@ -94,8 +94,14 @@ var root;
 if (JudgeUtils$1.isNodeJs() && typeof global != "undefined") {
     root = global;
 }
-else {
+else if (typeof window != "undefined") {
     root = window;
+}
+else if (typeof self != "undefined") {
+    root = self;
+}
+else {
+    Log.error("no avaliable root!");
 }
 
 var Log = (function () {
@@ -152,173 +158,173 @@ var Log = (function () {
         }
         return false;
     };
+    Log.info = {
+        INVALID_PARAM: "invalid parameter",
+        helperFunc: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            var result = "";
+            args.forEach(function (val) {
+                result += String(val) + " ";
+            });
+            return result.slice(0, -1);
+        },
+        assertion: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            if (args.length === 2) {
+                return this.helperFunc(args[0], args[1]);
+            }
+            else if (args.length === 3) {
+                return this.helperFunc(args[1], args[0], args[2]);
+            }
+            else {
+                throw new Error("args.length must <= 3");
+            }
+        },
+        FUNC_INVALID: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args.unshift("invalid");
+            return this.assertion.apply(this, args);
+        },
+        FUNC_MUST: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args.unshift("must");
+            return this.assertion.apply(this, args);
+        },
+        FUNC_MUST_BE: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args.unshift("must be");
+            return this.assertion.apply(this, args);
+        },
+        FUNC_MUST_NOT_BE: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args.unshift("must not be");
+            return this.assertion.apply(this, args);
+        },
+        FUNC_SHOULD: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args.unshift("should");
+            return this.assertion.apply(this, args);
+        },
+        FUNC_SHOULD_NOT: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args.unshift("should not");
+            return this.assertion.apply(this, args);
+        },
+        FUNC_SUPPORT: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args.unshift("support");
+            return this.assertion.apply(this, args);
+        },
+        FUNC_NOT_SUPPORT: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args.unshift("not support");
+            return this.assertion.apply(this, args);
+        },
+        FUNC_MUST_DEFINE: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args.unshift("must define");
+            return this.assertion.apply(this, args);
+        },
+        FUNC_MUST_NOT_DEFINE: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args.unshift("must not define");
+            return this.assertion.apply(this, args);
+        },
+        FUNC_UNKNOW: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args.unshift("unknow");
+            return this.assertion.apply(this, args);
+        },
+        FUNC_EXPECT: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args.unshift("expect");
+            return this.assertion.apply(this, args);
+        },
+        FUNC_UNEXPECT: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args.unshift("unexpect");
+            return this.assertion.apply(this, args);
+        },
+        FUNC_EXIST: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args.unshift("exist");
+            return this.assertion.apply(this, args);
+        },
+        FUNC_NOT_EXIST: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args.unshift("not exist");
+            return this.assertion.apply(this, args);
+        },
+        FUNC_ONLY: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args.unshift("only");
+            return this.assertion.apply(this, args);
+        },
+        FUNC_CAN_NOT: function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args.unshift("can't");
+            return this.assertion.apply(this, args);
+        }
+    };
     return Log;
 }());
-Log.info = {
-    INVALID_PARAM: "invalid parameter",
-    helperFunc: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        var result = "";
-        args.forEach(function (val) {
-            result += String(val) + " ";
-        });
-        return result.slice(0, -1);
-    },
-    assertion: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        if (args.length === 2) {
-            return this.helperFunc(args[0], args[1]);
-        }
-        else if (args.length === 3) {
-            return this.helperFunc(args[1], args[0], args[2]);
-        }
-        else {
-            throw new Error("args.length must <= 3");
-        }
-    },
-    FUNC_INVALID: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        args.unshift("invalid");
-        return this.assertion.apply(this, args);
-    },
-    FUNC_MUST: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        args.unshift("must");
-        return this.assertion.apply(this, args);
-    },
-    FUNC_MUST_BE: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        args.unshift("must be");
-        return this.assertion.apply(this, args);
-    },
-    FUNC_MUST_NOT_BE: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        args.unshift("must not be");
-        return this.assertion.apply(this, args);
-    },
-    FUNC_SHOULD: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        args.unshift("should");
-        return this.assertion.apply(this, args);
-    },
-    FUNC_SHOULD_NOT: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        args.unshift("should not");
-        return this.assertion.apply(this, args);
-    },
-    FUNC_SUPPORT: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        args.unshift("support");
-        return this.assertion.apply(this, args);
-    },
-    FUNC_NOT_SUPPORT: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        args.unshift("not support");
-        return this.assertion.apply(this, args);
-    },
-    FUNC_MUST_DEFINE: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        args.unshift("must define");
-        return this.assertion.apply(this, args);
-    },
-    FUNC_MUST_NOT_DEFINE: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        args.unshift("must not define");
-        return this.assertion.apply(this, args);
-    },
-    FUNC_UNKNOW: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        args.unshift("unknow");
-        return this.assertion.apply(this, args);
-    },
-    FUNC_EXPECT: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        args.unshift("expect");
-        return this.assertion.apply(this, args);
-    },
-    FUNC_UNEXPECT: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        args.unshift("unexpect");
-        return this.assertion.apply(this, args);
-    },
-    FUNC_EXIST: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        args.unshift("exist");
-        return this.assertion.apply(this, args);
-    },
-    FUNC_NOT_EXIST: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        args.unshift("not exist");
-        return this.assertion.apply(this, args);
-    },
-    FUNC_ONLY: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        args.unshift("only");
-        return this.assertion.apply(this, args);
-    },
-    FUNC_CAN_NOT: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        args.unshift("can't");
-        return this.assertion.apply(this, args);
-    }
-};
 
 var Entity = (function () {
     function Entity(uidPre) {
@@ -335,9 +341,9 @@ var Entity = (function () {
         enumerable: true,
         configurable: true
     });
+    Entity.UID = 1;
     return Entity;
 }());
-Entity.UID = 1;
 
 var $BREAK = {
     break: true
@@ -774,9 +780,9 @@ var Observer = (function (_super) {
 var Main = (function () {
     function Main() {
     }
+    Main.isTest = false;
     return Main;
 }());
-Main.isTest = false;
 
 function assert(cond, message) {
     if (message === void 0) { message = "contract error"; }
@@ -923,15 +929,15 @@ var AutoDetachObserver = (function (_super) {
             throw e;
         }
     };
+    __decorate([
+        requireCheck(function () {
+            if (this.isDisposed) {
+                Log.warn("only can dispose once");
+            }
+        })
+    ], AutoDetachObserver.prototype, "dispose", null);
     return AutoDetachObserver;
 }(Observer));
-__decorate([
-    requireCheck(function () {
-        if (this.isDisposed) {
-            Log.warn("only can dispose once");
-        }
-    })
-], AutoDetachObserver.prototype, "dispose", null);
 
 var InnerSubscription = (function () {
     function InnerSubscription(subject, observer) {
@@ -1037,9 +1043,9 @@ var ClassMapUtils = (function () {
     ClassMapUtils.getClass = function (className) {
         return this._classMap[className];
     };
+    ClassMapUtils._classMap = {};
     return ClassMapUtils;
 }());
-ClassMapUtils._classMap = {};
 
 var FunctionUtils = (function () {
     function FunctionUtils() {
@@ -1253,20 +1259,893 @@ var Stream = (function (_super) {
     Stream.prototype._setSubject = function (subject) {
         subject.source = this;
     };
+    __decorate([
+        requireCheck(function (count) {
+            if (count === void 0) { count = 1; }
+            assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
+        })
+    ], Stream.prototype, "take", null);
+    __decorate([
+        requireCheck(function (count) {
+            if (count === void 0) { count = 1; }
+            assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
+        })
+    ], Stream.prototype, "takeLast", null);
     return Stream;
 }(Entity));
-__decorate([
-    requireCheck(function (count) {
-        if (count === void 0) { count = 1; }
-        assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
-    })
-], Stream.prototype, "take", null);
-__decorate([
-    requireCheck(function (count) {
-        if (count === void 0) { count = 1; }
-        assert(count >= 0, Log.info.FUNC_SHOULD("count", ">= 0"));
-    })
-], Stream.prototype, "takeLast", null);
+
+var BaseStream = (function (_super) {
+    __extends(BaseStream, _super);
+    function BaseStream() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    BaseStream.prototype.subscribe = function (arg1, onError, onCompleted) {
+        var observer = null;
+        if (this.handleSubject(arg1)) {
+            return;
+        }
+        observer = arg1 instanceof Observer
+            ? AutoDetachObserver.create(arg1)
+            : AutoDetachObserver.create(arg1, onError, onCompleted);
+        observer.setDisposable(this.buildStream(observer));
+        return observer;
+    };
+    BaseStream.prototype.buildStream = function (observer) {
+        _super.prototype.buildStream.call(this, observer);
+        return this.subscribeCore(observer);
+    };
+    return BaseStream;
+}(Stream));
+
+var AnonymousObserver = (function (_super) {
+    __extends(AnonymousObserver, _super);
+    function AnonymousObserver() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    AnonymousObserver.create = function (onNext, onError, onCompleted) {
+        return new this(onNext, onError, onCompleted);
+    };
+    AnonymousObserver.prototype.onNext = function (value) {
+        this.onUserNext(value);
+    };
+    AnonymousObserver.prototype.onError = function (error) {
+        this.onUserError(error);
+    };
+    AnonymousObserver.prototype.onCompleted = function () {
+        this.onUserCompleted();
+    };
+    return AnonymousObserver;
+}(Observer));
+
+var DoObserver = (function (_super) {
+    __extends(DoObserver, _super);
+    function DoObserver(currentObserver, prevObserver) {
+        var _this = _super.call(this, null, null, null) || this;
+        _this._currentObserver = null;
+        _this._prevObserver = null;
+        _this._currentObserver = currentObserver;
+        _this._prevObserver = prevObserver;
+        return _this;
+    }
+    DoObserver.create = function (currentObserver, prevObserver) {
+        return new this(currentObserver, prevObserver);
+    };
+    DoObserver.prototype.onNext = function (value) {
+        try {
+            this._prevObserver.next(value);
+        }
+        catch (e) {
+            this._prevObserver.error(e);
+            this._currentObserver.error(e);
+        }
+        finally {
+            this._currentObserver.next(value);
+        }
+    };
+    DoObserver.prototype.onError = function (error) {
+        try {
+            this._prevObserver.error(error);
+        }
+        catch (e) {
+        }
+        finally {
+            this._currentObserver.error(error);
+        }
+    };
+    DoObserver.prototype.onCompleted = function () {
+        try {
+            this._prevObserver.completed();
+        }
+        catch (e) {
+            this._prevObserver.error(e);
+            this._currentObserver.error(e);
+        }
+        finally {
+            this._currentObserver.completed();
+        }
+    };
+    return DoObserver;
+}(Observer));
+
+function registerClass(className) {
+    return function (target) {
+        ClassMapUtils.addClassMap(className, target);
+    };
+}
+
+var DoStream = (function (_super) {
+    __extends(DoStream, _super);
+    function DoStream(source, onNext, onError, onCompleted) {
+        var _this = _super.call(this, null) || this;
+        _this._source = null;
+        _this._observer = null;
+        _this._source = source;
+        _this._observer = AnonymousObserver.create(onNext, onError, onCompleted);
+        _this.scheduler = _this._source.scheduler;
+        return _this;
+    }
+    DoStream.create = function (source, onNext, onError, onCompleted) {
+        var obj = new this(source, onNext, onError, onCompleted);
+        return obj;
+    };
+    DoStream.prototype.subscribeCore = function (observer) {
+        return this._source.buildStream(DoObserver.create(observer, this._observer));
+    };
+    DoStream = __decorate([
+        registerClass("DoStream")
+    ], DoStream);
+    return DoStream;
+}(BaseStream));
+
+var GroupDisposable = (function (_super) {
+    __extends(GroupDisposable, _super);
+    function GroupDisposable(disposable) {
+        var _this = _super.call(this, "GroupDisposable") || this;
+        _this._group = Collection.create();
+        _this._isDisposed = false;
+        if (disposable) {
+            _this._group.addChild(disposable);
+        }
+        return _this;
+    }
+    GroupDisposable.create = function (disposable) {
+        var obj = new this(disposable);
+        return obj;
+    };
+    GroupDisposable.prototype.add = function (disposable) {
+        this._group.addChild(disposable);
+        return this;
+    };
+    GroupDisposable.prototype.remove = function (disposable) {
+        this._group.removeChild(disposable);
+        return this;
+    };
+    GroupDisposable.prototype.dispose = function () {
+        if (this._isDisposed) {
+            return;
+        }
+        this._isDisposed = true;
+        this._group.forEach(function (disposable) {
+            disposable.dispose();
+        });
+    };
+    return GroupDisposable;
+}(Entity));
+
+var ConcatObserver = (function (_super) {
+    __extends(ConcatObserver, _super);
+    function ConcatObserver(currentObserver, startNextStream) {
+        var _this = _super.call(this, null, null, null) || this;
+        _this.currentObserver = null;
+        _this._startNextStream = null;
+        _this.currentObserver = currentObserver;
+        _this._startNextStream = startNextStream;
+        return _this;
+    }
+    ConcatObserver.create = function (currentObserver, startNextStream) {
+        return new this(currentObserver, startNextStream);
+    };
+    ConcatObserver.prototype.onNext = function (value) {
+        this.currentObserver.next(value);
+    };
+    ConcatObserver.prototype.onError = function (error) {
+        this.currentObserver.error(error);
+    };
+    ConcatObserver.prototype.onCompleted = function () {
+        this._startNextStream();
+    };
+    return ConcatObserver;
+}(Observer));
+
+var ConcatStream = (function (_super) {
+    __extends(ConcatStream, _super);
+    function ConcatStream(sources) {
+        var _this = _super.call(this, null) || this;
+        _this._sources = Collection.create();
+        var self = _this;
+        _this.scheduler = sources[0].scheduler;
+        sources.forEach(function (source) {
+            if (JudgeUtils$$1.isPromise(source)) {
+                self._sources.addChild(fromPromise(source));
+            }
+            else {
+                self._sources.addChild(source);
+            }
+        });
+        return _this;
+    }
+    ConcatStream.create = function (sources) {
+        var obj = new this(sources);
+        return obj;
+    };
+    ConcatStream.prototype.subscribeCore = function (observer) {
+        var self = this, count = this._sources.getCount(), d = GroupDisposable.create();
+        function loopRecursive(i) {
+            if (i === count) {
+                observer.completed();
+                return;
+            }
+            d.add(self._sources.getChild(i).buildStream(ConcatObserver.create(observer, function () {
+                loopRecursive(i + 1);
+            })));
+        }
+        this.scheduler.publishRecursive(observer, 0, loopRecursive);
+        return GroupDisposable.create(d);
+    };
+    ConcatStream = __decorate([
+        registerClass("ConcatStream")
+    ], ConcatStream);
+    return ConcatStream;
+}(BaseStream));
+
+var MapObserver = (function (_super) {
+    __extends(MapObserver, _super);
+    function MapObserver(currentObserver, selector) {
+        var _this = _super.call(this, null, null, null) || this;
+        _this._currentObserver = null;
+        _this._selector = null;
+        _this._currentObserver = currentObserver;
+        _this._selector = selector;
+        return _this;
+    }
+    MapObserver.create = function (currentObserver, selector) {
+        return new this(currentObserver, selector);
+    };
+    MapObserver.prototype.onNext = function (value) {
+        var result = null;
+        try {
+            result = this._selector(value);
+        }
+        catch (e) {
+            this._currentObserver.error(e);
+        }
+        finally {
+            this._currentObserver.next(result);
+        }
+    };
+    MapObserver.prototype.onError = function (error) {
+        this._currentObserver.error(error);
+    };
+    MapObserver.prototype.onCompleted = function () {
+        this._currentObserver.completed();
+    };
+    return MapObserver;
+}(Observer));
+
+var MapStream = (function (_super) {
+    __extends(MapStream, _super);
+    function MapStream(source, selector) {
+        var _this = _super.call(this, null) || this;
+        _this._source = null;
+        _this._selector = null;
+        _this._source = source;
+        _this.scheduler = _this._source.scheduler;
+        _this._selector = selector;
+        return _this;
+    }
+    MapStream.create = function (source, selector) {
+        var obj = new this(source, selector);
+        return obj;
+    };
+    MapStream.prototype.subscribeCore = function (observer) {
+        return this._source.buildStream(MapObserver.create(observer, this._selector));
+    };
+    MapStream = __decorate([
+        registerClass("MapStream")
+    ], MapStream);
+    return MapStream;
+}(BaseStream));
+
+var MergeAllObserver = (function (_super) {
+    __extends(MergeAllObserver, _super);
+    function MergeAllObserver(currentObserver, streamGroup, groupDisposable) {
+        var _this = _super.call(this, null, null, null) || this;
+        _this.done = false;
+        _this.currentObserver = null;
+        _this._streamGroup = null;
+        _this._groupDisposable = null;
+        _this.currentObserver = currentObserver;
+        _this._streamGroup = streamGroup;
+        _this._groupDisposable = groupDisposable;
+        return _this;
+    }
+    MergeAllObserver.create = function (currentObserver, streamGroup, groupDisposable) {
+        return new this(currentObserver, streamGroup, groupDisposable);
+    };
+    MergeAllObserver.prototype.onNext = function (innerSource) {
+        if (JudgeUtils$$1.isPromise(innerSource)) {
+            innerSource = fromPromise(innerSource);
+        }
+        this._streamGroup.addChild(innerSource);
+        this._groupDisposable.add(innerSource.buildStream(InnerObserver.create(this, this._streamGroup, innerSource)));
+    };
+    MergeAllObserver.prototype.onError = function (error) {
+        this.currentObserver.error(error);
+    };
+    MergeAllObserver.prototype.onCompleted = function () {
+        this.done = true;
+        if (this._streamGroup.getCount() === 0) {
+            this.currentObserver.completed();
+        }
+    };
+    __decorate([
+        requireCheck(function (innerSource) {
+            assert(innerSource instanceof Stream || JudgeUtils$$1.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
+        })
+    ], MergeAllObserver.prototype, "onNext", null);
+    return MergeAllObserver;
+}(Observer));
+var InnerObserver = (function (_super) {
+    __extends(InnerObserver, _super);
+    function InnerObserver(parent, streamGroup, currentStream) {
+        var _this = _super.call(this, null, null, null) || this;
+        _this._parent = null;
+        _this._streamGroup = null;
+        _this._currentStream = null;
+        _this._parent = parent;
+        _this._streamGroup = streamGroup;
+        _this._currentStream = currentStream;
+        return _this;
+    }
+    InnerObserver.create = function (parent, streamGroup, currentStream) {
+        var obj = new this(parent, streamGroup, currentStream);
+        return obj;
+    };
+    InnerObserver.prototype.onNext = function (value) {
+        this._parent.currentObserver.next(value);
+    };
+    InnerObserver.prototype.onError = function (error) {
+        this._parent.currentObserver.error(error);
+    };
+    InnerObserver.prototype.onCompleted = function () {
+        var currentStream = this._currentStream, parent = this._parent;
+        this._streamGroup.removeChild(function (stream) {
+            return JudgeUtils$$1.isEqual(stream, currentStream);
+        });
+        if (this._isAsync() && this._streamGroup.getCount() === 0) {
+            parent.currentObserver.completed();
+        }
+    };
+    InnerObserver.prototype._isAsync = function () {
+        return this._parent.done;
+    };
+    return InnerObserver;
+}(Observer));
+
+var MergeAllStream = (function (_super) {
+    __extends(MergeAllStream, _super);
+    function MergeAllStream(source) {
+        var _this = _super.call(this, null) || this;
+        _this._source = null;
+        _this._observer = null;
+        _this._source = source;
+        _this.scheduler = _this._source.scheduler;
+        return _this;
+    }
+    MergeAllStream.create = function (source) {
+        var obj = new this(source);
+        return obj;
+    };
+    MergeAllStream.prototype.subscribeCore = function (observer) {
+        var streamGroup = Collection.create(), groupDisposable = GroupDisposable.create();
+        this._source.buildStream(MergeAllObserver.create(observer, streamGroup, groupDisposable));
+        return groupDisposable;
+    };
+    MergeAllStream = __decorate([
+        registerClass("MergeAllStream")
+    ], MergeAllStream);
+    return MergeAllStream;
+}(BaseStream));
+
+var SkipUntilOtherObserver = (function (_super) {
+    __extends(SkipUntilOtherObserver, _super);
+    function SkipUntilOtherObserver(prevObserver, skipUntilStream) {
+        var _this = _super.call(this, null, null, null) || this;
+        _this.otherDisposable = null;
+        _this._prevObserver = null;
+        _this._skipUntilStream = null;
+        _this._prevObserver = prevObserver;
+        _this._skipUntilStream = skipUntilStream;
+        return _this;
+    }
+    SkipUntilOtherObserver.create = function (prevObserver, skipUntilStream) {
+        return new this(prevObserver, skipUntilStream);
+    };
+    SkipUntilOtherObserver.prototype.onNext = function (value) {
+        this._skipUntilStream.isOpen = true;
+        this.otherDisposable.dispose();
+    };
+    SkipUntilOtherObserver.prototype.onError = function (error) {
+        this._prevObserver.error(error);
+    };
+    SkipUntilOtherObserver.prototype.onCompleted = function () {
+        this.otherDisposable.dispose();
+    };
+    return SkipUntilOtherObserver;
+}(Observer));
+
+var SkipUntilSourceObserver = (function (_super) {
+    __extends(SkipUntilSourceObserver, _super);
+    function SkipUntilSourceObserver(prevObserver, skipUntilStream) {
+        var _this = _super.call(this, null, null, null) || this;
+        _this._prevObserver = null;
+        _this._skipUntilStream = null;
+        _this._prevObserver = prevObserver;
+        _this._skipUntilStream = skipUntilStream;
+        return _this;
+    }
+    SkipUntilSourceObserver.create = function (prevObserver, skipUntilStream) {
+        return new this(prevObserver, skipUntilStream);
+    };
+    SkipUntilSourceObserver.prototype.onNext = function (value) {
+        if (this._skipUntilStream.isOpen) {
+            this._prevObserver.next(value);
+        }
+    };
+    SkipUntilSourceObserver.prototype.onError = function (error) {
+        this._prevObserver.error(error);
+    };
+    SkipUntilSourceObserver.prototype.onCompleted = function () {
+        if (this._skipUntilStream.isOpen) {
+            this._prevObserver.completed();
+        }
+    };
+    return SkipUntilSourceObserver;
+}(Observer));
+
+var SkipUntilStream = (function (_super) {
+    __extends(SkipUntilStream, _super);
+    function SkipUntilStream(source, otherStream) {
+        var _this = _super.call(this, null) || this;
+        _this.isOpen = false;
+        _this._source = null;
+        _this._otherStream = null;
+        _this._source = source;
+        _this._otherStream = JudgeUtils$$1.isPromise(otherStream) ? fromPromise(otherStream) : otherStream;
+        _this.scheduler = _this._source.scheduler;
+        return _this;
+    }
+    SkipUntilStream.create = function (source, otherSteam) {
+        var obj = new this(source, otherSteam);
+        return obj;
+    };
+    SkipUntilStream.prototype.subscribeCore = function (observer) {
+        var group = GroupDisposable.create(), otherDisposable = null, skipUntilOtherObserver = null;
+        group.add(this._source.buildStream(SkipUntilSourceObserver.create(observer, this)));
+        skipUntilOtherObserver = SkipUntilOtherObserver.create(observer, this);
+        otherDisposable = this._otherStream.buildStream(skipUntilOtherObserver);
+        skipUntilOtherObserver.otherDisposable = otherDisposable;
+        group.add(otherDisposable);
+        return group;
+    };
+    SkipUntilStream = __decorate([
+        registerClass("SkipUntilStream")
+    ], SkipUntilStream);
+    return SkipUntilStream;
+}(BaseStream));
+
+var TakeUntilObserver = (function (_super) {
+    __extends(TakeUntilObserver, _super);
+    function TakeUntilObserver(prevObserver) {
+        var _this = _super.call(this, null, null, null) || this;
+        _this._prevObserver = null;
+        _this._prevObserver = prevObserver;
+        return _this;
+    }
+    TakeUntilObserver.create = function (prevObserver) {
+        return new this(prevObserver);
+    };
+    TakeUntilObserver.prototype.onNext = function (value) {
+        this._prevObserver.completed();
+    };
+    TakeUntilObserver.prototype.onError = function (error) {
+        this._prevObserver.error(error);
+    };
+    TakeUntilObserver.prototype.onCompleted = function () {
+    };
+    return TakeUntilObserver;
+}(Observer));
+
+var TakeUntilStream = (function (_super) {
+    __extends(TakeUntilStream, _super);
+    function TakeUntilStream(source, otherStream) {
+        var _this = _super.call(this, null) || this;
+        _this._source = null;
+        _this._otherStream = null;
+        _this._source = source;
+        _this._otherStream = JudgeUtils$$1.isPromise(otherStream) ? fromPromise(otherStream) : otherStream;
+        _this.scheduler = _this._source.scheduler;
+        return _this;
+    }
+    TakeUntilStream.create = function (source, otherSteam) {
+        var obj = new this(source, otherSteam);
+        return obj;
+    };
+    TakeUntilStream.prototype.subscribeCore = function (observer) {
+        var group = GroupDisposable.create(), autoDetachObserver = AutoDetachObserver.create(observer), sourceDisposable = null;
+        sourceDisposable = this._source.buildStream(observer);
+        group.add(sourceDisposable);
+        autoDetachObserver.setDisposable(sourceDisposable);
+        group.add(this._otherStream.buildStream(TakeUntilObserver.create(autoDetachObserver)));
+        return group;
+    };
+    TakeUntilStream = __decorate([
+        registerClass("TakeUntilStream")
+    ], TakeUntilStream);
+    return TakeUntilStream;
+}(BaseStream));
+
+var FilterObserver = (function (_super) {
+    __extends(FilterObserver, _super);
+    function FilterObserver(prevObserver, predicate, source) {
+        var _this = _super.call(this, null, null, null) || this;
+        _this.prevObserver = null;
+        _this.source = null;
+        _this.i = 0;
+        _this.predicate = null;
+        _this.prevObserver = prevObserver;
+        _this.predicate = predicate;
+        _this.source = source;
+        return _this;
+    }
+    FilterObserver.create = function (prevObserver, predicate, source) {
+        return new this(prevObserver, predicate, source);
+    };
+    FilterObserver.prototype.onNext = function (value) {
+        try {
+            if (this.predicate(value, this.i++, this.source)) {
+                this.prevObserver.next(value);
+            }
+        }
+        catch (e) {
+            this.prevObserver.error(e);
+        }
+    };
+    FilterObserver.prototype.onError = function (error) {
+        this.prevObserver.error(error);
+    };
+    FilterObserver.prototype.onCompleted = function () {
+        this.prevObserver.completed();
+    };
+    return FilterObserver;
+}(Observer));
+
+var FilterStream = (function (_super) {
+    __extends(FilterStream, _super);
+    function FilterStream(source, predicate, thisArg) {
+        var _this = _super.call(this, null) || this;
+        _this.predicate = null;
+        _this._source = null;
+        _this._source = source;
+        _this.predicate = FunctionUtils.bind(thisArg, predicate);
+        return _this;
+    }
+    FilterStream_1 = FilterStream;
+    FilterStream.create = function (source, predicate, thisArg) {
+        var obj = new this(source, predicate, thisArg);
+        return obj;
+    };
+    FilterStream.prototype.subscribeCore = function (observer) {
+        return this._source.subscribe(this.createObserver(observer));
+    };
+    FilterStream.prototype.internalFilter = function (predicate, thisArg) {
+        return this.createStreamForInternalFilter(this._source, this._innerPredicate(predicate, this), thisArg);
+    };
+    FilterStream.prototype.createObserver = function (observer) {
+        return FilterObserver.create(observer, this.predicate, this);
+    };
+    FilterStream.prototype.createStreamForInternalFilter = function (source, innerPredicate, thisArg) {
+        return FilterStream_1.create(source, innerPredicate, thisArg);
+    };
+    FilterStream.prototype._innerPredicate = function (predicate, self) {
+        var _this = this;
+        return function (value, i, o) {
+            return self.predicate(value, i, o) && predicate.call(_this, value, i, o);
+        };
+    };
+    FilterStream = FilterStream_1 = __decorate([
+        registerClass("FilterStream")
+    ], FilterStream);
+    return FilterStream;
+    var FilterStream_1;
+}(BaseStream));
+
+var FilterState;
+(function (FilterState) {
+    FilterState[FilterState["TRIGGER"] = 0] = "TRIGGER";
+    FilterState[FilterState["ENTER"] = 1] = "ENTER";
+    FilterState[FilterState["LEAVE"] = 2] = "LEAVE";
+})(FilterState || (FilterState = {}));
+
+var FilterWithStateObserver = (function (_super) {
+    __extends(FilterWithStateObserver, _super);
+    function FilterWithStateObserver() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this._isTrigger = false;
+        return _this;
+    }
+    FilterWithStateObserver.create = function (prevObserver, predicate, source) {
+        return new this(prevObserver, predicate, source);
+    };
+    FilterWithStateObserver.prototype.onNext = function (value) {
+        var data = null;
+        try {
+            if (this.predicate(value, this.i++, this.source)) {
+                if (!this._isTrigger) {
+                    data = {
+                        value: value,
+                        state: FilterState.ENTER
+                    };
+                }
+                else {
+                    data = {
+                        value: value,
+                        state: FilterState.TRIGGER
+                    };
+                }
+                this.prevObserver.next(data);
+                this._isTrigger = true;
+            }
+            else {
+                if (this._isTrigger) {
+                    data = {
+                        value: value,
+                        state: FilterState.LEAVE
+                    };
+                    this.prevObserver.next(data);
+                }
+                this._isTrigger = false;
+            }
+        }
+        catch (e) {
+            this.prevObserver.error(e);
+        }
+    };
+    return FilterWithStateObserver;
+}(FilterObserver));
+
+var FilterWithStateStream = (function (_super) {
+    __extends(FilterWithStateStream, _super);
+    function FilterWithStateStream() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    FilterWithStateStream_1 = FilterWithStateStream;
+    FilterWithStateStream.create = function (source, predicate, thisArg) {
+        var obj = new this(source, predicate, thisArg);
+        return obj;
+    };
+    FilterWithStateStream.prototype.createObserver = function (observer) {
+        return FilterWithStateObserver.create(observer, this.predicate, this);
+    };
+    FilterWithStateStream.prototype.createStreamForInternalFilter = function (source, innerPredicate, thisArg) {
+        return FilterWithStateStream_1.create(source, innerPredicate, thisArg);
+    };
+    FilterWithStateStream = FilterWithStateStream_1 = __decorate([
+        registerClass("FilterWithStateStream")
+    ], FilterWithStateStream);
+    return FilterWithStateStream;
+    var FilterWithStateStream_1;
+}(FilterStream));
+
+var MergeObserver = (function (_super) {
+    __extends(MergeObserver, _super);
+    function MergeObserver(currentObserver, maxConcurrent, streamGroup, groupDisposable) {
+        var _this = _super.call(this, null, null, null) || this;
+        _this.done = false;
+        _this.currentObserver = null;
+        _this.activeCount = 0;
+        _this.q = [];
+        _this._maxConcurrent = null;
+        _this._groupDisposable = null;
+        _this._streamGroup = null;
+        _this.currentObserver = currentObserver;
+        _this._maxConcurrent = maxConcurrent;
+        _this._streamGroup = streamGroup;
+        _this._groupDisposable = groupDisposable;
+        return _this;
+    }
+    MergeObserver.create = function (currentObserver, maxConcurrent, streamGroup, groupDisposable) {
+        return new this(currentObserver, maxConcurrent, streamGroup, groupDisposable);
+    };
+    MergeObserver.prototype.handleSubscribe = function (innerSource) {
+        if (JudgeUtils$$1.isPromise(innerSource)) {
+            innerSource = fromPromise(innerSource);
+        }
+        this._streamGroup.addChild(innerSource);
+        this._groupDisposable.add(innerSource.buildStream(InnerObserver$1.create(this, this._streamGroup, innerSource)));
+    };
+    MergeObserver.prototype.onNext = function (innerSource) {
+        if (this._isReachMaxConcurrent()) {
+            this.activeCount++;
+            this.handleSubscribe(innerSource);
+            return;
+        }
+        this.q.push(innerSource);
+    };
+    MergeObserver.prototype.onError = function (error) {
+        this.currentObserver.error(error);
+    };
+    MergeObserver.prototype.onCompleted = function () {
+        this.done = true;
+        if (this._streamGroup.getCount() === 0) {
+            this.currentObserver.completed();
+        }
+    };
+    MergeObserver.prototype._isReachMaxConcurrent = function () {
+        return this.activeCount < this._maxConcurrent;
+    };
+    __decorate([
+        requireCheck(function (innerSource) {
+            assert(innerSource instanceof Stream || JudgeUtils$$1.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
+        })
+    ], MergeObserver.prototype, "onNext", null);
+    return MergeObserver;
+}(Observer));
+var InnerObserver$1 = (function (_super) {
+    __extends(InnerObserver, _super);
+    function InnerObserver(parent, streamGroup, currentStream) {
+        var _this = _super.call(this, null, null, null) || this;
+        _this._parent = null;
+        _this._streamGroup = null;
+        _this._currentStream = null;
+        _this._parent = parent;
+        _this._streamGroup = streamGroup;
+        _this._currentStream = currentStream;
+        return _this;
+    }
+    InnerObserver.create = function (parent, streamGroup, currentStream) {
+        var obj = new this(parent, streamGroup, currentStream);
+        return obj;
+    };
+    InnerObserver.prototype.onNext = function (value) {
+        this._parent.currentObserver.next(value);
+    };
+    InnerObserver.prototype.onError = function (error) {
+        this._parent.currentObserver.error(error);
+    };
+    InnerObserver.prototype.onCompleted = function () {
+        var parent = this._parent;
+        this._streamGroup.removeChild(this._currentStream);
+        if (parent.q.length > 0) {
+            parent.activeCount = 0;
+            parent.handleSubscribe(parent.q.shift());
+        }
+        else {
+            if (this._isAsync() && this._streamGroup.getCount() === 0) {
+                parent.currentObserver.completed();
+            }
+        }
+    };
+    InnerObserver.prototype._isAsync = function () {
+        return this._parent.done;
+    };
+    return InnerObserver;
+}(Observer));
+
+var MergeStream = (function (_super) {
+    __extends(MergeStream, _super);
+    function MergeStream(source, maxConcurrent) {
+        var _this = _super.call(this, null) || this;
+        _this._source = null;
+        _this._maxConcurrent = null;
+        _this._source = source;
+        _this._maxConcurrent = maxConcurrent;
+        _this.scheduler = _this._source.scheduler;
+        return _this;
+    }
+    MergeStream.create = function (source, maxConcurrent) {
+        var obj = new this(source, maxConcurrent);
+        return obj;
+    };
+    MergeStream.prototype.subscribeCore = function (observer) {
+        var streamGroup = Collection.create(), groupDisposable = GroupDisposable.create();
+        this._source.buildStream(MergeObserver.create(observer, this._maxConcurrent, streamGroup, groupDisposable));
+        return groupDisposable;
+    };
+    MergeStream = __decorate([
+        registerClass("MergeStream")
+    ], MergeStream);
+    return MergeStream;
+}(BaseStream));
+
+var RepeatStream = (function (_super) {
+    __extends(RepeatStream, _super);
+    function RepeatStream(source, count) {
+        var _this = _super.call(this, null) || this;
+        _this._source = null;
+        _this._count = null;
+        _this._source = source;
+        _this._count = count;
+        _this.scheduler = _this._source.scheduler;
+        return _this;
+    }
+    RepeatStream.create = function (source, count) {
+        var obj = new this(source, count);
+        return obj;
+    };
+    RepeatStream.prototype.subscribeCore = function (observer) {
+        var self = this, d = GroupDisposable.create();
+        function loopRecursive(count) {
+            if (count === 0) {
+                observer.completed();
+                return;
+            }
+            d.add(self._source.buildStream(ConcatObserver.create(observer, function () {
+                loopRecursive(count - 1);
+            })));
+        }
+        this.scheduler.publishRecursive(observer, this._count, loopRecursive);
+        return GroupDisposable.create(d);
+    };
+    RepeatStream = __decorate([
+        registerClass("RepeatStream")
+    ], RepeatStream);
+    return RepeatStream;
+}(BaseStream));
+
+var IgnoreElementsObserver = (function (_super) {
+    __extends(IgnoreElementsObserver, _super);
+    function IgnoreElementsObserver(currentObserver) {
+        var _this = _super.call(this, null, null, null) || this;
+        _this._currentObserver = null;
+        _this._currentObserver = currentObserver;
+        return _this;
+    }
+    IgnoreElementsObserver.create = function (currentObserver) {
+        return new this(currentObserver);
+    };
+    IgnoreElementsObserver.prototype.onNext = function (value) {
+    };
+    IgnoreElementsObserver.prototype.onError = function (error) {
+        this._currentObserver.error(error);
+    };
+    IgnoreElementsObserver.prototype.onCompleted = function () {
+        this._currentObserver.completed();
+    };
+    return IgnoreElementsObserver;
+}(Observer));
+
+var IgnoreElementsStream = (function (_super) {
+    __extends(IgnoreElementsStream, _super);
+    function IgnoreElementsStream(source) {
+        var _this = _super.call(this, null) || this;
+        _this._source = null;
+        _this._source = source;
+        _this.scheduler = _this._source.scheduler;
+        return _this;
+    }
+    IgnoreElementsStream.create = function (source) {
+        var obj = new this(source);
+        return obj;
+    };
+    IgnoreElementsStream.prototype.subscribeCore = function (observer) {
+        return this._source.buildStream(IgnoreElementsObserver.create(observer));
+    };
+    IgnoreElementsStream = __decorate([
+        registerClass("IgnoreElementsStream")
+    ], IgnoreElementsStream);
+    return IgnoreElementsStream;
+}(BaseStream));
 
 var root$1;
 if (JudgeUtils$$1.isNodeJs() && typeof global != "undefined") {
@@ -1281,6 +2160,60 @@ else if (typeof self != "undefined") {
 else {
     Log.error("no avaliable root!");
 }
+
+root$1.requestNextAnimationFrame = (function () {
+    var originalRequestAnimationFrame = undefined, wrapper = undefined, callback = undefined, geckoVersion = null, userAgent = root$1.navigator && root$1.navigator.userAgent, index = 0, self = this;
+    wrapper = function (time) {
+        time = root$1.performance.now();
+        self.callback(time);
+    };
+    if (root$1.requestAnimationFrame) {
+        return requestAnimationFrame;
+    }
+    if (root$1.webkitRequestAnimationFrame) {
+        originalRequestAnimationFrame = root$1.webkitRequestAnimationFrame;
+        root$1.webkitRequestAnimationFrame = function (callback, element) {
+            self.callback = callback;
+            return originalRequestAnimationFrame(wrapper, element);
+        };
+    }
+    if (root$1.msRequestAnimationFrame) {
+        originalRequestAnimationFrame = root$1.msRequestAnimationFrame;
+        root$1.msRequestAnimationFrame = function (callback) {
+            self.callback = callback;
+            return originalRequestAnimationFrame(wrapper);
+        };
+    }
+    if (root$1.mozRequestAnimationFrame) {
+        index = userAgent.indexOf('rv:');
+        if (userAgent.indexOf('Gecko') != -1) {
+            geckoVersion = userAgent.substr(index + 3, 3);
+            if (geckoVersion === '2.0') {
+                root$1.mozRequestAnimationFrame = undefined;
+            }
+        }
+    }
+    return root$1.webkitRequestAnimationFrame ||
+        root$1.mozRequestAnimationFrame ||
+        root$1.oRequestAnimationFrame ||
+        root$1.msRequestAnimationFrame ||
+        function (callback, element) {
+            var start, finish;
+            root$1.setTimeout(function () {
+                start = root$1.performance.now();
+                callback(start);
+                finish = root$1.performance.now();
+                self.timeout = 1000 / 60 - (finish - start);
+            }, self.timeout);
+        };
+}());
+root$1.cancelNextRequestAnimationFrame = root$1.cancelRequestAnimationFrame
+    || root$1.webkitCancelAnimationFrame
+    || root$1.webkitCancelRequestAnimationFrame
+    || root$1.mozCancelRequestAnimationFrame
+    || root$1.oCancelRequestAnimationFrame
+    || root$1.msCancelRequestAnimationFrame
+    || clearTimeout;
 
 var Scheduler = (function () {
     function Scheduler() {
@@ -1367,29 +2300,6 @@ var AnonymousStream = (function (_super) {
         return observer;
     };
     return AnonymousStream;
-}(Stream));
-
-var BaseStream = (function (_super) {
-    __extends(BaseStream, _super);
-    function BaseStream() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    BaseStream.prototype.subscribe = function (arg1, onError, onCompleted) {
-        var observer = null;
-        if (this.handleSubject(arg1)) {
-            return;
-        }
-        observer = arg1 instanceof Observer
-            ? AutoDetachObserver.create(arg1)
-            : AutoDetachObserver.create(arg1, onError, onCompleted);
-        observer.setDisposable(this.buildStream(observer));
-        return observer;
-    };
-    BaseStream.prototype.buildStream = function (observer) {
-        _super.prototype.buildStream.call(this, observer);
-        return this.subscribeCore(observer);
-    };
-    return BaseStream;
 }(Stream));
 
 var FromArrayStream = (function (_super) {
@@ -1552,48 +2462,13 @@ var TimeoutStream = (function (_super) {
             root$1.clearTimeout(id);
         });
     };
+    __decorate([
+        requireCheck(function (time, scheduler) {
+            assert(time > 0, Log.info.FUNC_SHOULD("time", "> 0"));
+        })
+    ], TimeoutStream, "create", null);
     return TimeoutStream;
 }(BaseStream));
-__decorate([
-    requireCheck(function (time, scheduler) {
-        assert(time > 0, Log.info.FUNC_SHOULD("time", "> 0"));
-    })
-], TimeoutStream, "create", null);
-
-var GroupDisposable = (function (_super) {
-    __extends(GroupDisposable, _super);
-    function GroupDisposable(disposable) {
-        var _this = _super.call(this, "GroupDisposable") || this;
-        _this._group = Collection.create();
-        _this._isDisposed = false;
-        if (disposable) {
-            _this._group.addChild(disposable);
-        }
-        return _this;
-    }
-    GroupDisposable.create = function (disposable) {
-        var obj = new this(disposable);
-        return obj;
-    };
-    GroupDisposable.prototype.add = function (disposable) {
-        this._group.addChild(disposable);
-        return this;
-    };
-    GroupDisposable.prototype.remove = function (disposable) {
-        this._group.removeChild(disposable);
-        return this;
-    };
-    GroupDisposable.prototype.dispose = function () {
-        if (this._isDisposed) {
-            return;
-        }
-        this._isDisposed = true;
-        this._group.forEach(function (disposable) {
-            disposable.dispose();
-        });
-    };
-    return GroupDisposable;
-}(Entity));
 
 var DeferStream = (function (_super) {
     __extends(DeferStream, _super);
@@ -1615,15 +2490,10 @@ var DeferStream = (function (_super) {
     return DeferStream;
 }(BaseStream));
 
-function registerClass(className) {
-    return function (target) {
-        ClassMapUtils.addClassMap(className, target);
-    };
-}
-
-var Operator = Operator_1 = (function () {
+var Operator = (function () {
     function Operator() {
     }
+    Operator_1 = Operator;
     Operator.empty = function () {
         return Operator_1.createStream(function (observer) {
             observer.completed();
@@ -1636,11 +2506,12 @@ var Operator = Operator_1 = (function () {
         if (scheduler === void 0) { scheduler = Scheduler.create(); }
         return FromArrayStream.create(array, scheduler);
     };
+    Operator = Operator_1 = __decorate([
+        registerClass("Operator")
+    ], Operator);
     return Operator;
+    var Operator_1;
 }());
-Operator = Operator_1 = __decorate([
-    registerClass("Operator")
-], Operator);
 var createStream = Operator.createStream;
 var empty = Operator.empty;
 var fromArray = Operator.fromArray;
@@ -1687,7 +2558,6 @@ var just = function (returnValue) {
         observer.completed();
     });
 };
-var Operator_1;
 
 var fromNodeCallback = function (func, context) {
     return function () {
@@ -1772,813 +2642,6 @@ var InnerSubscriptionGroup = (function () {
     };
     return InnerSubscriptionGroup;
 }());
-
-var FilterState;
-(function (FilterState) {
-    FilterState[FilterState["TRIGGER"] = 0] = "TRIGGER";
-    FilterState[FilterState["ENTER"] = 1] = "ENTER";
-    FilterState[FilterState["LEAVE"] = 2] = "LEAVE";
-})(FilterState || (FilterState = {}));
-
-var AnonymousObserver = (function (_super) {
-    __extends(AnonymousObserver, _super);
-    function AnonymousObserver() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    AnonymousObserver.create = function (onNext, onError, onCompleted) {
-        return new this(onNext, onError, onCompleted);
-    };
-    AnonymousObserver.prototype.onNext = function (value) {
-        this.onUserNext(value);
-    };
-    AnonymousObserver.prototype.onError = function (error) {
-        this.onUserError(error);
-    };
-    AnonymousObserver.prototype.onCompleted = function () {
-        this.onUserCompleted();
-    };
-    return AnonymousObserver;
-}(Observer));
-
-var ConcatObserver = (function (_super) {
-    __extends(ConcatObserver, _super);
-    function ConcatObserver(currentObserver, startNextStream) {
-        var _this = _super.call(this, null, null, null) || this;
-        _this.currentObserver = null;
-        _this._startNextStream = null;
-        _this.currentObserver = currentObserver;
-        _this._startNextStream = startNextStream;
-        return _this;
-    }
-    ConcatObserver.create = function (currentObserver, startNextStream) {
-        return new this(currentObserver, startNextStream);
-    };
-    ConcatObserver.prototype.onNext = function (value) {
-        this.currentObserver.next(value);
-    };
-    ConcatObserver.prototype.onError = function (error) {
-        this.currentObserver.error(error);
-    };
-    ConcatObserver.prototype.onCompleted = function () {
-        this._startNextStream();
-    };
-    return ConcatObserver;
-}(Observer));
-
-var DoObserver = (function (_super) {
-    __extends(DoObserver, _super);
-    function DoObserver(currentObserver, prevObserver) {
-        var _this = _super.call(this, null, null, null) || this;
-        _this._currentObserver = null;
-        _this._prevObserver = null;
-        _this._currentObserver = currentObserver;
-        _this._prevObserver = prevObserver;
-        return _this;
-    }
-    DoObserver.create = function (currentObserver, prevObserver) {
-        return new this(currentObserver, prevObserver);
-    };
-    DoObserver.prototype.onNext = function (value) {
-        try {
-            this._prevObserver.next(value);
-        }
-        catch (e) {
-            this._prevObserver.error(e);
-            this._currentObserver.error(e);
-        }
-        finally {
-            this._currentObserver.next(value);
-        }
-    };
-    DoObserver.prototype.onError = function (error) {
-        try {
-            this._prevObserver.error(error);
-        }
-        catch (e) {
-        }
-        finally {
-            this._currentObserver.error(error);
-        }
-    };
-    DoObserver.prototype.onCompleted = function () {
-        try {
-            this._prevObserver.completed();
-        }
-        catch (e) {
-            this._prevObserver.error(e);
-            this._currentObserver.error(e);
-        }
-        finally {
-            this._currentObserver.completed();
-        }
-    };
-    return DoObserver;
-}(Observer));
-
-var FilterObserver = (function (_super) {
-    __extends(FilterObserver, _super);
-    function FilterObserver(prevObserver, predicate, source) {
-        var _this = _super.call(this, null, null, null) || this;
-        _this.prevObserver = null;
-        _this.source = null;
-        _this.i = 0;
-        _this.predicate = null;
-        _this.prevObserver = prevObserver;
-        _this.predicate = predicate;
-        _this.source = source;
-        return _this;
-    }
-    FilterObserver.create = function (prevObserver, predicate, source) {
-        return new this(prevObserver, predicate, source);
-    };
-    FilterObserver.prototype.onNext = function (value) {
-        try {
-            if (this.predicate(value, this.i++, this.source)) {
-                this.prevObserver.next(value);
-            }
-        }
-        catch (e) {
-            this.prevObserver.error(e);
-        }
-    };
-    FilterObserver.prototype.onError = function (error) {
-        this.prevObserver.error(error);
-    };
-    FilterObserver.prototype.onCompleted = function () {
-        this.prevObserver.completed();
-    };
-    return FilterObserver;
-}(Observer));
-
-var FilterWithStateObserver = (function (_super) {
-    __extends(FilterWithStateObserver, _super);
-    function FilterWithStateObserver() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this._isTrigger = false;
-        return _this;
-    }
-    FilterWithStateObserver.create = function (prevObserver, predicate, source) {
-        return new this(prevObserver, predicate, source);
-    };
-    FilterWithStateObserver.prototype.onNext = function (value) {
-        var data = null;
-        try {
-            if (this.predicate(value, this.i++, this.source)) {
-                if (!this._isTrigger) {
-                    data = {
-                        value: value,
-                        state: FilterState.ENTER
-                    };
-                }
-                else {
-                    data = {
-                        value: value,
-                        state: FilterState.TRIGGER
-                    };
-                }
-                this.prevObserver.next(data);
-                this._isTrigger = true;
-            }
-            else {
-                if (this._isTrigger) {
-                    data = {
-                        value: value,
-                        state: FilterState.LEAVE
-                    };
-                    this.prevObserver.next(data);
-                }
-                this._isTrigger = false;
-            }
-        }
-        catch (e) {
-            this.prevObserver.error(e);
-        }
-    };
-    return FilterWithStateObserver;
-}(FilterObserver));
-
-var IgnoreElementsObserver = (function (_super) {
-    __extends(IgnoreElementsObserver, _super);
-    function IgnoreElementsObserver(currentObserver) {
-        var _this = _super.call(this, null, null, null) || this;
-        _this._currentObserver = null;
-        _this._currentObserver = currentObserver;
-        return _this;
-    }
-    IgnoreElementsObserver.create = function (currentObserver) {
-        return new this(currentObserver);
-    };
-    IgnoreElementsObserver.prototype.onNext = function (value) {
-    };
-    IgnoreElementsObserver.prototype.onError = function (error) {
-        this._currentObserver.error(error);
-    };
-    IgnoreElementsObserver.prototype.onCompleted = function () {
-        this._currentObserver.completed();
-    };
-    return IgnoreElementsObserver;
-}(Observer));
-
-var MapObserver = (function (_super) {
-    __extends(MapObserver, _super);
-    function MapObserver(currentObserver, selector) {
-        var _this = _super.call(this, null, null, null) || this;
-        _this._currentObserver = null;
-        _this._selector = null;
-        _this._currentObserver = currentObserver;
-        _this._selector = selector;
-        return _this;
-    }
-    MapObserver.create = function (currentObserver, selector) {
-        return new this(currentObserver, selector);
-    };
-    MapObserver.prototype.onNext = function (value) {
-        var result = null;
-        try {
-            result = this._selector(value);
-        }
-        catch (e) {
-            this._currentObserver.error(e);
-        }
-        finally {
-            this._currentObserver.next(result);
-        }
-    };
-    MapObserver.prototype.onError = function (error) {
-        this._currentObserver.error(error);
-    };
-    MapObserver.prototype.onCompleted = function () {
-        this._currentObserver.completed();
-    };
-    return MapObserver;
-}(Observer));
-
-var MergeAllObserver = (function (_super) {
-    __extends(MergeAllObserver, _super);
-    function MergeAllObserver(currentObserver, streamGroup, groupDisposable) {
-        var _this = _super.call(this, null, null, null) || this;
-        _this.done = false;
-        _this.currentObserver = null;
-        _this._streamGroup = null;
-        _this._groupDisposable = null;
-        _this.currentObserver = currentObserver;
-        _this._streamGroup = streamGroup;
-        _this._groupDisposable = groupDisposable;
-        return _this;
-    }
-    MergeAllObserver.create = function (currentObserver, streamGroup, groupDisposable) {
-        return new this(currentObserver, streamGroup, groupDisposable);
-    };
-    MergeAllObserver.prototype.onNext = function (innerSource) {
-        if (JudgeUtils$$1.isPromise(innerSource)) {
-            innerSource = fromPromise(innerSource);
-        }
-        this._streamGroup.addChild(innerSource);
-        this._groupDisposable.add(innerSource.buildStream(InnerObserver.create(this, this._streamGroup, innerSource)));
-    };
-    MergeAllObserver.prototype.onError = function (error) {
-        this.currentObserver.error(error);
-    };
-    MergeAllObserver.prototype.onCompleted = function () {
-        this.done = true;
-        if (this._streamGroup.getCount() === 0) {
-            this.currentObserver.completed();
-        }
-    };
-    return MergeAllObserver;
-}(Observer));
-__decorate([
-    requireCheck(function (innerSource) {
-        assert(innerSource instanceof Stream || JudgeUtils$$1.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
-    })
-], MergeAllObserver.prototype, "onNext", null);
-var InnerObserver = (function (_super) {
-    __extends(InnerObserver, _super);
-    function InnerObserver(parent, streamGroup, currentStream) {
-        var _this = _super.call(this, null, null, null) || this;
-        _this._parent = null;
-        _this._streamGroup = null;
-        _this._currentStream = null;
-        _this._parent = parent;
-        _this._streamGroup = streamGroup;
-        _this._currentStream = currentStream;
-        return _this;
-    }
-    InnerObserver.create = function (parent, streamGroup, currentStream) {
-        var obj = new this(parent, streamGroup, currentStream);
-        return obj;
-    };
-    InnerObserver.prototype.onNext = function (value) {
-        this._parent.currentObserver.next(value);
-    };
-    InnerObserver.prototype.onError = function (error) {
-        this._parent.currentObserver.error(error);
-    };
-    InnerObserver.prototype.onCompleted = function () {
-        var currentStream = this._currentStream, parent = this._parent;
-        this._streamGroup.removeChild(function (stream) {
-            return JudgeUtils$$1.isEqual(stream, currentStream);
-        });
-        if (this._isAsync() && this._streamGroup.getCount() === 0) {
-            parent.currentObserver.completed();
-        }
-    };
-    InnerObserver.prototype._isAsync = function () {
-        return this._parent.done;
-    };
-    return InnerObserver;
-}(Observer));
-
-var MergeObserver = (function (_super) {
-    __extends(MergeObserver, _super);
-    function MergeObserver(currentObserver, maxConcurrent, streamGroup, groupDisposable) {
-        var _this = _super.call(this, null, null, null) || this;
-        _this.done = false;
-        _this.currentObserver = null;
-        _this.activeCount = 0;
-        _this.q = [];
-        _this._maxConcurrent = null;
-        _this._groupDisposable = null;
-        _this._streamGroup = null;
-        _this.currentObserver = currentObserver;
-        _this._maxConcurrent = maxConcurrent;
-        _this._streamGroup = streamGroup;
-        _this._groupDisposable = groupDisposable;
-        return _this;
-    }
-    MergeObserver.create = function (currentObserver, maxConcurrent, streamGroup, groupDisposable) {
-        return new this(currentObserver, maxConcurrent, streamGroup, groupDisposable);
-    };
-    MergeObserver.prototype.handleSubscribe = function (innerSource) {
-        if (JudgeUtils$$1.isPromise(innerSource)) {
-            innerSource = fromPromise(innerSource);
-        }
-        this._streamGroup.addChild(innerSource);
-        this._groupDisposable.add(innerSource.buildStream(InnerObserver$1.create(this, this._streamGroup, innerSource)));
-    };
-    MergeObserver.prototype.onNext = function (innerSource) {
-        if (this._isReachMaxConcurrent()) {
-            this.activeCount++;
-            this.handleSubscribe(innerSource);
-            return;
-        }
-        this.q.push(innerSource);
-    };
-    MergeObserver.prototype.onError = function (error) {
-        this.currentObserver.error(error);
-    };
-    MergeObserver.prototype.onCompleted = function () {
-        this.done = true;
-        if (this._streamGroup.getCount() === 0) {
-            this.currentObserver.completed();
-        }
-    };
-    MergeObserver.prototype._isReachMaxConcurrent = function () {
-        return this.activeCount < this._maxConcurrent;
-    };
-    return MergeObserver;
-}(Observer));
-__decorate([
-    requireCheck(function (innerSource) {
-        assert(innerSource instanceof Stream || JudgeUtils$$1.isPromise(innerSource), Log.info.FUNC_MUST_BE("innerSource", "Stream or Promise"));
-    })
-], MergeObserver.prototype, "onNext", null);
-var InnerObserver$1 = (function (_super) {
-    __extends(InnerObserver, _super);
-    function InnerObserver(parent, streamGroup, currentStream) {
-        var _this = _super.call(this, null, null, null) || this;
-        _this._parent = null;
-        _this._streamGroup = null;
-        _this._currentStream = null;
-        _this._parent = parent;
-        _this._streamGroup = streamGroup;
-        _this._currentStream = currentStream;
-        return _this;
-    }
-    InnerObserver.create = function (parent, streamGroup, currentStream) {
-        var obj = new this(parent, streamGroup, currentStream);
-        return obj;
-    };
-    InnerObserver.prototype.onNext = function (value) {
-        this._parent.currentObserver.next(value);
-    };
-    InnerObserver.prototype.onError = function (error) {
-        this._parent.currentObserver.error(error);
-    };
-    InnerObserver.prototype.onCompleted = function () {
-        var parent = this._parent;
-        this._streamGroup.removeChild(this._currentStream);
-        if (parent.q.length > 0) {
-            parent.activeCount = 0;
-            parent.handleSubscribe(parent.q.shift());
-        }
-        else {
-            if (this._isAsync() && this._streamGroup.getCount() === 0) {
-                parent.currentObserver.completed();
-            }
-        }
-    };
-    InnerObserver.prototype._isAsync = function () {
-        return this._parent.done;
-    };
-    return InnerObserver;
-}(Observer));
-
-var SkipUntilOtherObserver = (function (_super) {
-    __extends(SkipUntilOtherObserver, _super);
-    function SkipUntilOtherObserver(prevObserver, skipUntilStream) {
-        var _this = _super.call(this, null, null, null) || this;
-        _this.otherDisposable = null;
-        _this._prevObserver = null;
-        _this._skipUntilStream = null;
-        _this._prevObserver = prevObserver;
-        _this._skipUntilStream = skipUntilStream;
-        return _this;
-    }
-    SkipUntilOtherObserver.create = function (prevObserver, skipUntilStream) {
-        return new this(prevObserver, skipUntilStream);
-    };
-    SkipUntilOtherObserver.prototype.onNext = function (value) {
-        this._skipUntilStream.isOpen = true;
-        this.otherDisposable.dispose();
-    };
-    SkipUntilOtherObserver.prototype.onError = function (error) {
-        this._prevObserver.error(error);
-    };
-    SkipUntilOtherObserver.prototype.onCompleted = function () {
-        this.otherDisposable.dispose();
-    };
-    return SkipUntilOtherObserver;
-}(Observer));
-
-var SkipUntilSourceObserver = (function (_super) {
-    __extends(SkipUntilSourceObserver, _super);
-    function SkipUntilSourceObserver(prevObserver, skipUntilStream) {
-        var _this = _super.call(this, null, null, null) || this;
-        _this._prevObserver = null;
-        _this._skipUntilStream = null;
-        _this._prevObserver = prevObserver;
-        _this._skipUntilStream = skipUntilStream;
-        return _this;
-    }
-    SkipUntilSourceObserver.create = function (prevObserver, skipUntilStream) {
-        return new this(prevObserver, skipUntilStream);
-    };
-    SkipUntilSourceObserver.prototype.onNext = function (value) {
-        if (this._skipUntilStream.isOpen) {
-            this._prevObserver.next(value);
-        }
-    };
-    SkipUntilSourceObserver.prototype.onError = function (error) {
-        this._prevObserver.error(error);
-    };
-    SkipUntilSourceObserver.prototype.onCompleted = function () {
-        if (this._skipUntilStream.isOpen) {
-            this._prevObserver.completed();
-        }
-    };
-    return SkipUntilSourceObserver;
-}(Observer));
-
-var TakeUntilObserver = (function (_super) {
-    __extends(TakeUntilObserver, _super);
-    function TakeUntilObserver(prevObserver) {
-        var _this = _super.call(this, null, null, null) || this;
-        _this._prevObserver = null;
-        _this._prevObserver = prevObserver;
-        return _this;
-    }
-    TakeUntilObserver.create = function (prevObserver) {
-        return new this(prevObserver);
-    };
-    TakeUntilObserver.prototype.onNext = function (value) {
-        this._prevObserver.completed();
-    };
-    TakeUntilObserver.prototype.onError = function (error) {
-        this._prevObserver.error(error);
-    };
-    TakeUntilObserver.prototype.onCompleted = function () {
-    };
-    return TakeUntilObserver;
-}(Observer));
-
-var ConcatStream = (function (_super) {
-    __extends(ConcatStream, _super);
-    function ConcatStream(sources) {
-        var _this = _super.call(this, null) || this;
-        _this._sources = Collection.create();
-        var self = _this;
-        _this.scheduler = sources[0].scheduler;
-        sources.forEach(function (source) {
-            if (JudgeUtils$$1.isPromise(source)) {
-                self._sources.addChild(fromPromise(source));
-            }
-            else {
-                self._sources.addChild(source);
-            }
-        });
-        return _this;
-    }
-    ConcatStream.create = function (sources) {
-        var obj = new this(sources);
-        return obj;
-    };
-    ConcatStream.prototype.subscribeCore = function (observer) {
-        var self = this, count = this._sources.getCount(), d = GroupDisposable.create();
-        function loopRecursive(i) {
-            if (i === count) {
-                observer.completed();
-                return;
-            }
-            d.add(self._sources.getChild(i).buildStream(ConcatObserver.create(observer, function () {
-                loopRecursive(i + 1);
-            })));
-        }
-        this.scheduler.publishRecursive(observer, 0, loopRecursive);
-        return GroupDisposable.create(d);
-    };
-    return ConcatStream;
-}(BaseStream));
-ConcatStream = __decorate([
-    registerClass("ConcatStream")
-], ConcatStream);
-
-var DoStream = (function (_super) {
-    __extends(DoStream, _super);
-    function DoStream(source, onNext, onError, onCompleted) {
-        var _this = _super.call(this, null) || this;
-        _this._source = null;
-        _this._observer = null;
-        _this._source = source;
-        _this._observer = AnonymousObserver.create(onNext, onError, onCompleted);
-        _this.scheduler = _this._source.scheduler;
-        return _this;
-    }
-    DoStream.create = function (source, onNext, onError, onCompleted) {
-        var obj = new this(source, onNext, onError, onCompleted);
-        return obj;
-    };
-    DoStream.prototype.subscribeCore = function (observer) {
-        return this._source.buildStream(DoObserver.create(observer, this._observer));
-    };
-    return DoStream;
-}(BaseStream));
-DoStream = __decorate([
-    registerClass("DoStream")
-], DoStream);
-
-var FilterStream = FilterStream_1 = (function (_super) {
-    __extends(FilterStream, _super);
-    function FilterStream(source, predicate, thisArg) {
-        var _this = _super.call(this, null) || this;
-        _this.predicate = null;
-        _this._source = null;
-        _this._source = source;
-        _this.predicate = FunctionUtils.bind(thisArg, predicate);
-        return _this;
-    }
-    FilterStream.create = function (source, predicate, thisArg) {
-        var obj = new this(source, predicate, thisArg);
-        return obj;
-    };
-    FilterStream.prototype.subscribeCore = function (observer) {
-        return this._source.subscribe(this.createObserver(observer));
-    };
-    FilterStream.prototype.internalFilter = function (predicate, thisArg) {
-        return this.createStreamForInternalFilter(this._source, this._innerPredicate(predicate, this), thisArg);
-    };
-    FilterStream.prototype.createObserver = function (observer) {
-        return FilterObserver.create(observer, this.predicate, this);
-    };
-    FilterStream.prototype.createStreamForInternalFilter = function (source, innerPredicate, thisArg) {
-        return FilterStream_1.create(source, innerPredicate, thisArg);
-    };
-    FilterStream.prototype._innerPredicate = function (predicate, self) {
-        var _this = this;
-        return function (value, i, o) {
-            return self.predicate(value, i, o) && predicate.call(_this, value, i, o);
-        };
-    };
-    return FilterStream;
-}(BaseStream));
-FilterStream = FilterStream_1 = __decorate([
-    registerClass("FilterStream")
-], FilterStream);
-var FilterStream_1;
-
-var FilterWithStateStream = FilterWithStateStream_1 = (function (_super) {
-    __extends(FilterWithStateStream, _super);
-    function FilterWithStateStream() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    FilterWithStateStream.create = function (source, predicate, thisArg) {
-        var obj = new this(source, predicate, thisArg);
-        return obj;
-    };
-    FilterWithStateStream.prototype.createObserver = function (observer) {
-        return FilterWithStateObserver.create(observer, this.predicate, this);
-    };
-    FilterWithStateStream.prototype.createStreamForInternalFilter = function (source, innerPredicate, thisArg) {
-        return FilterWithStateStream_1.create(source, innerPredicate, thisArg);
-    };
-    return FilterWithStateStream;
-}(FilterStream));
-FilterWithStateStream = FilterWithStateStream_1 = __decorate([
-    registerClass("FilterWithStateStream")
-], FilterWithStateStream);
-var FilterWithStateStream_1;
-
-var IgnoreElementsStream = (function (_super) {
-    __extends(IgnoreElementsStream, _super);
-    function IgnoreElementsStream(source) {
-        var _this = _super.call(this, null) || this;
-        _this._source = null;
-        _this._source = source;
-        _this.scheduler = _this._source.scheduler;
-        return _this;
-    }
-    IgnoreElementsStream.create = function (source) {
-        var obj = new this(source);
-        return obj;
-    };
-    IgnoreElementsStream.prototype.subscribeCore = function (observer) {
-        return this._source.buildStream(IgnoreElementsObserver.create(observer));
-    };
-    return IgnoreElementsStream;
-}(BaseStream));
-IgnoreElementsStream = __decorate([
-    registerClass("IgnoreElementsStream")
-], IgnoreElementsStream);
-
-var MapStream = (function (_super) {
-    __extends(MapStream, _super);
-    function MapStream(source, selector) {
-        var _this = _super.call(this, null) || this;
-        _this._source = null;
-        _this._selector = null;
-        _this._source = source;
-        _this.scheduler = _this._source.scheduler;
-        _this._selector = selector;
-        return _this;
-    }
-    MapStream.create = function (source, selector) {
-        var obj = new this(source, selector);
-        return obj;
-    };
-    MapStream.prototype.subscribeCore = function (observer) {
-        return this._source.buildStream(MapObserver.create(observer, this._selector));
-    };
-    return MapStream;
-}(BaseStream));
-MapStream = __decorate([
-    registerClass("MapStream")
-], MapStream);
-
-var MergeAllStream = (function (_super) {
-    __extends(MergeAllStream, _super);
-    function MergeAllStream(source) {
-        var _this = _super.call(this, null) || this;
-        _this._source = null;
-        _this._observer = null;
-        _this._source = source;
-        _this.scheduler = _this._source.scheduler;
-        return _this;
-    }
-    MergeAllStream.create = function (source) {
-        var obj = new this(source);
-        return obj;
-    };
-    MergeAllStream.prototype.subscribeCore = function (observer) {
-        var streamGroup = Collection.create(), groupDisposable = GroupDisposable.create();
-        this._source.buildStream(MergeAllObserver.create(observer, streamGroup, groupDisposable));
-        return groupDisposable;
-    };
-    return MergeAllStream;
-}(BaseStream));
-MergeAllStream = __decorate([
-    registerClass("MergeAllStream")
-], MergeAllStream);
-
-var MergeStream = (function (_super) {
-    __extends(MergeStream, _super);
-    function MergeStream(source, maxConcurrent) {
-        var _this = _super.call(this, null) || this;
-        _this._source = null;
-        _this._maxConcurrent = null;
-        _this._source = source;
-        _this._maxConcurrent = maxConcurrent;
-        _this.scheduler = _this._source.scheduler;
-        return _this;
-    }
-    MergeStream.create = function (source, maxConcurrent) {
-        var obj = new this(source, maxConcurrent);
-        return obj;
-    };
-    MergeStream.prototype.subscribeCore = function (observer) {
-        var streamGroup = Collection.create(), groupDisposable = GroupDisposable.create();
-        this._source.buildStream(MergeObserver.create(observer, this._maxConcurrent, streamGroup, groupDisposable));
-        return groupDisposable;
-    };
-    return MergeStream;
-}(BaseStream));
-MergeStream = __decorate([
-    registerClass("MergeStream")
-], MergeStream);
-
-var RepeatStream = (function (_super) {
-    __extends(RepeatStream, _super);
-    function RepeatStream(source, count) {
-        var _this = _super.call(this, null) || this;
-        _this._source = null;
-        _this._count = null;
-        _this._source = source;
-        _this._count = count;
-        _this.scheduler = _this._source.scheduler;
-        return _this;
-    }
-    RepeatStream.create = function (source, count) {
-        var obj = new this(source, count);
-        return obj;
-    };
-    RepeatStream.prototype.subscribeCore = function (observer) {
-        var self = this, d = GroupDisposable.create();
-        function loopRecursive(count) {
-            if (count === 0) {
-                observer.completed();
-                return;
-            }
-            d.add(self._source.buildStream(ConcatObserver.create(observer, function () {
-                loopRecursive(count - 1);
-            })));
-        }
-        this.scheduler.publishRecursive(observer, this._count, loopRecursive);
-        return GroupDisposable.create(d);
-    };
-    return RepeatStream;
-}(BaseStream));
-RepeatStream = __decorate([
-    registerClass("RepeatStream")
-], RepeatStream);
-
-var SkipUntilStream = (function (_super) {
-    __extends(SkipUntilStream, _super);
-    function SkipUntilStream(source, otherStream) {
-        var _this = _super.call(this, null) || this;
-        _this.isOpen = false;
-        _this._source = null;
-        _this._otherStream = null;
-        _this._source = source;
-        _this._otherStream = JudgeUtils$$1.isPromise(otherStream) ? fromPromise(otherStream) : otherStream;
-        _this.scheduler = _this._source.scheduler;
-        return _this;
-    }
-    SkipUntilStream.create = function (source, otherSteam) {
-        var obj = new this(source, otherSteam);
-        return obj;
-    };
-    SkipUntilStream.prototype.subscribeCore = function (observer) {
-        var group = GroupDisposable.create(), otherDisposable = null, skipUntilOtherObserver = null;
-        group.add(this._source.buildStream(SkipUntilSourceObserver.create(observer, this)));
-        skipUntilOtherObserver = SkipUntilOtherObserver.create(observer, this);
-        otherDisposable = this._otherStream.buildStream(skipUntilOtherObserver);
-        skipUntilOtherObserver.otherDisposable = otherDisposable;
-        group.add(otherDisposable);
-        return group;
-    };
-    return SkipUntilStream;
-}(BaseStream));
-SkipUntilStream = __decorate([
-    registerClass("SkipUntilStream")
-], SkipUntilStream);
-
-var TakeUntilStream = (function (_super) {
-    __extends(TakeUntilStream, _super);
-    function TakeUntilStream(source, otherStream) {
-        var _this = _super.call(this, null) || this;
-        _this._source = null;
-        _this._otherStream = null;
-        _this._source = source;
-        _this._otherStream = JudgeUtils$$1.isPromise(otherStream) ? fromPromise(otherStream) : otherStream;
-        _this.scheduler = _this._source.scheduler;
-        return _this;
-    }
-    TakeUntilStream.create = function (source, otherSteam) {
-        var obj = new this(source, otherSteam);
-        return obj;
-    };
-    TakeUntilStream.prototype.subscribeCore = function (observer) {
-        var group = GroupDisposable.create(), autoDetachObserver = AutoDetachObserver.create(observer), sourceDisposable = null;
-        sourceDisposable = this._source.buildStream(observer);
-        group.add(sourceDisposable);
-        autoDetachObserver.setDisposable(sourceDisposable);
-        group.add(this._otherStream.buildStream(TakeUntilObserver.create(autoDetachObserver)));
-        return group;
-    };
-    return TakeUntilStream;
-}(BaseStream));
-TakeUntilStream = __decorate([
-    registerClass("TakeUntilStream")
-], TakeUntilStream);
 
 var GeneratorSubject = (function (_super) {
     __extends(GeneratorSubject, _super);
@@ -3282,60 +3345,6 @@ var TestScheduler = (function (_super) {
     };
     return TestScheduler;
 }(Scheduler));
-
-root$1.requestNextAnimationFrame = (function () {
-    var originalRequestAnimationFrame = undefined, wrapper = undefined, callback = undefined, geckoVersion = null, userAgent = root$1.navigator && root$1.navigator.userAgent, index = 0, self = this;
-    wrapper = function (time) {
-        time = root$1.performance.now();
-        self.callback(time);
-    };
-    if (root$1.requestAnimationFrame) {
-        return requestAnimationFrame;
-    }
-    if (root$1.webkitRequestAnimationFrame) {
-        originalRequestAnimationFrame = root$1.webkitRequestAnimationFrame;
-        root$1.webkitRequestAnimationFrame = function (callback, element) {
-            self.callback = callback;
-            return originalRequestAnimationFrame(wrapper, element);
-        };
-    }
-    if (root$1.msRequestAnimationFrame) {
-        originalRequestAnimationFrame = root$1.msRequestAnimationFrame;
-        root$1.msRequestAnimationFrame = function (callback) {
-            self.callback = callback;
-            return originalRequestAnimationFrame(wrapper);
-        };
-    }
-    if (root$1.mozRequestAnimationFrame) {
-        index = userAgent.indexOf('rv:');
-        if (userAgent.indexOf('Gecko') != -1) {
-            geckoVersion = userAgent.substr(index + 3, 3);
-            if (geckoVersion === '2.0') {
-                root$1.mozRequestAnimationFrame = undefined;
-            }
-        }
-    }
-    return root$1.webkitRequestAnimationFrame ||
-        root$1.mozRequestAnimationFrame ||
-        root$1.oRequestAnimationFrame ||
-        root$1.msRequestAnimationFrame ||
-        function (callback, element) {
-            var start, finish;
-            root$1.setTimeout(function () {
-                start = root$1.performance.now();
-                callback(start);
-                finish = root$1.performance.now();
-                self.timeout = 1000 / 60 - (finish - start);
-            }, self.timeout);
-        };
-}());
-root$1.cancelNextRequestAnimationFrame = root$1.cancelRequestAnimationFrame
-    || root$1.webkitCancelAnimationFrame
-    || root$1.webkitCancelRequestAnimationFrame
-    || root$1.mozCancelRequestAnimationFrame
-    || root$1.oCancelRequestAnimationFrame
-    || root$1.msCancelRequestAnimationFrame
-    || clearTimeout;
 
 export { JudgeUtils$$1 as JudgeUtils, fromNodeCallback, fromStream, fromReadableStream, fromWritableStream, fromTransformStream, Entity, Main, Observer, Scheduler, Stream, assert, requireCheck, ensure, requireGetter, requireSetter, ensureGetter, ensureSetter, invariant, GroupDisposable, InnerSubscription, InnerSubscriptionGroup, SingleDisposable, FilterState, createStream, fromArray, fromPromise, fromEventPattern, interval, intervalRequest, timeout, empty, callFunc, judge, defer, just, root$1 as root, AnonymousObserver, AutoDetachObserver, ConcatObserver, DoObserver, FilterObserver, FilterWithStateObserver, IgnoreElementsObserver, MapObserver, MergeAllObserver, MergeObserver, SkipUntilOtherObserver, SkipUntilSourceObserver, SubjectObserver, TakeUntilObserver, AnonymousStream, BaseStream, ConcatStream, DeferStream, DoStream, FilterStream, FilterWithStateStream, FromArrayStream, FromEventPatternStream, FromPromiseStream, IgnoreElementsStream, IntervalRequestStream, IntervalStream, MapStream, MergeAllStream, MergeStream, RepeatStream, SkipUntilStream, TakeUntilStream, TimeoutStream, GeneratorSubject, Subject, ActionType, MockObserver, MockPromise, Record, TestScheduler, TestStream };
 //# sourceMappingURL=wdFrp.module.js.map

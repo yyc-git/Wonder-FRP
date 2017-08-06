@@ -1,3 +1,15 @@
+import "../stream/DoStream";
+import "../stream/ConcatStream";
+import "../stream/MapStream";
+import "../stream/MergeAllStream";
+import "../stream/SkipUntilStream";
+import "../stream/TakeUntilStream";
+import "../stream/FilterStream";
+import "../stream/FilterWithStateStream";
+import "../stream/MergeStream";
+import "../stream/RepeatStream";
+import "../stream/IgnoreElementsStream";
+import "../extend/root";
 import { AnonymousStream } from "../stream/AnonymousStream";
 import { Scheduler } from "../core/Scheduler";
 import { FromArrayStream } from "../stream/FromArrayStream";

@@ -1,3 +1,23 @@
+/*!
+to avoid cycle dependence problem and avoid user who use wonder-frp need mannully import stream:
+manually import stream which need be imported in Stream.ts here!
+ */
+import "../stream/DoStream";
+import "../stream/ConcatStream";
+import "../stream/MapStream";
+import "../stream/MergeAllStream";
+import "../stream/SkipUntilStream";
+import "../stream/TakeUntilStream";
+import "../stream/FilterStream";
+import "../stream/FilterWithStateStream";
+import "../stream/MergeStream";
+import "../stream/RepeatStream";
+import "../stream/IgnoreElementsStream";
+/*!
+ to avoid user who use wonder-frp need mannully import root:
+ manually import root here!
+ */
+import "../extend/root";
 import { AnonymousStream } from "../stream/AnonymousStream";
 import { Scheduler } from "../core/Scheduler";
 import { FromArrayStream } from "../stream/FromArrayStream";

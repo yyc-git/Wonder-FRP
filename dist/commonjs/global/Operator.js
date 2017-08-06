@@ -6,6 +6,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+require("../stream/DoStream");
+require("../stream/ConcatStream");
+require("../stream/MapStream");
+require("../stream/MergeAllStream");
+require("../stream/SkipUntilStream");
+require("../stream/TakeUntilStream");
+require("../stream/FilterStream");
+require("../stream/FilterWithStateStream");
+require("../stream/MergeStream");
+require("../stream/RepeatStream");
+require("../stream/IgnoreElementsStream");
+require("../extend/root");
 var AnonymousStream_1 = require("../stream/AnonymousStream");
 var Scheduler_1 = require("../core/Scheduler");
 var FromArrayStream_1 = require("../stream/FromArrayStream");
