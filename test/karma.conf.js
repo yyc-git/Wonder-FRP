@@ -14,16 +14,13 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-        'bower_components/jquery/dist/jquery.js',
-        'bower_components/yyctoolbox/tool/yTool.js',
-        'bower_components/rsvp.js/rsvp.js',
-
+        'test/helper/*.js',
+        'test/helper/jasmine/**',
+        'test/helper/sinonJs/*.js',
 
         'dist/wdFrp.js',
 
 
-        'test/helper/jasmine/**',
-        'test/helper/sinonJs/*.js',
 
         'test/unit/*Tool.js',
         'test/unit/**/*Tool.js',
