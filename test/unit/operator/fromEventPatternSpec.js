@@ -5,186 +5,178 @@ describe("fromEventPattern", function () {
         completed = TestScheduler.completed;
     var scheduler = null;
     var sandbox = null;
+    var canvasId = null;
 
     beforeEach(function () {
         sandbox = sinon.sandbox.create();
         scheduler = TestScheduler.create();
+
+        canvasId = "test_engine";
+        $("body").append($("<canvas id=" + canvasId + "></canvas>"));
     });
     afterEach(function () {
         sandbox.restore();
+        $("#" + canvasId).remove();
     });
 
-    describe("Wonder engine event test", function(){
-        var canvasId = null;
-        var scene = null;
+    it("single handler", function(){
+        var eventTriggered = null,
+            isOff = false,
+            sum = 0;
 
-        beforeEach(function(){
-            canvasId = "test_engine";
-            $("body").append($("<canvas id=" + canvasId + "></canvas>"));
-        });
-        afterEach(function(){
-            $("#" + canvasId).remove();
-        });
+        var subscription = rt.fromEventPattern(
+            function(handler){
+                $("canvas").on("mousedown", handler);
+            },
+            function(handler){
+                $("canvas").off("mousedown", handler);
+                isOff = true;
+            })
+            .subscribe(function(e){
+                eventTriggered = e;
+                sum ++;
+            });
 
-        it("single handler", function(){
+        $("canvas").trigger("mousedown");
+
+        expect(eventTriggered.type).toEqual("mousedown");
+        expect(sum).toEqual(1);
+
+        subscription.dispose();
+        $("canvas").trigger("mousedown");
+
+        expect(isOff).toBeTruthy();
+        expect(sum).toEqual(1);
+    });
+
+    describe("multi handler for one eventType", function(){
+        describe("subject", function(){
             var eventTriggered = null,
+                eventTriggered2 = null,
                 isOff = false,
-                sum = 0;
+                sum = 0,
+                sum2 = 0;
+            var fakeEvent = null;
+            var subject = null;
+            var subscription1 = null,
+                subscription2 = null;
 
-            var subscription = rt.fromEventPattern(
-                function(handler){
-                    $("canvas").on("mousedown", handler);
-                },
-                function(handler){
-                    $("canvas").off("mousedown", handler);
-                    isOff = true;
-                })
-                .subscribe(function(e){
+            beforeEach(function(){
+                eventTriggered = null;
+                eventTriggered2 = null;
+                isOff = false;
+                sum = 0;
+                sum2 = 0;
+
+                subject = rt.Subject.create();
+
+                rt.fromEventPattern(
+                    function(handler){
+                        $("canvas").on("mousedown", handler);
+                    },
+                    function(handler){
+                        $("canvas").off("mousedown", handler);
+                        isOff = true;
+                    })
+                    .subscribe(subject);
+
+                subscription1 = subject.subscribe(function(e){
                     eventTriggered = e;
                     sum ++;
                 });
-
-            $("canvas").trigger("mousedown");
-
-            expect(eventTriggered.type).toEqual("mousedown");
-            expect(sum).toEqual(1);
-
-            subscription.dispose();
-            $("canvas").trigger("mousedown");
-
-            expect(isOff).toBeTruthy();
-            expect(sum).toEqual(1);
-        });
-
-        describe("multi handler for one eventType", function(){
-            describe("subject", function(){
-                var eventTriggered = null,
-                    eventTriggered2 = null,
-                    isOff = false,
-                    sum = 0,
-                    sum2 = 0;
-                var fakeEvent = null;
-                var subject = null;
-                var subscription1 = null,
-                    subscription2 = null;
-
-                beforeEach(function(){
-                    eventTriggered = null;
-                    eventTriggered2 = null;
-                    isOff = false;
-                    sum = 0;
-                    sum2 = 0;
-
-                    subject = rt.Subject.create();
-
-                    rt.fromEventPattern(
-                        function(handler){
-                            $("canvas").on("mousedown", handler);
-                        },
-                        function(handler){
-                            $("canvas").off("mousedown", handler);
-                            isOff = true;
-                        })
-                        .subscribe(subject);
-
-                    subscription1 = subject.subscribe(function(e){
-                        eventTriggered = e;
-                        sum ++;
-                    });
-                    subscription2 = subject.subscribe(function(e){
-                        eventTriggered2 = e;
-                        sum2 ++;
-                    });
-                    subject.start();
+                subscription2 = subject.subscribe(function(e){
+                    eventTriggered2 = e;
+                    sum2 ++;
                 });
-
-                it("trigger", function(){
-                    $("canvas").trigger("mousedown");
-
-                    expect(eventTriggered.type).toEqual("mousedown");
-                    expect(eventTriggered2.type).toEqual("mousedown");
-                    expect(sum).toEqual(1);
-                    expect(sum2).toEqual(1);
-                });
-                it("it will invoke removeHandler when disposing arbitrary one", function(){
-                    subscription2.dispose();
-                    $("canvas").trigger("mousedown");
-
-                    expect(isOff).toBeTruthy();
-                    expect(sum).toEqual(0);
-                    expect(sum2).toEqual(0);
-                });
+                subject.start();
             });
 
-            describe("multi invoke fromEventPattern", function(){
-                var eventTriggered = null,
-                    eventTriggered2 = null,
-                    isOff = false,
-                    sum = 0,
-                    sum2 = 0;
-                var fakeEvent = null;
-                var subscription1 = null,
-                    subscription2 = null;
-                var fakeObj = null;
+            it("trigger", function(){
+                $("canvas").trigger("mousedown");
 
-                beforeEach(function(){
-                    eventTriggered = null;
-                    eventTriggered2 = null;
-                    isOff = false;
-                    sum = 0;
-                    sum2 = 0;
+                expect(eventTriggered.type).toEqual("mousedown");
+                expect(eventTriggered2.type).toEqual("mousedown");
+                expect(sum).toEqual(1);
+                expect(sum2).toEqual(1);
+            });
+            it("it will invoke removeHandler when disposing arbitrary one", function(){
+                subscription2.dispose();
+                $("canvas").trigger("mousedown");
 
-                    fakeObj = {
-                        a:sandbox.stub(),
-                        b:sandbox.stub()
-                    };
+                expect(isOff).toBeTruthy();
+                expect(sum).toEqual(0);
+                expect(sum2).toEqual(0);
+            });
+        });
+
+        describe("multi invoke fromEventPattern", function(){
+            var eventTriggered = null,
+                eventTriggered2 = null,
+                isOff = false,
+                sum = 0,
+                sum2 = 0;
+            var fakeEvent = null;
+            var subscription1 = null,
+                subscription2 = null;
+            var fakeObj = null;
+
+            beforeEach(function(){
+                eventTriggered = null;
+                eventTriggered2 = null;
+                isOff = false;
+                sum = 0;
+                sum2 = 0;
+
+                fakeObj = {
+                    a:sandbox.stub(),
+                    b:sandbox.stub()
+                };
 
 
-                    subscription1 = rt.fromEventPattern(
-                        function(handler){
-                            $("canvas").on("mousedown", handler);
-                        },
-                        function(handler){
-                            $("canvas").off("mousedown", handler);
-                            isOff = true;
-                        })
-                        .subscribe(function(e){
-                            eventTriggered = e;
-                            sum ++;
-                            fakeObj.a();
+                subscription1 = rt.fromEventPattern(
+                    function(handler){
+                        $("canvas").on("mousedown", handler);
+                    },
+                    function(handler){
+                        $("canvas").off("mousedown", handler);
+                        isOff = true;
+                    })
+                    .subscribe(function(e){
+                        eventTriggered = e;
+                        sum ++;
+                        fakeObj.a();
                     });
 
-                    subscription2 = rt.fromEventPattern(
-                        function(handler){
-                            $("canvas").on("mousedown", handler);
-                        },
-                        function(handler){
-                            $("canvas").off("mousedown", handler);
-                            isOff = true;
-                        })
-                        .subscribe(function(e){
-                            eventTriggered2 = e;
-                            sum2 ++;
-                            fakeObj.b();
-                        });
-                });
+                subscription2 = rt.fromEventPattern(
+                    function(handler){
+                        $("canvas").on("mousedown", handler);
+                    },
+                    function(handler){
+                        $("canvas").off("mousedown", handler);
+                        isOff = true;
+                    })
+                    .subscribe(function(e){
+                        eventTriggered2 = e;
+                        sum2 ++;
+                        fakeObj.b();
+                    });
+            });
 
-                it("trigger", function(){
-                    $("canvas").trigger("mousedown");
+            it("trigger", function(){
+                $("canvas").trigger("mousedown");
 
-                    expect(eventTriggered.type).toEqual("mousedown");
-                    expect(eventTriggered2.type).toEqual("mousedown");
-                    expect(sum).toEqual(1);
-                    expect(sum2).toEqual(1);
-                });
-                it("it will invoke the specify removeHandler when disposing", function(){
-                    subscription2.dispose();
-                    $("canvas").trigger("mousedown");
+                expect(eventTriggered.type).toEqual("mousedown");
+                expect(eventTriggered2.type).toEqual("mousedown");
+                expect(sum).toEqual(1);
+                expect(sum2).toEqual(1);
+            });
+            it("it will invoke the specify removeHandler when disposing", function(){
+                subscription2.dispose();
+                $("canvas").trigger("mousedown");
 
-                    expect(isOff).toBeTruthy();
-                    expect(sum).toEqual(1);
-                    expect(sum2).toEqual(0);
-                });
+                expect(isOff).toBeTruthy();
+                expect(sum).toEqual(1);
+                expect(sum2).toEqual(0);
             });
         });
     });

@@ -28,6 +28,7 @@ module.exports = function(config) {
 
         'test/unit/**',
 
+        // 'test/unit/**/fromEventSpec.js',
         // 'test/unit/**/fromPromise*.js'
 
         // 'test/unit/**/doSpec.js',

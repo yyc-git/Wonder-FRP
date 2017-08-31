@@ -22,6 +22,7 @@ export abstract class Stream extends Entity {
         super("Stream");
 
         this.subscribeFunc = subscribeFunc || function() { };
+
     }
 
     public abstract subscribe(arg1: Function | Observer | Subject, onError?: Function, onCompleted?: Function): IDisposable;
