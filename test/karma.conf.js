@@ -35,7 +35,10 @@ module.exports = function(config) {
         // 'test/unit/**/skipUntilSpec.js',
         // 'test/unit/**/dispose*.js',
 
-        //'test/unit/**/takeUntilSpec.js',
+        // 'test/unit/**/takeUntilSpec.js',
+        // 'test/unit/**/flatMapSpec.js',
+        // 'test/unit/**/concatMapSpec.js',
+        // 'test/unit/**/merge*',
 
         // 'test/unit/**/filterSpec.js',
 

@@ -159,4 +159,59 @@ describe("flatMap", function () {
         expect(sum).toEqual(1 + 2 + 2 + 3 + 3 + 4);
         expect(result).toEqual([1, 2, 2, 3, 3, 4]);
     });
+
+    describe("fix bug", function(){
+        it("when MergeAllObserver->InnerObserver complete, should dispose inner stream", function () {
+            var sum2 = 0;
+
+            var dom = $("<div></div>");
+            $("body").append(dom);
+
+
+            sandbox.spy(dom, "on");
+            sandbox.spy(dom, "off");
+
+            function fromEvent(dom, eventName){
+                return rt.fromEventPattern(function(h){
+                    dom.on(eventName, h);
+                }, function(h){
+                    dom.off(eventName, h);
+                });
+            }
+
+            var mouseup = fromEvent(dom, 'mouseup');
+            var mousemove = fromEvent(dom, 'mousemove');
+            var mousedown = fromEvent(dom, 'mousedown');
+
+
+
+
+            var mousedrag = mousedown.flatMap(function () {
+                return mousemove.takeUntil(mouseup.do(function(){
+                    sum2++;
+                }));
+            });
+
+            var subscription = mousedrag.subscribe(function(){
+            });
+
+
+            dom.trigger("mousedown");
+            dom.trigger("mousemove");
+            dom.trigger("mouseup");
+
+            expect(sum2).toEqual(1);
+
+
+            dom.trigger("mousedown");
+            dom.trigger("mousemove");
+            dom.trigger("mouseup");
+
+            expect(sum2).toEqual(2);
+
+
+
+            dom.remove();
+        });
+    });
 });

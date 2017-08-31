@@ -32,6 +32,10 @@ export class GroupDisposable extends Entity implements IDisposable {
         return this;
     }
 
+    public getCount(){
+        return this._group.getCount();
+    }
+
     public dispose() {
         if (this._isDisposed) {
             return;

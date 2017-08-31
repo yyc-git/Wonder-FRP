@@ -8,6 +8,9 @@ import { AutoDetachObserver } from "../observer/AutoDetachObserver";
 export abstract class BaseStream extends Stream {
     public abstract subscribeCore(observer: IObserver): IDisposable;
 
+    // private _isBuildStream:boolean = false;
+    // private _disposable:IDisposable = null;
+
     public subscribe(arg1: Function | Observer | Subject, onError?, onCompleted?): IDisposable {
         var observer: Observer = null;
 

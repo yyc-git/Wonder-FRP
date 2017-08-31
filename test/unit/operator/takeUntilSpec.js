@@ -144,7 +144,7 @@ describe("takeUntil", function () {
         expect(dom.off).not.toCalled();
 
         dom.trigger("mouseup");
-        expect(dom.off).toCalledOnce();
+        expect(dom.off).toCalledTwice();
         expect(dom.off).toCalledWith("mousemove");
 
         expect(sum1).toEqual(1);
