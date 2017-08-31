@@ -896,9 +896,6 @@ var AutoDetachObserver = (function (_super) {
         }
     };
     AutoDetachObserver.prototype.dispose = function () {
-        if (this.isDisposed) {
-            return;
-        }
         _super.prototype.dispose.call(this);
     };
     AutoDetachObserver.prototype.onNext = function (value) {
@@ -1009,27 +1006,35 @@ var Subject = (function () {
 
 var SingleDisposable = (function (_super) {
     __extends(SingleDisposable, _super);
-    function SingleDisposable(disposeHandler) {
+    function SingleDisposable(dispose) {
         var _this = _super.call(this, "SingleDisposable") || this;
-        _this._disposeHandler = null;
+        _this._disposable = null;
         _this._isDisposed = false;
-        _this._disposeHandler = disposeHandler;
+        _this._disposable = dispose;
         return _this;
     }
-    SingleDisposable.create = function (disposeHandler) {
-        if (disposeHandler === void 0) { disposeHandler = function () { }; }
-        var obj = new this(disposeHandler);
+    SingleDisposable.create = function (dispose) {
+        if (dispose === void 0) { dispose = null; }
+        var obj = new this(dispose);
         return obj;
     };
-    SingleDisposable.prototype.setDisposeHandler = function (handler) {
-        this._disposeHandler = handler;
+    SingleDisposable.prototype.setDispose = function (disposable) {
+        this._disposable = disposable;
     };
     SingleDisposable.prototype.dispose = function () {
         if (this._isDisposed) {
             return;
         }
         this._isDisposed = true;
-        this._disposeHandler();
+        if (!this._disposable) {
+            return;
+        }
+        if (!!this._disposable.dispose) {
+            this._disposable.dispose();
+        }
+        else {
+            this._disposable();
+        }
     };
     return SingleDisposable;
 }(Entity));
@@ -1420,6 +1425,9 @@ var GroupDisposable = (function (_super) {
         this._group.removeChild(disposable);
         return this;
     };
+    GroupDisposable.prototype.getCount = function () {
+        return this._group.getCount();
+    };
     GroupDisposable.prototype.dispose = function () {
         if (this._isDisposed) {
             return;
@@ -1558,33 +1566,33 @@ var MapStream = (function (_super) {
 
 var MergeAllObserver = (function (_super) {
     __extends(MergeAllObserver, _super);
-    function MergeAllObserver(currentObserver, streamGroup, groupDisposable) {
+    function MergeAllObserver(currentObserver, groupDisposable) {
         var _this = _super.call(this, null, null, null) || this;
         _this.done = false;
         _this.currentObserver = null;
-        _this._streamGroup = null;
         _this._groupDisposable = null;
         _this.currentObserver = currentObserver;
-        _this._streamGroup = streamGroup;
         _this._groupDisposable = groupDisposable;
         return _this;
     }
-    MergeAllObserver.create = function (currentObserver, streamGroup, groupDisposable) {
-        return new this(currentObserver, streamGroup, groupDisposable);
+    MergeAllObserver.create = function (currentObserver, groupDisposable) {
+        return new this(currentObserver, groupDisposable);
     };
     MergeAllObserver.prototype.onNext = function (innerSource) {
         if (JudgeUtils$$1.isPromise(innerSource)) {
             innerSource = fromPromise(innerSource);
         }
-        this._streamGroup.addChild(innerSource);
-        this._groupDisposable.add(innerSource.buildStream(InnerObserver.create(this, this._streamGroup, innerSource)));
+        var disposable = SingleDisposable.create(), innerObserver = InnerObserver.create(this, innerSource, this._groupDisposable);
+        this._groupDisposable.add(disposable);
+        innerObserver.disposable = disposable;
+        disposable.setDispose(innerSource.buildStream(innerObserver));
     };
     MergeAllObserver.prototype.onError = function (error) {
         this.currentObserver.error(error);
     };
     MergeAllObserver.prototype.onCompleted = function () {
         this.done = true;
-        if (this._streamGroup.getCount() === 0) {
+        if (this._groupDisposable.getCount() <= 1) {
             this.currentObserver.completed();
         }
     };
@@ -1597,18 +1605,19 @@ var MergeAllObserver = (function (_super) {
 }(Observer));
 var InnerObserver = (function (_super) {
     __extends(InnerObserver, _super);
-    function InnerObserver(parent, streamGroup, currentStream) {
+    function InnerObserver(parent, currentStream, groupDisposable) {
         var _this = _super.call(this, null, null, null) || this;
+        _this.disposable = null;
         _this._parent = null;
-        _this._streamGroup = null;
         _this._currentStream = null;
+        _this._groupDisposable = null;
         _this._parent = parent;
-        _this._streamGroup = streamGroup;
         _this._currentStream = currentStream;
+        _this._groupDisposable = groupDisposable;
         return _this;
     }
-    InnerObserver.create = function (parent, streamGroup, currentStream) {
-        var obj = new this(parent, streamGroup, currentStream);
+    InnerObserver.create = function (parent, currentStream, groupDisposable) {
+        var obj = new this(parent, currentStream, groupDisposable);
         return obj;
     };
     InnerObserver.prototype.onNext = function (value) {
@@ -1619,10 +1628,11 @@ var InnerObserver = (function (_super) {
     };
     InnerObserver.prototype.onCompleted = function () {
         var currentStream = this._currentStream, parent = this._parent;
-        this._streamGroup.removeChild(function (stream) {
-            return JudgeUtils$$1.isEqual(stream, currentStream);
-        });
-        if (this._isAsync() && this._streamGroup.getCount() === 0) {
+        if (!!this.disposable) {
+            this.disposable.dispose();
+            this._groupDisposable.remove(this.disposable);
+        }
+        if (this._isAsync() && this._groupDisposable.getCount() <= 1) {
             parent.currentObserver.completed();
         }
     };
@@ -1637,7 +1647,6 @@ var MergeAllStream = (function (_super) {
     function MergeAllStream(source) {
         var _this = _super.call(this, null) || this;
         _this._source = null;
-        _this._observer = null;
         _this._source = source;
         _this.scheduler = _this._source.scheduler;
         return _this;
@@ -1647,8 +1656,8 @@ var MergeAllStream = (function (_super) {
         return obj;
     };
     MergeAllStream.prototype.subscribeCore = function (observer) {
-        var streamGroup = Collection.create(), groupDisposable = GroupDisposable.create();
-        this._source.buildStream(MergeAllObserver.create(observer, streamGroup, groupDisposable));
+        var groupDisposable = GroupDisposable.create();
+        groupDisposable.add(this._source.buildStream(MergeAllObserver.create(observer, groupDisposable)));
         return groupDisposable;
     };
     MergeAllStream = __decorate([
@@ -1949,7 +1958,7 @@ var FilterWithStateStream = (function (_super) {
 
 var MergeObserver = (function (_super) {
     __extends(MergeObserver, _super);
-    function MergeObserver(currentObserver, maxConcurrent, streamGroup, groupDisposable) {
+    function MergeObserver(currentObserver, maxConcurrent, groupDisposable) {
         var _this = _super.call(this, null, null, null) || this;
         _this.done = false;
         _this.currentObserver = null;
@@ -1957,25 +1966,25 @@ var MergeObserver = (function (_super) {
         _this.q = [];
         _this._maxConcurrent = null;
         _this._groupDisposable = null;
-        _this._streamGroup = null;
         _this.currentObserver = currentObserver;
         _this._maxConcurrent = maxConcurrent;
-        _this._streamGroup = streamGroup;
         _this._groupDisposable = groupDisposable;
         return _this;
     }
-    MergeObserver.create = function (currentObserver, maxConcurrent, streamGroup, groupDisposable) {
-        return new this(currentObserver, maxConcurrent, streamGroup, groupDisposable);
+    MergeObserver.create = function (currentObserver, maxConcurrent, groupDisposable) {
+        return new this(currentObserver, maxConcurrent, groupDisposable);
     };
     MergeObserver.prototype.handleSubscribe = function (innerSource) {
         if (JudgeUtils$$1.isPromise(innerSource)) {
             innerSource = fromPromise(innerSource);
         }
-        this._streamGroup.addChild(innerSource);
-        this._groupDisposable.add(innerSource.buildStream(InnerObserver$1.create(this, this._streamGroup, innerSource)));
+        var disposable = SingleDisposable.create(), innerObserver = InnerObserver$1.create(this, innerSource, this._groupDisposable);
+        this._groupDisposable.add(disposable);
+        innerObserver.disposable = disposable;
+        disposable.setDispose(innerSource.buildStream(innerObserver));
     };
     MergeObserver.prototype.onNext = function (innerSource) {
-        if (this._isReachMaxConcurrent()) {
+        if (this._isNotReachMaxConcurrent()) {
             this.activeCount++;
             this.handleSubscribe(innerSource);
             return;
@@ -1987,11 +1996,11 @@ var MergeObserver = (function (_super) {
     };
     MergeObserver.prototype.onCompleted = function () {
         this.done = true;
-        if (this._streamGroup.getCount() === 0) {
+        if (this.activeCount === 0) {
             this.currentObserver.completed();
         }
     };
-    MergeObserver.prototype._isReachMaxConcurrent = function () {
+    MergeObserver.prototype._isNotReachMaxConcurrent = function () {
         return this.activeCount < this._maxConcurrent;
     };
     __decorate([
@@ -2003,18 +2012,19 @@ var MergeObserver = (function (_super) {
 }(Observer));
 var InnerObserver$1 = (function (_super) {
     __extends(InnerObserver, _super);
-    function InnerObserver(parent, streamGroup, currentStream) {
+    function InnerObserver(parent, currentStream, groupDisposable) {
         var _this = _super.call(this, null, null, null) || this;
+        _this.disposable = null;
         _this._parent = null;
-        _this._streamGroup = null;
         _this._currentStream = null;
+        _this._groupDisposable = null;
         _this._parent = parent;
-        _this._streamGroup = streamGroup;
         _this._currentStream = currentStream;
+        _this._groupDisposable = groupDisposable;
         return _this;
     }
-    InnerObserver.create = function (parent, streamGroup, currentStream) {
-        var obj = new this(parent, streamGroup, currentStream);
+    InnerObserver.create = function (parent, currentStream, groupDisposable) {
+        var obj = new this(parent, currentStream, groupDisposable);
         return obj;
     };
     InnerObserver.prototype.onNext = function (value) {
@@ -2025,13 +2035,16 @@ var InnerObserver$1 = (function (_super) {
     };
     InnerObserver.prototype.onCompleted = function () {
         var parent = this._parent;
-        this._streamGroup.removeChild(this._currentStream);
+        if (!!this.disposable) {
+            this.disposable.dispose();
+            this._groupDisposable.remove(this.disposable);
+        }
         if (parent.q.length > 0) {
-            parent.activeCount = 0;
             parent.handleSubscribe(parent.q.shift());
         }
         else {
-            if (this._isAsync() && this._streamGroup.getCount() === 0) {
+            parent.activeCount -= 1;
+            if (this._isAsync() && parent.activeCount === 0) {
                 parent.currentObserver.completed();
             }
         }
@@ -2058,8 +2071,8 @@ var MergeStream = (function (_super) {
         return obj;
     };
     MergeStream.prototype.subscribeCore = function (observer) {
-        var streamGroup = Collection.create(), groupDisposable = GroupDisposable.create();
-        this._source.buildStream(MergeObserver.create(observer, this._maxConcurrent, streamGroup, groupDisposable));
+        var groupDisposable = GroupDisposable.create();
+        groupDisposable.add(this._source.buildStream(MergeObserver.create(observer, this._maxConcurrent, groupDisposable)));
         return groupDisposable;
     };
     MergeStream = __decorate([

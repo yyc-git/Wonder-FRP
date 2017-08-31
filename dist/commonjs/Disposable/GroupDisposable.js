@@ -35,6 +35,9 @@ var GroupDisposable = (function (_super) {
         this._group.removeChild(disposable);
         return this;
     };
+    GroupDisposable.prototype.getCount = function () {
+        return this._group.getCount();
+    };
     GroupDisposable.prototype.dispose = function () {
         if (this._isDisposed) {
             return;

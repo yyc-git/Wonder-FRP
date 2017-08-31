@@ -17,7 +17,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var BaseStream_1 = require("./BaseStream");
-var Collection_1 = require("wonder-commonlib/dist/commonjs/Collection");
 var GroupDisposable_1 = require("../Disposable/GroupDisposable");
 var MergeObserver_1 = require("../observer/MergeObserver");
 var registerClass_1 = require("../definition/typescript/decorator/registerClass");
@@ -37,8 +36,8 @@ var MergeStream = (function (_super) {
         return obj;
     };
     MergeStream.prototype.subscribeCore = function (observer) {
-        var streamGroup = Collection_1.Collection.create(), groupDisposable = GroupDisposable_1.GroupDisposable.create();
-        this._source.buildStream(MergeObserver_1.MergeObserver.create(observer, this._maxConcurrent, streamGroup, groupDisposable));
+        var groupDisposable = GroupDisposable_1.GroupDisposable.create();
+        groupDisposable.add(this._source.buildStream(MergeObserver_1.MergeObserver.create(observer, this._maxConcurrent, groupDisposable)));
         return groupDisposable;
     };
     MergeStream = __decorate([

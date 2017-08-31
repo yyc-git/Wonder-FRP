@@ -2,16 +2,16 @@ import { Entity } from "../core/Entity";
 import { IDisposable } from "./IDisposable";
 
 export class SingleDisposable extends Entity implements IDisposable {
-    public static create(dispose: IDisposable|Function = null) {
+    public static create(dispose: IDisposable | Function = null) {
         var obj = new this(dispose);
 
         return obj;
     }
 
-    private _disposable: IDisposable|Function = null;
+    private _disposable: IDisposable | Function = null;
     private _isDisposed: boolean = false;
 
-    constructor(dispose: IDisposable|Function) {
+    constructor(dispose: IDisposable | Function) {
         super("SingleDisposable");
 
         this._disposable = dispose;
@@ -28,14 +28,14 @@ export class SingleDisposable extends Entity implements IDisposable {
 
         this._isDisposed = true;
 
-        if(!this._disposable){
+        if (!this._disposable) {
             return;
         }
 
-        if(!!(this._disposable as IDisposable).dispose){
+        if (!!(this._disposable as IDisposable).dispose) {
             (this._disposable as IDisposable).dispose();
         }
-        else{
+        else {
             (this._disposable as Function)();
         }
     }

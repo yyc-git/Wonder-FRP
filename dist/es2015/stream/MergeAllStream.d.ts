@@ -6,6 +6,5 @@ export declare class MergeAllStream extends BaseStream {
     static create(source: Stream): MergeAllStream;
     constructor(source: Stream);
     private _source;
-    private _observer;
     subscribeCore(observer: IObserver): GroupDisposable;
 }

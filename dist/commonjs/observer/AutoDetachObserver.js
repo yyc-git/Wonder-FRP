@@ -37,9 +37,6 @@ var AutoDetachObserver = (function (_super) {
         }
     };
     AutoDetachObserver.prototype.dispose = function () {
-        if (this.isDisposed) {
-            return;
-        }
         _super.prototype.dispose.call(this);
     };
     AutoDetachObserver.prototype.onNext = function (value) {

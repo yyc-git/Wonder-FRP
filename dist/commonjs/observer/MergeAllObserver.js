@@ -22,35 +22,36 @@ var Stream_1 = require("../core/Stream");
 var contract_1 = require("../definition/typescript/decorator/contract");
 var JudgeUtils_1 = require("../JudgeUtils");
 var Operator_1 = require("../global/Operator");
+var SingleDisposable_1 = require("../Disposable/SingleDisposable");
 var MergeAllObserver = (function (_super) {
     __extends(MergeAllObserver, _super);
-    function MergeAllObserver(currentObserver, streamGroup, groupDisposable) {
+    function MergeAllObserver(currentObserver, groupDisposable) {
         var _this = _super.call(this, null, null, null) || this;
         _this.done = false;
         _this.currentObserver = null;
-        _this._streamGroup = null;
         _this._groupDisposable = null;
         _this.currentObserver = currentObserver;
-        _this._streamGroup = streamGroup;
         _this._groupDisposable = groupDisposable;
         return _this;
     }
-    MergeAllObserver.create = function (currentObserver, streamGroup, groupDisposable) {
-        return new this(currentObserver, streamGroup, groupDisposable);
+    MergeAllObserver.create = function (currentObserver, groupDisposable) {
+        return new this(currentObserver, groupDisposable);
     };
     MergeAllObserver.prototype.onNext = function (innerSource) {
         if (JudgeUtils_1.JudgeUtils.isPromise(innerSource)) {
             innerSource = Operator_1.fromPromise(innerSource);
         }
-        this._streamGroup.addChild(innerSource);
-        this._groupDisposable.add(innerSource.buildStream(InnerObserver.create(this, this._streamGroup, innerSource)));
+        var disposable = SingleDisposable_1.SingleDisposable.create(), innerObserver = InnerObserver.create(this, innerSource, this._groupDisposable);
+        this._groupDisposable.add(disposable);
+        innerObserver.disposable = disposable;
+        disposable.setDispose(innerSource.buildStream(innerObserver));
     };
     MergeAllObserver.prototype.onError = function (error) {
         this.currentObserver.error(error);
     };
     MergeAllObserver.prototype.onCompleted = function () {
         this.done = true;
-        if (this._streamGroup.getCount() === 0) {
+        if (this._groupDisposable.getCount() <= 1) {
             this.currentObserver.completed();
         }
     };
@@ -64,18 +65,19 @@ var MergeAllObserver = (function (_super) {
 exports.MergeAllObserver = MergeAllObserver;
 var InnerObserver = (function (_super) {
     __extends(InnerObserver, _super);
-    function InnerObserver(parent, streamGroup, currentStream) {
+    function InnerObserver(parent, currentStream, groupDisposable) {
         var _this = _super.call(this, null, null, null) || this;
+        _this.disposable = null;
         _this._parent = null;
-        _this._streamGroup = null;
         _this._currentStream = null;
+        _this._groupDisposable = null;
         _this._parent = parent;
-        _this._streamGroup = streamGroup;
         _this._currentStream = currentStream;
+        _this._groupDisposable = groupDisposable;
         return _this;
     }
-    InnerObserver.create = function (parent, streamGroup, currentStream) {
-        var obj = new this(parent, streamGroup, currentStream);
+    InnerObserver.create = function (parent, currentStream, groupDisposable) {
+        var obj = new this(parent, currentStream, groupDisposable);
         return obj;
     };
     InnerObserver.prototype.onNext = function (value) {
@@ -86,10 +88,11 @@ var InnerObserver = (function (_super) {
     };
     InnerObserver.prototype.onCompleted = function () {
         var currentStream = this._currentStream, parent = this._parent;
-        this._streamGroup.removeChild(function (stream) {
-            return JudgeUtils_1.JudgeUtils.isEqual(stream, currentStream);
-        });
-        if (this._isAsync() && this._streamGroup.getCount() === 0) {
+        if (!!this.disposable) {
+            this.disposable.dispose();
+            this._groupDisposable.remove(this.disposable);
+        }
+        if (this._isAsync() && this._groupDisposable.getCount() <= 1) {
             parent.currentObserver.completed();
         }
     };

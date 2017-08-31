@@ -7,5 +7,6 @@ export declare class GroupDisposable extends Entity implements IDisposable {
     constructor(disposable?: IDisposable);
     add(disposable: IDisposable): this;
     remove(disposable: IDisposable): this;
+    getCount(): number;
     dispose(): void;
 }

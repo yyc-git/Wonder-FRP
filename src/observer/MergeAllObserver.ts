@@ -58,13 +58,13 @@ export class MergeAllObserver extends Observer {
 }
 
 class InnerObserver extends Observer {
-    public static create(parent: MergeAllObserver, currentStream: Stream, groupDisposable:GroupDisposable) {
+    public static create(parent: MergeAllObserver, currentStream: Stream, groupDisposable: GroupDisposable) {
         var obj = new this(parent, currentStream, groupDisposable);
 
         return obj;
     }
 
-    constructor(parent: MergeAllObserver, currentStream: Stream, groupDisposable:GroupDisposable) {
+    constructor(parent: MergeAllObserver, currentStream: Stream, groupDisposable: GroupDisposable) {
         super(null, null, null);
 
         this._parent = parent;
@@ -72,11 +72,11 @@ class InnerObserver extends Observer {
         this._groupDisposable = groupDisposable;
     }
 
-    public disposable:SingleDisposable = null;
+    public disposable: SingleDisposable = null;
 
     private _parent: MergeAllObserver = null;
     private _currentStream: Stream = null;
-    private _groupDisposable:GroupDisposable = null;
+    private _groupDisposable: GroupDisposable = null;
 
     protected onNext(value) {
         this._parent.currentObserver.next(value);
@@ -90,7 +90,7 @@ class InnerObserver extends Observer {
         var currentStream = this._currentStream,
             parent = this._parent;
 
-        if(!!this.disposable){
+        if (!!this.disposable) {
             this.disposable.dispose();
             this._groupDisposable.remove(this.disposable);
         }
@@ -101,7 +101,7 @@ class InnerObserver extends Observer {
         then exec all this.next and all this.completed
         so in this case, it should invoke parent.currentObserver.completed after the last invokcation of this.completed(have invoked all the innerSource)
         */
-        if (this._isAsync() && this._groupDisposable.getCount() <= 1){
+        if (this._isAsync() && this._groupDisposable.getCount() <= 1) {
             parent.currentObserver.completed();
         }
     }

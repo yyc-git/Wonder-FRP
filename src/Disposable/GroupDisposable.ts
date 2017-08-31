@@ -32,7 +32,7 @@ export class GroupDisposable extends Entity implements IDisposable {
         return this;
     }
 
-    public getCount(){
+    public getCount() {
         return this._group.getCount();
     }
 

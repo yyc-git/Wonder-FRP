@@ -13,27 +13,35 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Entity_1 = require("../core/Entity");
 var SingleDisposable = (function (_super) {
     __extends(SingleDisposable, _super);
-    function SingleDisposable(disposeHandler) {
+    function SingleDisposable(dispose) {
         var _this = _super.call(this, "SingleDisposable") || this;
-        _this._disposeHandler = null;
+        _this._disposable = null;
         _this._isDisposed = false;
-        _this._disposeHandler = disposeHandler;
+        _this._disposable = dispose;
         return _this;
     }
-    SingleDisposable.create = function (disposeHandler) {
-        if (disposeHandler === void 0) { disposeHandler = function () { }; }
-        var obj = new this(disposeHandler);
+    SingleDisposable.create = function (dispose) {
+        if (dispose === void 0) { dispose = null; }
+        var obj = new this(dispose);
         return obj;
     };
-    SingleDisposable.prototype.setDisposeHandler = function (handler) {
-        this._disposeHandler = handler;
+    SingleDisposable.prototype.setDispose = function (disposable) {
+        this._disposable = disposable;
     };
     SingleDisposable.prototype.dispose = function () {
         if (this._isDisposed) {
             return;
         }
         this._isDisposed = true;
-        this._disposeHandler();
+        if (!this._disposable) {
+            return;
+        }
+        if (!!this._disposable.dispose) {
+            this._disposable.dispose();
+        }
+        else {
+            this._disposable();
+        }
     };
     return SingleDisposable;
 }(Entity_1.Entity));

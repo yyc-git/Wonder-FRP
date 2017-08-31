@@ -1,24 +1,23 @@
 import { Log } from "wonder-commonlib/dist/commonjs/Log";
 import { Observer } from "../core/Observer";
 import { IObserver } from "./IObserver";
-import { Collection } from "wonder-commonlib/dist/commonjs/Collection";
 import { Stream } from "../core/Stream";
 import { GroupDisposable } from "../Disposable/GroupDisposable";
 import { JudgeUtils } from "../JudgeUtils";
 import { fromPromise } from "../global/Operator";
 import { requireCheck, assert } from "../definition/typescript/decorator/contract";
+import { SingleDisposable } from "../Disposable/SingleDisposable";
 
 export class MergeObserver extends Observer {
-    public static create(currentObserver: IObserver, maxConcurrent: number, streamGroup: Collection<Stream>, groupDisposable: GroupDisposable) {
-        return new this(currentObserver, maxConcurrent, streamGroup, groupDisposable);
+    public static create(currentObserver: IObserver, maxConcurrent: number, groupDisposable: GroupDisposable) {
+        return new this(currentObserver, maxConcurrent, groupDisposable);
     }
 
-    constructor(currentObserver: IObserver, maxConcurrent: number, streamGroup: Collection<Stream>, groupDisposable: GroupDisposable) {
+    constructor(currentObserver: IObserver, maxConcurrent: number, groupDisposable: GroupDisposable) {
         super(null, null, null);
 
         this.currentObserver = currentObserver;
         this._maxConcurrent = maxConcurrent;
-        this._streamGroup = streamGroup;
         this._groupDisposable = groupDisposable;
     }
 
@@ -29,16 +28,20 @@ export class MergeObserver extends Observer {
 
     private _maxConcurrent: number = null;
     private _groupDisposable: GroupDisposable = null;
-    private _streamGroup: Collection<Stream> = null;
 
     public handleSubscribe(innerSource: any) {
         if (JudgeUtils.isPromise(innerSource)) {
             innerSource = fromPromise(innerSource);
         }
 
-        this._streamGroup.addChild(innerSource);
+        let disposable = SingleDisposable.create(),
+            innerObserver = InnerObserver.create(this, innerSource, this._groupDisposable);
 
-        this._groupDisposable.add(innerSource.buildStream(InnerObserver.create(this, this._streamGroup, innerSource)));
+        this._groupDisposable.add(disposable);
+
+        innerObserver.disposable = disposable;
+
+        disposable.setDispose(innerSource.buildStream(innerObserver));
     }
 
     @requireCheck(function(innerSource: any) {
@@ -46,7 +49,7 @@ export class MergeObserver extends Observer {
 
     })
     protected onNext(innerSource: any) {
-        if (this._isReachMaxConcurrent()) {
+        if (this._isNotReachMaxConcurrent()) {
             this.activeCount++;
             this.handleSubscribe(innerSource);
 
@@ -63,34 +66,36 @@ export class MergeObserver extends Observer {
     protected onCompleted() {
         this.done = true;
 
-        if (this._streamGroup.getCount() === 0) {
+        if (this.activeCount === 0) {
             this.currentObserver.completed();
         }
     }
 
-    private _isReachMaxConcurrent() {
+    private _isNotReachMaxConcurrent() {
         return this.activeCount < this._maxConcurrent;
     }
 }
 
 class InnerObserver extends Observer {
-    public static create(parent: MergeObserver, streamGroup: Collection<Stream>, currentStream: Stream) {
-        var obj = new this(parent, streamGroup, currentStream);
+    public static create(parent: MergeObserver, currentStream: Stream, groupDisposable:GroupDisposable) {
+        var obj = new this(parent, currentStream, groupDisposable);
 
         return obj;
     }
 
-    constructor(parent: MergeObserver, streamGroup: Collection<Stream>, currentStream: Stream) {
+    constructor(parent: MergeObserver, currentStream: Stream, groupDisposable:GroupDisposable) {
         super(null, null, null);
 
         this._parent = parent;
-        this._streamGroup = streamGroup;
         this._currentStream = currentStream;
+        this._groupDisposable = groupDisposable;
     }
 
+    public disposable:SingleDisposable = null;
+
     private _parent: MergeObserver = null;
-    private _streamGroup: Collection<Stream> = null;
     private _currentStream: Stream = null;
+    private _groupDisposable:GroupDisposable = null;
 
     protected onNext(value) {
         this._parent.currentObserver.next(value);
@@ -103,14 +108,17 @@ class InnerObserver extends Observer {
     protected onCompleted() {
         var parent = this._parent;
 
-        this._streamGroup.removeChild(this._currentStream);
+        if(!!this.disposable){
+            this.disposable.dispose();
+            this._groupDisposable.remove(this.disposable);
+        }
 
         if (parent.q.length > 0) {
-            parent.activeCount = 0;
             parent.handleSubscribe(parent.q.shift());
         }
         else {
-            if (this._isAsync() && this._streamGroup.getCount() === 0) {
+            parent.activeCount -= 1;
+            if (this._isAsync() && parent.activeCount === 0){
                 parent.currentObserver.completed();
             }
         }

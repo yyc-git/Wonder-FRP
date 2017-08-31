@@ -15,6 +15,9 @@ export abstract class Stream extends Entity {
     public scheduler: Scheduler = null;
     public subscribeFunc: (observer: IObserver) => Function | void = null;
 
+    // private _isBuildStream:boolean = false;
+    // private _singleDisposable:IDisposable = null;
+
     constructor(subscribeFunc) {
         super("Stream");
 
@@ -24,7 +27,7 @@ export abstract class Stream extends Entity {
     public abstract subscribe(arg1: Function | Observer | Subject, onError?: Function, onCompleted?: Function): IDisposable;
 
     public buildStream(observer: IObserver): IDisposable {
-        return SingleDisposable.create(<Function>(this.subscribeFunc(observer) || function() { }));
+         return SingleDisposable.create(<Function>(this.subscribeFunc(observer) || function() { }));
     }
 
     public do(onNext?: Function, onError?: Function, onCompleted?: Function) {

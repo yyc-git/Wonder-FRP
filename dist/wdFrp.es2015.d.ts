@@ -193,6 +193,7 @@ declare module 'wonder-frp/dist/es2015/Disposable/GroupDisposable' {
         constructor(disposable?: IDisposable);
         add(disposable: IDisposable): this;
         remove(disposable: IDisposable): this;
+        getCount(): number;
         dispose(): void;
     }
 }
@@ -228,9 +229,9 @@ declare module 'wonder-frp/dist/es2015/Disposable/SingleDisposable' {
     import { Entity } from "wonder-frp/dist/es2015/core/Entity";
     import { IDisposable } from "wonder-frp/dist/es2015/Disposable/IDisposable";
     export class SingleDisposable extends Entity implements IDisposable {
-        static create(disposeHandler?: Function): SingleDisposable;
-        constructor(disposeHandler: Function);
-        setDisposeHandler(handler: Function): void;
+        static create(dispose?: IDisposable | Function): SingleDisposable;
+        constructor(dispose: IDisposable | Function);
+        setDispose(disposable: IDisposable): void;
         dispose(): void;
     }
 }
@@ -407,12 +408,10 @@ declare module 'wonder-frp/dist/es2015/observer/MapObserver' {
 declare module 'wonder-frp/dist/es2015/observer/MergeAllObserver' {
     import { Observer } from "wonder-frp/dist/es2015/core/Observer";
     import { IObserver } from "wonder-frp/dist/es2015/observer/IObserver";
-    import { Collection } from "wonder-commonlib/dist/es2015/Collection";
-    import { Stream } from "wonder-frp/dist/es2015/core/Stream";
     import { GroupDisposable } from "wonder-frp/dist/es2015/Disposable/GroupDisposable";
     export class MergeAllObserver extends Observer {
-        static create(currentObserver: IObserver, streamGroup: Collection<Stream>, groupDisposable: GroupDisposable): MergeAllObserver;
-        constructor(currentObserver: IObserver, streamGroup: Collection<Stream>, groupDisposable: GroupDisposable);
+        static create(currentObserver: IObserver, groupDisposable: GroupDisposable): MergeAllObserver;
+        constructor(currentObserver: IObserver, groupDisposable: GroupDisposable);
         done: boolean;
         currentObserver: IObserver;
         protected onNext(innerSource: any): void;
@@ -424,12 +423,11 @@ declare module 'wonder-frp/dist/es2015/observer/MergeAllObserver' {
 declare module 'wonder-frp/dist/es2015/observer/MergeObserver' {
     import { Observer } from "wonder-frp/dist/es2015/core/Observer";
     import { IObserver } from "wonder-frp/dist/es2015/observer/IObserver";
-    import { Collection } from "wonder-commonlib/dist/es2015/Collection";
     import { Stream } from "wonder-frp/dist/es2015/core/Stream";
     import { GroupDisposable } from "wonder-frp/dist/es2015/Disposable/GroupDisposable";
     export class MergeObserver extends Observer {
-        static create(currentObserver: IObserver, maxConcurrent: number, streamGroup: Collection<Stream>, groupDisposable: GroupDisposable): MergeObserver;
-        constructor(currentObserver: IObserver, maxConcurrent: number, streamGroup: Collection<Stream>, groupDisposable: GroupDisposable);
+        static create(currentObserver: IObserver, maxConcurrent: number, groupDisposable: GroupDisposable): MergeObserver;
+        constructor(currentObserver: IObserver, maxConcurrent: number, groupDisposable: GroupDisposable);
         done: boolean;
         currentObserver: IObserver;
         activeCount: number;

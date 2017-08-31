@@ -22,9 +22,9 @@ export class AutoDetachObserver extends Observer {
         }
     })
     public dispose() {
-        if (this.isDisposed) {
-            return;
-        }
+        // if (this.isDisposed) {
+        //     return;
+        // }
 
         super.dispose();
     }

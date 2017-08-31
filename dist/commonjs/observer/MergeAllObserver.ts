@@ -1,30 +1,28 @@
 import { Log } from "wonder-commonlib/dist/commonjs/Log";
 import { Observer } from "../core/Observer";
 import { IObserver } from "./IObserver";
-import { Collection } from "wonder-commonlib/dist/commonjs/Collection";
 import { Stream } from "../core/Stream";
 import { GroupDisposable } from "../Disposable/GroupDisposable";
 import { requireCheck, assert } from "../definition/typescript/decorator/contract";
 import { JudgeUtils } from "../JudgeUtils";
 import { fromPromise } from "../global/Operator";
+import { SingleDisposable } from "../Disposable/SingleDisposable";
 
 export class MergeAllObserver extends Observer {
-    public static create(currentObserver: IObserver, streamGroup: Collection<Stream>, groupDisposable: GroupDisposable) {
-        return new this(currentObserver, streamGroup, groupDisposable);
+    public static create(currentObserver: IObserver, groupDisposable: GroupDisposable) {
+        return new this(currentObserver, groupDisposable);
     }
 
-    constructor(currentObserver: IObserver, streamGroup: Collection<Stream>, groupDisposable: GroupDisposable) {
+    constructor(currentObserver: IObserver, groupDisposable: GroupDisposable) {
         super(null, null, null);
 
         this.currentObserver = currentObserver;
-        this._streamGroup = streamGroup;
         this._groupDisposable = groupDisposable;
     }
 
     public done: boolean = false;
     public currentObserver: IObserver = null;
 
-    private _streamGroup: Collection<Stream> = null;
     private _groupDisposable: GroupDisposable = null;
 
     @requireCheck(function(innerSource: any) {
@@ -36,9 +34,14 @@ export class MergeAllObserver extends Observer {
             innerSource = fromPromise(innerSource);
         }
 
-        this._streamGroup.addChild(innerSource);
+        let disposable = SingleDisposable.create(),
+            innerObserver = InnerObserver.create(this, innerSource, this._groupDisposable);
 
-        this._groupDisposable.add(innerSource.buildStream(InnerObserver.create(this, this._streamGroup, innerSource)));
+        this._groupDisposable.add(disposable);
+
+        innerObserver.disposable = disposable;
+
+        disposable.setDispose(innerSource.buildStream(innerObserver));
     }
 
     protected onError(error) {
@@ -48,30 +51,32 @@ export class MergeAllObserver extends Observer {
     protected onCompleted() {
         this.done = true;
 
-        if (this._streamGroup.getCount() === 0) {
+        if (this._groupDisposable.getCount() <= 1) {
             this.currentObserver.completed();
         }
     }
 }
 
 class InnerObserver extends Observer {
-    public static create(parent: MergeAllObserver, streamGroup: Collection<Stream>, currentStream: Stream) {
-        var obj = new this(parent, streamGroup, currentStream);
+    public static create(parent: MergeAllObserver, currentStream: Stream, groupDisposable:GroupDisposable) {
+        var obj = new this(parent, currentStream, groupDisposable);
 
         return obj;
     }
 
-    constructor(parent: MergeAllObserver, streamGroup: Collection<Stream>, currentStream: Stream) {
+    constructor(parent: MergeAllObserver, currentStream: Stream, groupDisposable:GroupDisposable) {
         super(null, null, null);
 
         this._parent = parent;
-        this._streamGroup = streamGroup;
         this._currentStream = currentStream;
+        this._groupDisposable = groupDisposable;
     }
 
+    public disposable:SingleDisposable = null;
+
     private _parent: MergeAllObserver = null;
-    private _streamGroup: Collection<Stream> = null;
     private _currentStream: Stream = null;
+    private _groupDisposable:GroupDisposable = null;
 
     protected onNext(value) {
         this._parent.currentObserver.next(value);
@@ -85,12 +90,10 @@ class InnerObserver extends Observer {
         var currentStream = this._currentStream,
             parent = this._parent;
 
-        this._streamGroup.removeChild((stream: Stream) => {
-            return JudgeUtils.isEqual(stream, currentStream);
-        });
-
-        //parent.currentObserver.completed();
-        //this.dispose();
+        if(!!this.disposable){
+            this.disposable.dispose();
+            this._groupDisposable.remove(this.disposable);
+        }
 
         /*!
         if this innerSource is async stream(as promise stream),
@@ -98,7 +101,7 @@ class InnerObserver extends Observer {
         then exec all this.next and all this.completed
         so in this case, it should invoke parent.currentObserver.completed after the last invokcation of this.completed(have invoked all the innerSource)
         */
-        if (this._isAsync() && this._streamGroup.getCount() === 0) {
+        if (this._isAsync() && this._groupDisposable.getCount() <= 1){
             parent.currentObserver.completed();
         }
     }

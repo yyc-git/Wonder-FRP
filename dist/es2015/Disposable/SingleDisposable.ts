@@ -2,23 +2,23 @@ import { Entity } from "../core/Entity";
 import { IDisposable } from "./IDisposable";
 
 export class SingleDisposable extends Entity implements IDisposable {
-    public static create(disposeHandler: Function = function() { }) {
-        var obj = new this(disposeHandler);
+    public static create(dispose: IDisposable|Function = null) {
+        var obj = new this(dispose);
 
         return obj;
     }
 
-    private _disposeHandler: Function = null;
+    private _disposable: IDisposable|Function = null;
     private _isDisposed: boolean = false;
 
-    constructor(disposeHandler: Function) {
+    constructor(dispose: IDisposable|Function) {
         super("SingleDisposable");
 
-        this._disposeHandler = disposeHandler;
+        this._disposable = dispose;
     }
 
-    public setDisposeHandler(handler: Function) {
-        this._disposeHandler = handler;
+    public setDispose(disposable: IDisposable) {
+        this._disposable = disposable;
     }
 
     public dispose() {
@@ -28,6 +28,15 @@ export class SingleDisposable extends Entity implements IDisposable {
 
         this._isDisposed = true;
 
-        this._disposeHandler();
+        if(!this._disposable){
+            return;
+        }
+
+        if(!!(this._disposable as IDisposable).dispose){
+            (this._disposable as IDisposable).dispose();
+        }
+        else{
+            (this._disposable as Function)();
+        }
     }
 }

@@ -20,9 +20,10 @@ import { Stream } from "../core/Stream";
 import { JudgeUtils } from "../JudgeUtils";
 import { fromPromise } from "../global/Operator";
 import { requireCheck, assert } from "../definition/typescript/decorator/contract";
+import { SingleDisposable } from "../Disposable/SingleDisposable";
 var MergeObserver = (function (_super) {
     __extends(MergeObserver, _super);
-    function MergeObserver(currentObserver, maxConcurrent, streamGroup, groupDisposable) {
+    function MergeObserver(currentObserver, maxConcurrent, groupDisposable) {
         var _this = _super.call(this, null, null, null) || this;
         _this.done = false;
         _this.currentObserver = null;
@@ -30,25 +31,25 @@ var MergeObserver = (function (_super) {
         _this.q = [];
         _this._maxConcurrent = null;
         _this._groupDisposable = null;
-        _this._streamGroup = null;
         _this.currentObserver = currentObserver;
         _this._maxConcurrent = maxConcurrent;
-        _this._streamGroup = streamGroup;
         _this._groupDisposable = groupDisposable;
         return _this;
     }
-    MergeObserver.create = function (currentObserver, maxConcurrent, streamGroup, groupDisposable) {
-        return new this(currentObserver, maxConcurrent, streamGroup, groupDisposable);
+    MergeObserver.create = function (currentObserver, maxConcurrent, groupDisposable) {
+        return new this(currentObserver, maxConcurrent, groupDisposable);
     };
     MergeObserver.prototype.handleSubscribe = function (innerSource) {
         if (JudgeUtils.isPromise(innerSource)) {
             innerSource = fromPromise(innerSource);
         }
-        this._streamGroup.addChild(innerSource);
-        this._groupDisposable.add(innerSource.buildStream(InnerObserver.create(this, this._streamGroup, innerSource)));
+        var disposable = SingleDisposable.create(), innerObserver = InnerObserver.create(this, innerSource, this._groupDisposable);
+        this._groupDisposable.add(disposable);
+        innerObserver.disposable = disposable;
+        disposable.setDispose(innerSource.buildStream(innerObserver));
     };
     MergeObserver.prototype.onNext = function (innerSource) {
-        if (this._isReachMaxConcurrent()) {
+        if (this._isNotReachMaxConcurrent()) {
             this.activeCount++;
             this.handleSubscribe(innerSource);
             return;
@@ -60,11 +61,11 @@ var MergeObserver = (function (_super) {
     };
     MergeObserver.prototype.onCompleted = function () {
         this.done = true;
-        if (this._streamGroup.getCount() === 0) {
+        if (this.activeCount === 0) {
             this.currentObserver.completed();
         }
     };
-    MergeObserver.prototype._isReachMaxConcurrent = function () {
+    MergeObserver.prototype._isNotReachMaxConcurrent = function () {
         return this.activeCount < this._maxConcurrent;
     };
     __decorate([
@@ -77,18 +78,19 @@ var MergeObserver = (function (_super) {
 export { MergeObserver };
 var InnerObserver = (function (_super) {
     __extends(InnerObserver, _super);
-    function InnerObserver(parent, streamGroup, currentStream) {
+    function InnerObserver(parent, currentStream, groupDisposable) {
         var _this = _super.call(this, null, null, null) || this;
+        _this.disposable = null;
         _this._parent = null;
-        _this._streamGroup = null;
         _this._currentStream = null;
+        _this._groupDisposable = null;
         _this._parent = parent;
-        _this._streamGroup = streamGroup;
         _this._currentStream = currentStream;
+        _this._groupDisposable = groupDisposable;
         return _this;
     }
-    InnerObserver.create = function (parent, streamGroup, currentStream) {
-        var obj = new this(parent, streamGroup, currentStream);
+    InnerObserver.create = function (parent, currentStream, groupDisposable) {
+        var obj = new this(parent, currentStream, groupDisposable);
         return obj;
     };
     InnerObserver.prototype.onNext = function (value) {
@@ -99,13 +101,16 @@ var InnerObserver = (function (_super) {
     };
     InnerObserver.prototype.onCompleted = function () {
         var parent = this._parent;
-        this._streamGroup.removeChild(this._currentStream);
+        if (!!this.disposable) {
+            this.disposable.dispose();
+            this._groupDisposable.remove(this.disposable);
+        }
         if (parent.q.length > 0) {
-            parent.activeCount = 0;
             parent.handleSubscribe(parent.q.shift());
         }
         else {
-            if (this._isAsync() && this._streamGroup.getCount() === 0) {
+            parent.activeCount -= 1;
+            if (this._isAsync() && parent.activeCount === 0) {
                 parent.currentObserver.completed();
             }
         }
