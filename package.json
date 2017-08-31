@@ -10,7 +10,7 @@
   "jsnext:main": "dist/wdFrp.module.js",
   "dependencies": {
     "@types/node": "^7.0.5",
-    "@types/wonder-commonlib": "^0.1.1",
+    "@types/wonder-commonlib": "^0.2.0",
     "wonder-commonlib": "^0.1.8"
   },
   "devDependencies": {
@@ -30,6 +30,7 @@
     "through-gulp": "^0.3.8",
     "typescript": "^2.3.0-dev.20170220",
     "wonder-package": "^0.1.25",
-    "wonder-rollup-plugin-typescript": "^0.1.1"
+    "wonder-rollup-plugin-typescript": "^0.1.1",
+    "wonder-tool-generate_es2015_index": "^0.1.4"
   }
 }

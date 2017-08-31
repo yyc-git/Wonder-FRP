@@ -11,6 +11,9 @@ var compileTs = wonderPackage.compileTs;
 var package = wonderPackage.package;
 var format = wonderPackage.format;
 
+var generateIndex = require("wonder-tool-generate_es2015_index").generate;
+var ts = require("typescript");
+
 
 var config = require("./gulp/common/config");
 
@@ -58,6 +61,20 @@ gulp.task("generateDTS", function(done) {
     done();
 });
 
+gulp.task("generateIndex", function(done) {
+    var rootDir = path.join(process.cwd(), "src"),
+        destDir = "./src/";
+
+    generateIndex("/", rootDir, ["*.ts", "**/*.ts"], destDir, {
+        target: ts.ScriptTarget.ES5,
+        module: ts.ModuleKind.System
+    }, {
+    });
+
+    done();
+});
+
+
 function _replaceDTSFileContent(dtsFilePath) {
     var fs = require("fs-extra");
 
@@ -88,12 +105,12 @@ gulp.task("formatTs", function(done) {
 
 
 
-gulp.task("build", gulpSync.sync(["clean", "compileTsES2015", "compileTsCommonjs", "generateDTS", "generateDTS", "rollup", "formatTs"]));
+gulp.task("build", gulpSync.sync(["clean", "generateIndex", "compileTsES2015", "compileTsCommonjs", "generateDTS", "rollup", "formatTs"]));
 
 
 
 gulp.task("watch", function(){
-    gulp.watch(tsFilePaths, gulpSync.sync(["compileTsES2015", "rollup"]));
+    gulp.watch(tsFilePaths, gulpSync.sync(["generateIndex", "compileTsES2015", "rollup"]));
 });
 
 
