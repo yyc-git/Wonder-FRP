@@ -5,6 +5,10 @@
 
 declare module 'wonder-frp/dist/commonjs' {
     export { JudgeUtils } from "wonder-frp/dist/commonjs/JudgeUtils";
+    export { GroupDisposable } from "wonder-frp/dist/commonjs/Disposable/GroupDisposable";
+    export { InnerSubscription } from "wonder-frp/dist/commonjs/Disposable/InnerSubscription";
+    export { InnerSubscriptionGroup } from "wonder-frp/dist/commonjs/Disposable/InnerSubscriptionGroup";
+    export { SingleDisposable } from "wonder-frp/dist/commonjs/Disposable/SingleDisposable";
     export { fromNodeCallback, fromStream, fromReadableStream, fromWritableStream, fromTransformStream } from "wonder-frp/dist/commonjs/binding/nodejs/NodeOperator";
     export { Entity } from "wonder-frp/dist/commonjs/core/Entity";
     export { Main } from "wonder-frp/dist/commonjs/core/Main";
@@ -12,13 +16,10 @@ declare module 'wonder-frp/dist/commonjs' {
     export { Scheduler } from "wonder-frp/dist/commonjs/core/Scheduler";
     export { Stream } from "wonder-frp/dist/commonjs/core/Stream";
     export { assert, requireCheck, ensure, requireGetter, requireSetter, ensureGetter, ensureSetter, invariant } from "wonder-frp/dist/commonjs/definition/typescript/decorator/contract";
-    export { GroupDisposable } from "wonder-frp/dist/commonjs/Disposable/GroupDisposable";
-    export { IDisposable } from "wonder-frp/dist/commonjs/Disposable/IDisposable";
-    export { InnerSubscription } from "wonder-frp/dist/commonjs/Disposable/InnerSubscription";
-    export { InnerSubscriptionGroup } from "wonder-frp/dist/commonjs/Disposable/InnerSubscriptionGroup";
-    export { SingleDisposable } from "wonder-frp/dist/commonjs/Disposable/SingleDisposable";
+    export { registerClass } from "wonder-frp/dist/commonjs/definition/typescript/decorator/registerClass";
+    export { virtual } from "wonder-frp/dist/commonjs/definition/typescript/decorator/virtual";
     export { FilterState } from "wonder-frp/dist/commonjs/enum/FilterState";
-    export { createStream, fromArray, fromPromise, fromEventPattern, interval, intervalRequest, timeout, empty, callFunc, judge, defer, just } from "wonder-frp/dist/commonjs/global/Operator";
+    export { Operator, createStream, empty, fromArray, fromPromise, fromEvent, fromEventPattern, interval, intervalRequest, timeout, callFunc, judge, defer, just } from "wonder-frp/dist/commonjs/global/Operator";
     export { root } from "wonder-frp/dist/commonjs/global/Variable";
     export { AnonymousObserver } from "wonder-frp/dist/commonjs/observer/AnonymousObserver";
     export { AutoDetachObserver } from "wonder-frp/dist/commonjs/observer/AutoDetachObserver";
@@ -27,8 +28,6 @@ declare module 'wonder-frp/dist/commonjs' {
     export { FilterObserver } from "wonder-frp/dist/commonjs/observer/FilterObserver";
     export { FilterWithStateObserver } from "wonder-frp/dist/commonjs/observer/FilterWithStateObserver";
     export { IgnoreElementsObserver } from "wonder-frp/dist/commonjs/observer/IgnoreElementsObserver";
-    export { IObserver } from "wonder-frp/dist/commonjs/observer/IObserver";
-    export { ISubjectObserver } from "wonder-frp/dist/commonjs/observer/ISubjectObserver";
     export { MapObserver } from "wonder-frp/dist/commonjs/observer/MapObserver";
     export { MergeAllObserver } from "wonder-frp/dist/commonjs/observer/MergeAllObserver";
     export { MergeObserver } from "wonder-frp/dist/commonjs/observer/MergeObserver";
@@ -64,8 +63,7 @@ declare module 'wonder-frp/dist/commonjs' {
     export { Record } from "wonder-frp/dist/commonjs/testing/Record";
     export { TestScheduler } from "wonder-frp/dist/commonjs/testing/TestScheduler";
     export { TestStream } from "wonder-frp/dist/commonjs/testing/TestStream";
-    //import "./extend/root";
-    //import "./global/init";
+    export { ClassMapUtils } from "wonder-frp/dist/commonjs/utils/ClassMapUtils";
 }
 
 declare module 'wonder-frp/dist/commonjs/JudgeUtils' {
@@ -76,6 +74,51 @@ declare module 'wonder-frp/dist/commonjs/JudgeUtils' {
         static isPromise(obj: any): boolean;
         static isEqual(ob1: Entity, ob2: Entity): boolean;
         static isIObserver(i: IObserver): () => any;
+    }
+}
+
+declare module 'wonder-frp/dist/commonjs/Disposable/GroupDisposable' {
+    import { Entity } from "wonder-frp/dist/commonjs/core/Entity";
+    import { IDisposable } from "wonder-frp/dist/commonjs/Disposable/IDisposable";
+    export class GroupDisposable extends Entity implements IDisposable {
+        static create(disposable?: IDisposable): GroupDisposable;
+        constructor(disposable?: IDisposable);
+        add(disposable: IDisposable): this;
+        remove(disposable: IDisposable): this;
+        getCount(): number;
+        dispose(): void;
+    }
+}
+
+declare module 'wonder-frp/dist/commonjs/Disposable/InnerSubscription' {
+    import { IDisposable } from "wonder-frp/dist/commonjs/Disposable/IDisposable";
+    import { Subject } from "wonder-frp/dist/commonjs/subject/Subject";
+    import { GeneratorSubject } from "wonder-frp/dist/commonjs/subject/GeneratorSubject";
+    import { Observer } from "wonder-frp/dist/commonjs/core/Observer";
+    export class InnerSubscription implements IDisposable {
+        static create(subject: Subject | GeneratorSubject, observer: Observer): InnerSubscription;
+        constructor(subject: Subject | GeneratorSubject, observer: Observer);
+        dispose(): void;
+    }
+}
+
+declare module 'wonder-frp/dist/commonjs/Disposable/InnerSubscriptionGroup' {
+    import { IDisposable } from "wonder-frp/dist/commonjs/Disposable/IDisposable";
+    export class InnerSubscriptionGroup implements IDisposable {
+        static create(): InnerSubscriptionGroup;
+        addChild(child: IDisposable): void;
+        dispose(): void;
+    }
+}
+
+declare module 'wonder-frp/dist/commonjs/Disposable/SingleDisposable' {
+    import { Entity } from "wonder-frp/dist/commonjs/core/Entity";
+    import { IDisposable } from "wonder-frp/dist/commonjs/Disposable/IDisposable";
+    export class SingleDisposable extends Entity implements IDisposable {
+        static create(dispose?: IDisposable | Function): SingleDisposable;
+        constructor(dispose: IDisposable | Function);
+        setDispose(disposable: IDisposable): void;
+        dispose(): void;
     }
 }
 
@@ -185,55 +228,12 @@ declare module 'wonder-frp/dist/commonjs/definition/typescript/decorator/contrac
     export function invariant(func: any): (target: any) => void;
 }
 
-declare module 'wonder-frp/dist/commonjs/Disposable/GroupDisposable' {
-    import { Entity } from "wonder-frp/dist/commonjs/core/Entity";
-    import { IDisposable } from "wonder-frp/dist/commonjs/Disposable/IDisposable";
-    export class GroupDisposable extends Entity implements IDisposable {
-        static create(disposable?: IDisposable): GroupDisposable;
-        constructor(disposable?: IDisposable);
-        add(disposable: IDisposable): this;
-        remove(disposable: IDisposable): this;
-        getCount(): number;
-        dispose(): void;
-    }
+declare module 'wonder-frp/dist/commonjs/definition/typescript/decorator/registerClass' {
+    export function registerClass(className: string): (target: any) => void;
 }
 
-declare module 'wonder-frp/dist/commonjs/Disposable/IDisposable' {
-    export interface IDisposable {
-        dispose(): void;
-    }
-}
-
-declare module 'wonder-frp/dist/commonjs/Disposable/InnerSubscription' {
-    import { IDisposable } from "wonder-frp/dist/commonjs/Disposable/IDisposable";
-    import { Subject } from "wonder-frp/dist/commonjs/subject/Subject";
-    import { GeneratorSubject } from "wonder-frp/dist/commonjs/subject/GeneratorSubject";
-    import { Observer } from "wonder-frp/dist/commonjs/core/Observer";
-    export class InnerSubscription implements IDisposable {
-        static create(subject: Subject | GeneratorSubject, observer: Observer): InnerSubscription;
-        constructor(subject: Subject | GeneratorSubject, observer: Observer);
-        dispose(): void;
-    }
-}
-
-declare module 'wonder-frp/dist/commonjs/Disposable/InnerSubscriptionGroup' {
-    import { IDisposable } from "wonder-frp/dist/commonjs/Disposable/IDisposable";
-    export class InnerSubscriptionGroup implements IDisposable {
-        static create(): InnerSubscriptionGroup;
-        addChild(child: IDisposable): void;
-        dispose(): void;
-    }
-}
-
-declare module 'wonder-frp/dist/commonjs/Disposable/SingleDisposable' {
-    import { Entity } from "wonder-frp/dist/commonjs/core/Entity";
-    import { IDisposable } from "wonder-frp/dist/commonjs/Disposable/IDisposable";
-    export class SingleDisposable extends Entity implements IDisposable {
-        static create(dispose?: IDisposable | Function): SingleDisposable;
-        constructor(dispose: IDisposable | Function);
-        setDispose(disposable: IDisposable): void;
-        dispose(): void;
-    }
+declare module 'wonder-frp/dist/commonjs/definition/typescript/decorator/virtual' {
+    export function virtual(target: any, name: any, descriptor: any): any;
 }
 
 declare module 'wonder-frp/dist/commonjs/enum/FilterState' {
@@ -275,6 +275,7 @@ declare module 'wonder-frp/dist/commonjs/global/Operator' {
     export var empty: typeof Operator.empty;
     export var fromArray: typeof Operator.fromArray;
     export var fromPromise: (promise: any, scheduler?: Scheduler) => FromPromiseStream;
+    export var fromEvent: (dom: HTMLElement, eventName: string) => FromEventPatternStream;
     export var fromEventPattern: (addHandler: Function, removeHandler: Function) => FromEventPatternStream;
     export var interval: (interval: any, scheduler?: Scheduler) => IntervalStream;
     export var intervalRequest: (scheduler?: Scheduler) => IntervalRequestStream;
@@ -373,23 +374,6 @@ declare module 'wonder-frp/dist/commonjs/observer/IgnoreElementsObserver' {
         protected onNext(value: any): void;
         protected onError(error: any): void;
         protected onCompleted(): void;
-    }
-}
-
-declare module 'wonder-frp/dist/commonjs/observer/IObserver' {
-    import { IDisposable } from "wonder-frp/dist/commonjs/Disposable/IDisposable";
-    export interface IObserver extends IDisposable {
-        next(value: any): any;
-        error(error: any): any;
-        completed(): any;
-    }
-}
-
-declare module 'wonder-frp/dist/commonjs/observer/ISubjectObserver' {
-    import { Observer } from "wonder-frp/dist/commonjs/core/Observer";
-    export interface ISubjectObserver {
-        addChild(observer: Observer): any;
-        removeChild(observer: Observer): any;
     }
 }
 
@@ -886,6 +870,28 @@ declare module 'wonder-frp/dist/commonjs/testing/TestStream' {
         scheduler: TestScheduler;
         constructor(messages: [Record], scheduler: TestScheduler);
         subscribeCore(observer: IObserver): SingleDisposable;
+    }
+}
+
+declare module 'wonder-frp/dist/commonjs/utils/ClassMapUtils' {
+    export class ClassMapUtils {
+        static addClassMap(className: string, _class: any): void;
+        static getClass(className: string): any;
+    }
+}
+
+declare module 'wonder-frp/dist/commonjs/observer/IObserver' {
+    import { IDisposable } from "wonder-frp/dist/commonjs/Disposable/IDisposable";
+    export interface IObserver extends IDisposable {
+        next(value: any): any;
+        error(error: any): any;
+        completed(): any;
+    }
+}
+
+declare module 'wonder-frp/dist/commonjs/Disposable/IDisposable' {
+    export interface IDisposable {
+        dispose(): void;
     }
 }
 

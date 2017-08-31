@@ -30,6 +30,7 @@ import { IObserver } from "../observer/IObserver";
 import { root } from "./Variable";
 import { DeferStream } from "../stream/DeferStream";
 import { registerClass } from "../definition/typescript/decorator/registerClass";
+import { EventUtils } from "wonder-commonlib/dist/commonjs/utils/EventUtils";
 
 @registerClass("Operator")
 export class Operator {
@@ -56,6 +57,14 @@ export var fromArray = Operator.fromArray;
 
 export var fromPromise = (promise: any, scheduler = Scheduler.create()) => {
     return FromPromiseStream.create(promise, scheduler);
+};
+
+export var fromEvent = (dom:HTMLElement, eventName:string) => {
+    return fromEventPattern((handler) => {
+        EventUtils.addEvent(dom, eventName, handler);
+    }, (handler) => {
+        EventUtils.removeEvent(dom, eventName, handler);
+    });
 };
 
 export var fromEventPattern = (addHandler: Function, removeHandler: Function) => {

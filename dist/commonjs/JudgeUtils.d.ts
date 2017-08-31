@@ -1,3 +1,4 @@
+/// <reference types="wonder-commonlib" />
 import { JudgeUtils as JudgeUtils$ } from "wonder-commonlib/dist/commonjs/utils/JudgeUtils";
 import { Entity } from "./core/Entity";
 import { IObserver } from "./observer/IObserver";

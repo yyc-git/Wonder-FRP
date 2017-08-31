@@ -29,6 +29,7 @@ var TimeoutStream_1 = require("../stream/TimeoutStream");
 var Variable_1 = require("./Variable");
 var DeferStream_1 = require("../stream/DeferStream");
 var registerClass_1 = require("../definition/typescript/decorator/registerClass");
+var EventUtils_1 = require("wonder-commonlib/dist/commonjs/utils/EventUtils");
 var Operator = (function () {
     function Operator() {
     }
@@ -58,6 +59,13 @@ exports.fromArray = Operator.fromArray;
 exports.fromPromise = function (promise, scheduler) {
     if (scheduler === void 0) { scheduler = Scheduler_1.Scheduler.create(); }
     return FromPromiseStream_1.FromPromiseStream.create(promise, scheduler);
+};
+exports.fromEvent = function (dom, eventName) {
+    return exports.fromEventPattern(function (handler) {
+        EventUtils_1.EventUtils.addEvent(dom, eventName, handler);
+    }, function (handler) {
+        EventUtils_1.EventUtils.removeEvent(dom, eventName, handler);
+    });
 };
 exports.fromEventPattern = function (addHandler, removeHandler) {
     return FromEventPatternStream_1.FromEventPatternStream.create(addHandler, removeHandler);

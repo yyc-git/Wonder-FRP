@@ -59,7 +59,7 @@ export var fromPromise = (promise: any, scheduler = Scheduler.create()) => {
     return FromPromiseStream.create(promise, scheduler);
 };
 
-export var fromEvent = (dom:HTMLElement, eventName:string) => {
+export var fromEvent = (dom: HTMLElement, eventName: string) => {
     return fromEventPattern((handler) => {
         EventUtils.addEvent(dom, eventName, handler);
     }, (handler) => {

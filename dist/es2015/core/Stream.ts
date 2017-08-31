@@ -22,12 +22,13 @@ export abstract class Stream extends Entity {
         super("Stream");
 
         this.subscribeFunc = subscribeFunc || function() { };
+
     }
 
     public abstract subscribe(arg1: Function | Observer | Subject, onError?: Function, onCompleted?: Function): IDisposable;
 
     public buildStream(observer: IObserver): IDisposable {
-         return SingleDisposable.create(<Function>(this.subscribeFunc(observer) || function() { }));
+        return SingleDisposable.create(<Function>(this.subscribeFunc(observer) || function() { }));
     }
 
     public do(onNext?: Function, onError?: Function, onCompleted?: Function) {

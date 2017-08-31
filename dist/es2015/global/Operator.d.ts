@@ -28,6 +28,7 @@ export declare var createStream: typeof Operator.createStream;
 export declare var empty: typeof Operator.empty;
 export declare var fromArray: typeof Operator.fromArray;
 export declare var fromPromise: (promise: any, scheduler?: Scheduler) => FromPromiseStream;
+export declare var fromEvent: (dom: HTMLElement, eventName: string) => FromEventPatternStream;
 export declare var fromEventPattern: (addHandler: Function, removeHandler: Function) => FromEventPatternStream;
 export declare var interval: (interval: any, scheduler?: Scheduler) => IntervalStream;
 export declare var intervalRequest: (scheduler?: Scheduler) => IntervalRequestStream;

@@ -77,13 +77,13 @@ export class MergeObserver extends Observer {
 }
 
 class InnerObserver extends Observer {
-    public static create(parent: MergeObserver, currentStream: Stream, groupDisposable:GroupDisposable) {
+    public static create(parent: MergeObserver, currentStream: Stream, groupDisposable: GroupDisposable) {
         var obj = new this(parent, currentStream, groupDisposable);
 
         return obj;
     }
 
-    constructor(parent: MergeObserver, currentStream: Stream, groupDisposable:GroupDisposable) {
+    constructor(parent: MergeObserver, currentStream: Stream, groupDisposable: GroupDisposable) {
         super(null, null, null);
 
         this._parent = parent;
@@ -91,11 +91,11 @@ class InnerObserver extends Observer {
         this._groupDisposable = groupDisposable;
     }
 
-    public disposable:SingleDisposable = null;
+    public disposable: SingleDisposable = null;
 
     private _parent: MergeObserver = null;
     private _currentStream: Stream = null;
-    private _groupDisposable:GroupDisposable = null;
+    private _groupDisposable: GroupDisposable = null;
 
     protected onNext(value) {
         this._parent.currentObserver.next(value);
@@ -108,7 +108,7 @@ class InnerObserver extends Observer {
     protected onCompleted() {
         var parent = this._parent;
 
-        if(!!this.disposable){
+        if (!!this.disposable) {
             this.disposable.dispose();
             this._groupDisposable.remove(this.disposable);
         }
@@ -118,7 +118,7 @@ class InnerObserver extends Observer {
         }
         else {
             parent.activeCount -= 1;
-            if (this._isAsync() && parent.activeCount === 0){
+            if (this._isAsync() && parent.activeCount === 0) {
                 parent.currentObserver.completed();
             }
         }
