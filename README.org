@@ -1,5 +1,8 @@
 * Wonder-FRP
 Wonder-FRP is a functional reactive programming library writing in typescipt.
+
+Wonder-FRP is fork from RxJs: https://github.com/Reactive-Extensions/RxJS , Thanks for the great project!
+
 * License
 MIT Licence
 
